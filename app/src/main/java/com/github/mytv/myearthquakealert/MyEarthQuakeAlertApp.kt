@@ -1,7 +1,7 @@
 package com.github.mytv.myearthquakealert
 
 import android.app.Application
-import androidx.datastore.DataStore
+import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.github.mytv.myearthquakealert.data.api.WolfxApi

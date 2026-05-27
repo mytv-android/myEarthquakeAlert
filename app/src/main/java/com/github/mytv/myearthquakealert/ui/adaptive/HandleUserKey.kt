@@ -9,9 +9,9 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 
 fun Modifier.handleUserKey(
-    onConfirm: () -> Unit,
     onDismiss: (() -> Unit)? = null,
     onFocusChanged: ((Boolean) -> Unit)? = null,
+    onConfirm: () -> Unit,
 ): Modifier = this
     .focusable()
     .onFocusChanged { state ->

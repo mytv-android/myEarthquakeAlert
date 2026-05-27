@@ -18,13 +18,13 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Material3.DynamicColors.DayNight"
+        android:theme="@style/Theme.MyEarthQuakeAlert"
         android:localeConfig="@xml/locales_config">
 
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.Material3.DynamicColors.DayNight">
+            android:theme="@style/Theme.MyEarthQuakeAlert">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

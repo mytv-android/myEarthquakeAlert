@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.window.core.layout.WindowWidthSizeClass
 
 enum class LayoutMode {
     COMPACT,
@@ -17,10 +17,10 @@ enum class LayoutMode {
 
 @Composable
 fun currentLayoutMode(): LayoutMode {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    return when (windowSizeClass.widthSizeClass) {
-        WindowWidthSizeClass.Compact -> LayoutMode.COMPACT
-        WindowWidthSizeClass.Medium -> LayoutMode.MEDIUM
+    val widthSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
+    return when {
+        widthSizeClass == WindowWidthSizeClass.COMPACT -> LayoutMode.COMPACT
+        widthSizeClass == WindowWidthSizeClass.MEDIUM -> LayoutMode.MEDIUM
         else -> LayoutMode.EXPANDED
     }
 }

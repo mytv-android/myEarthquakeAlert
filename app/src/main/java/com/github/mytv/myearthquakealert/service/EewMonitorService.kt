@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import com.github.mytv.myearthquakealert.MainActivity
+import com.github.mytv.myearthquakealert.MyEarthQuakeAlertApp
 import com.github.mytv.myearthquakealert.R
 import com.github.mytv.myearthquakealert.data.repository.EewRepository
 import com.github.mytv.myearthquakealert.data.repository.SettingsRepository
@@ -17,6 +18,7 @@ import com.github.mytv.myearthquakealert.domain.AlertEvaluator
 import com.github.mytv.myearthquakealert.domain.SeismicCalculator
 import com.github.mytv.myearthquakealert.util.LocationProvider
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.first
 
 class EewMonitorService : Service() {
 
