@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Earthquake Alert</string>
+    <string name="service_monitoring">Monitoring earthquake activity</string>
+    <string name="service_toggle">Monitoring Service</string>
+    <string name="source_selector">Data Source</string>
+    <string name="min_magnitude">Min Magnitude</string>
+    <string name="min_intensity">Min Intensity (CSIS)</string>
+    <string name="allow_dismiss">Allow dismiss with Back key</string>
+    <string name="simulation_test">Simulation Test</string>
+    <string name="alert_title">Earthquake Early Warning</string>
+    <string name="alert_line1">This is an earthquake early warning. Please prepare for strong shaking.</string>
+    <string name="alert_line2">%1$s experienced a %2$s earthquake.</string>
+    <string name="alert_line3">Seismic waves will arrive in %1$d seconds. Estimated intensity: %2$s.</string>
+    <string name="connection_connected">Connected</string>
+    <string name="connection_connecting">Connecting</string>
+    <string name="connection_disconnected">Disconnected</string>
+    <string name="simulation_label">SIMULATION</string>
+    <string name="earthquake_history">Recent Earthquakes</string>
+    <string name="overlay_permission_required">Overlay permission is required to show earthquake alerts</string>
+    <string name="grant_permission">Grant Permission</string>
+</resources>

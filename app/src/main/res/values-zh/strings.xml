@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">地震速报</string>
+    <string name="service_monitoring">正在监测地震活动</string>
+    <string name="service_toggle">监测服务</string>
+    <string name="source_selector">数据源</string>
+    <string name="min_magnitude">最低震级</string>
+    <string name="min_intensity">最低烈度 (CSIS)</string>
+    <string name="allow_dismiss">允许使用返回键关闭</string>
+    <string name="simulation_test">模拟测试</string>
+    <string name="alert_title">紧急地震速报</string>
+    <string name="alert_line1">这是紧急地震速报，请注意强烈摇晃。</string>
+    <string name="alert_line2">%1$s发生了%2$s级地震。</string>
+    <string name="alert_line3">地震波将在%1$d秒后到达，预计震级为%2$s。</string>
+    <string name="connection_connected">已连接</string>
+    <string name="connection_connecting">连接中</string>
+    <string name="connection_disconnected">已断开</string>
+    <string name="simulation_label">模拟测试</string>
+    <string name="earthquake_history">最近地震</string>
+    <string name="overlay_permission_required">需要悬浮窗权限以显示地震预警</string>
+    <string name="grant_permission">授予权限</string>
+</resources>
