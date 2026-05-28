@@ -61,8 +61,9 @@ fun MyEarthQuakeAlertTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = EeqTypography,
         shapes = EeqShapes,
+        motionScheme = EeqMotionScheme,
         content = content,
     )
 }
