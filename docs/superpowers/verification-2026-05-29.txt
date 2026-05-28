@@ -1,0 +1,79 @@
+Visual Verification Checklist - Alert Overlay Redesign
+======================================================
+Date: 2026-05-29
+Status: REQUIRES MANUAL VERIFICATION IN ANDROID STUDIO
+
+This document outlines the visual verification steps required to confirm
+the alert overlay redesign matches the specification.
+
+VERIFICATION STEPS:
+-------------------
+
+Step 1: Check AlertOverlay Preview
+-----------------------------------
+File: app/src/main/java/com/github/mytv/myearthquakealert/ui/alert/AlertOverlay.kt
+
+Open in Android Studio and verify the @Preview shows:
+- Left side: 240dp dark map area (dark gray background)
+- Right side: Split into two sections
+  * Top: Red title bar (0xFFE60012) with white text
+  * Bottom: Blue info area (0xFF1565C0) with white text
+- Countdown displays large white numbers (72sp font size)
+- All text is white (Color.White) on colored backgrounds
+
+Step 2: Check Color Contrast
+-----------------------------
+Verify readability:
+- Red title bar (0xFFE60012) with white text is clearly readable
+- Blue info area (0xFF1565C0) with white text is clearly readable
+- CSIS intensity colors are visible against blue background:
+  * CSIS 0: #808080 (gray)
+  * CSIS 4: #00BFFF (cyan)
+  * CSIS 8: #FFD700 (yellow)
+  * CSIS 12: #FF4500 (orange-red)
+
+Step 3: Check Layout Proportions
+---------------------------------
+Verify dimensions:
+- Total overlay width: 600dp
+- Map area width: 240dp (40% of total)
+- Info area width: 360dp (60% of total)
+- Title bar height: 56dp
+- Proper spacing and padding throughout
+
+Step 4: Test Different CSIS Values
+-----------------------------------
+Modify the sampleAlertData in AlertOverlay.kt to test:
+- CSIS 0 (gray) - should show gray intensity badge
+- CSIS 4 (cyan) - should show cyan intensity badge
+- CSIS 8 (yellow) - should show yellow intensity badge
+- CSIS 12 (orange-red) - should show orange-red intensity badge
+
+Verify all colors display correctly and are distinguishable.
+
+Step 5: Test on Different Screen Sizes
+---------------------------------------
+If possible, test the preview on:
+- Phone screens (compact width)
+- Tablet screens (medium/expanded width)
+- TV screens (large format)
+
+Verify the 600dp fixed width works appropriately across devices.
+
+EXPECTED RESULTS:
+-----------------
+✓ Layout matches specification (240dp map + 360dp info)
+✓ Colors are vibrant and readable
+✓ Text contrast meets accessibility standards
+✓ CSIS colors are clearly distinguishable
+✓ Countdown is prominent and easy to read
+✓ No visual glitches or rendering issues
+
+NOTES:
+------
+This verification requires Android Studio's preview pane or running the
+actual application. Automated verification of visual appearance is not
+possible without UI testing infrastructure.
+
+The code structure has been verified programmatically, but visual
+confirmation is essential to ensure the design intent is realized.
