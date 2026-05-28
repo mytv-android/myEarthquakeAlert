@@ -1,13 +1,19 @@
 package com.github.mytv.myearthquakealert.ui.adaptive
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.window.core.layout.WindowWidthSizeClass
+import com.github.mytv.myearthquakealert.ui.theme.MyEarthQuakeAlertTheme
 
 enum class LayoutMode {
     COMPACT,
@@ -61,5 +67,29 @@ fun AdaptiveLayout(
                 }
             }
         }
+    }
+}
+
+@Preview(name = "Adaptive Layout Compact", device = "spec:width=360dp,height=640dp")
+@Composable
+private fun AdaptiveLayoutCompactPreview() {
+    MyEarthQuakeAlertTheme {
+        AdaptiveLayout(
+            settingsPane = { Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primaryContainer)) { Text("Settings") } },
+            listPane = { Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.secondaryContainer)) { Text("List") } },
+            detailPane = { Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.tertiaryContainer)) { Text("Detail") } },
+        )
+    }
+}
+
+@Preview(name = "Adaptive Layout Expanded", device = "spec:width=1200dp,height=800dp")
+@Composable
+private fun AdaptiveLayoutExpandedPreview() {
+    MyEarthQuakeAlertTheme {
+        AdaptiveLayout(
+            settingsPane = { Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primaryContainer)) { Text("Settings") } },
+            listPane = { Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.secondaryContainer)) { Text("List") } },
+            detailPane = { Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.tertiaryContainer)) { Text("Detail") } },
+        )
     }
 }

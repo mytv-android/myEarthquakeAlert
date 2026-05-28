@@ -7,8 +7,11 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
+import com.github.mytv.myearthquakealert.data.model.EewEvent
 import com.github.mytv.myearthquakealert.service.AlertData
+import com.github.mytv.myearthquakealert.ui.theme.MyEarthQuakeAlertTheme
 import com.github.mytv.myearthquakealert.ui.theme.PWaveBlue
 import com.github.mytv.myearthquakealert.ui.theme.SWaveRed
 import org.osmdroid.config.Configuration
