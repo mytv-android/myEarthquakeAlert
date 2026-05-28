@@ -77,3 +77,155 @@ possible without UI testing infrastructure.
 
 The code structure has been verified programmatically, but visual
 confirmation is essential to ensure the design intent is realized.
+
+================================================================================
+
+Runtime Testing Verification - 2026-05-29
+==========================================
+
+BUILD ATTEMPT
+-------------
+Status: BLOCKED - JAVA_HOME not configured
+Command attempted: .\gradlew.bat clean :app:assembleDebug
+Error: JAVA_HOME is not set and no 'java' command could be found in your PATH
+
+REQUIRED MANUAL TESTING CHECKLIST
+----------------------------------
+
+Prerequisites:
+1. Configure JAVA_HOME environment variable
+2. Run: .\gradlew.bat clean :app:assembleDebug
+3. Verify: BUILD SUCCESSFUL
+4. Run: .\gradlew.bat :app:installDebug
+5. Verify: Installation successful on device/emulator
+
+Test Case 1: Simulation Mode Alert Display
+-------------------------------------------
+Steps:
+1. Launch the app
+2. Navigate to simulation test screen
+3. Trigger a test alert
+
+Expected Results:
+✓ Alert overlay appears with new design (AlertOverlay.kt)
+✓ Countdown timer displays and updates every second
+✓ Map shows epicenter marker and expanding wave circles
+✓ "模拟测试" label appears in title bar
+✓ Back button is visible and functional
+✓ Alert dismisses when back button is pressed
+
+Test Case 2: Countdown to Zero Behavior
+----------------------------------------
+Steps:
+1. Trigger a test alert
+2. Wait for countdown to reach 0
+3. Continue observing after countdown reaches 0
+
+Expected Results:
+✓ Countdown displays "0" (not negative numbers like "-1", "-2")
+✓ Alert auto-dismisses after configured delay (check AlertViewModel.kt)
+✓ No crashes or UI glitches during transition
+
+Test Case 3: Long Text Handling
+--------------------------------
+Steps:
+1. Modify test data to use a very long epicenter name:
+   Example: "中国新疆维吾尔自治区伊犁哈萨克自治州尼勒克县与新源县交界地区"
+2. Trigger test alert with long text
+
+Expected Results:
+✓ Epicenter text truncates gracefully with ellipsis
+✓ No text overflow outside container bounds
+✓ Layout remains stable and readable
+✓ Other UI elements (countdown, map) not affected
+
+Test Case 4: Adaptive Layout Verification
+------------------------------------------
+Steps:
+1. Test on phone (portrait)
+2. Test on phone (landscape)
+3. Test on tablet (if available)
+4. Test on Android TV (if available)
+
+Expected Results:
+✓ Phone portrait: Vertical layout with map below info
+✓ Phone landscape: Horizontal layout with map beside info
+✓ Tablet: Appropriate spacing and sizing
+✓ TV: Focus navigation works correctly
+✓ All layouts maintain readability and usability
+
+Test Case 5: Theme and Color Verification
+------------------------------------------
+Steps:
+1. Test in light mode
+2. Test in dark mode
+3. Verify intensity badge colors
+
+Expected Results:
+✓ Light mode: Proper contrast and readability
+✓ Dark mode: Proper contrast and readability
+✓ Intensity badges use correct colors:
+  - Level 1: Green (#4CAF50)
+  - Level 2: Yellow (#FFC107)
+  - Level 3: Orange (#FF9800)
+  - Level 4: Red (#F44336)
+  - Level 5+: Deep Red (#D32F2F)
+
+Test Case 6: Animation and Motion
+----------------------------------
+Steps:
+1. Trigger multiple test alerts in sequence
+2. Observe entrance and exit animations
+
+Expected Results:
+✓ Alert overlay slides in smoothly
+✓ Intensity badge has spring entrance animation
+✓ Map wave circles animate outward
+✓ Countdown updates are smooth (no jank)
+✓ Dismissal animation is smooth
+
+IMPLEMENTATION SUMMARY
+----------------------
+Files Modified (Task 1-9):
+- app/src/main/java/com/github/mytv/myearthquakealert/ui/alert/AlertOverlay.kt
+- app/src/main/java/com/github/mytv/myearthquakealert/ui/alert/AlertMap.kt
+- app/src/main/java/com/github/mytv/myearthquakealert/ui/adaptive/AdaptiveLayout.kt
+- app/src/main/java/com/github/mytv/myearthquakealert/ui/main/MainScreen.kt
+- app/src/main/java/com/github/mytv/myearthquakealert/ui/main/ThresholdSettings.kt
+- app/src/main/java/com/github/mytv/myearthquakealert/ui/theme/Color.kt
+
+Key Features Implemented:
+1. Countdown timer with proper zero-handling logic
+2. Adaptive layout system for different screen sizes
+3. Enhanced AlertOverlay with simulation mode indicator
+4. Intensity-based color theming
+5. Spring animations for visual polish
+6. TV focus support
+7. Material 3 design tokens integration
+
+NOTES FOR TESTER
+-----------------
+- Ensure Android Studio is properly configured with JDK
+- Use Android 5.0+ device or emulator
+- Test with various screen sizes if possible
+- Pay special attention to countdown zero behavior (critical bug fix)
+- Verify simulation mode label appears correctly
+- Check that all text is properly localized (Chinese)
+
+COMPLETION STATUS
+-----------------
+Code Implementation: COMPLETE (Tasks 1-9)
+Build Verification: BLOCKED (JAVA_HOME not set)
+Runtime Testing: PENDING (requires device/emulator)
+
+Next Steps:
+1. Configure JAVA_HOME environment variable
+2. Run clean build
+3. Install on device/emulator
+4. Execute all test cases above
+5. Document any issues found
+6. Sign off on verification
+
+---
+Runtime testing documentation completed: 2026-05-29
+Implementation: Claude Opus 4.7
