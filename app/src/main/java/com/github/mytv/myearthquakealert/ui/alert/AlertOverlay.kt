@@ -155,17 +155,18 @@ private fun EpicenterSection(
     ) {
         Text(
             text = buildAnnotatedString {
-                append("震源：")
+                append(stringResource(R.string.epicenter_label))
                 withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
                     append(hypocenter)
                 }
             },
             style = MaterialTheme.typography.bodyLarge,
             color = Color.White,
+            maxLines = 1,
         )
         Text(
             text = buildAnnotatedString {
-                append("震级：")
+                append(stringResource(R.string.magnitude_label))
                 withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = Color(0xFFFFEB3B))) {
                     append("M${magnitude}")
                 }
@@ -187,19 +188,13 @@ private fun WarningSection(
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Text(
-            text = buildAnnotatedString {
-                append("地震波将在 ")
-                withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = Color(0xFFFFEB3B))) {
-                    append("${remainingSeconds.toInt()}")
-                }
-                append(" 秒后到达")
-            },
+            text = stringResource(R.string.arrival_time, remainingSeconds.toInt()),
             style = MaterialTheme.typography.bodyLarge,
             color = Color.White,
         )
         Text(
             text = buildAnnotatedString {
-                append("预计烈度：")
+                append(stringResource(R.string.expected_intensity))
                 withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = csisColor(localCsis))) {
                     append("CSIS ${localCsis.toInt()}")
                 }
