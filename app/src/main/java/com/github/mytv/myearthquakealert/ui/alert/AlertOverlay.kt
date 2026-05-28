@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.github.mytv.myearthquakealert.R
 import com.github.mytv.myearthquakealert.data.model.EewEvent
 import com.github.mytv.myearthquakealert.service.AlertData
@@ -64,9 +65,8 @@ fun AlertOverlay(
 
             Row(horizontalArrangement = Arrangement.spacedBy(EeqSpacing.sm)) {
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(EeqSpacing.sm)) {
-                    AlertCountdown(
+                    CountdownSection(
                         remainingSeconds = remainingSeconds,
-                        totalSeconds = alertData.sWaveSeconds,
                         localCsis = alertData.localCsis,
                     )
                     AlertDescription(
@@ -118,53 +118,38 @@ private fun RedTitleBar(
 }
 
 @Composable
-private fun AlertCountdown(
+private fun CountdownSection(
     remainingSeconds: Double,
-    totalSeconds: Double,
     localCsis: Double,
     modifier: Modifier = Modifier,
 ) {
-    val animatedProgress by animateFloatAsState(
-        targetValue = if (totalSeconds > 0) (remainingSeconds / totalSeconds).toFloat() else 0f,
-        animationSpec = spring(dampingRatio = 0.5f, stiffness = 4000f),
-        label = "countdown_progress",
-    )
-
-    val pulseAlpha by rememberInfiniteTransition(label = "pulse").animateFloat(
-        initialValue = 0.6f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(600),
-            repeatMode = RepeatMode.Reverse,
-        ),
-        label = "pulse_alpha",
-    )
-
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .aspectRatio(1f)
-            .background(csisColor(localCsis).copy(alpha = pulseAlpha * 0.3f), RoundedCornerShape(48.dp)),
-        contentAlignment = Alignment.Center,
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.Start,
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Row(
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             Text(
                 text = remainingSeconds.toInt().toString(),
                 style = MaterialTheme.typography.displayLarge,
-                color = MaterialTheme.colorScheme.inverseOnSurface,
+                color = Color.White,
+                fontSize = 72.sp,
             )
             Text(
                 text = "秒",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.inverseOnSurface,
-            )
-            Spacer(modifier = Modifier.height(EeqSpacing.sm))
-            Text(
-                text = "CSIS ${localCsis.toInt()}",
-                style = MaterialTheme.typography.titleMedium,
-                color = csisColor(localCsis),
+                style = MaterialTheme.typography.headlineMedium,
+                color = Color.White,
             )
         }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "CSIS ${localCsis.toInt()}",
+            style = MaterialTheme.typography.titleLarge,
+            color = csisColor(localCsis),
+            fontWeight = FontWeight.Bold,
+        )
     }
 }
 
@@ -253,12 +238,12 @@ private fun AlertOverlayPreview() {
     }
 }
 
-@Preview(name = "Alert Countdown")
+@Preview(name = "Countdown Section")
 @Composable
-private fun AlertCountdownPreview() {
+private fun CountdownSectionPreview() {
     MyEarthQuakeAlertTheme(darkTheme = true) {
         Box(modifier = Modifier.background(Color.Black).padding(EeqSpacing.md)) {
-            AlertCountdown(remainingSeconds = 25.0, totalSeconds = 30.0, localCsis = 4.0)
+            CountdownSection(remainingSeconds = 25.0, localCsis = 4.0)
         }
     }
 }
