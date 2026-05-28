@@ -135,8 +135,8 @@ fun MainScreen(
                     onAllowDismissWithBackChange = { scope.launch { app.settingsRepository.updateAllowDismissWithBack(it) } },
                 )
 
-                SimulationButton(
-                    onClick = {
+                SimulationCard(
+                    onSimulate = {
                         scope.launch {
                             val location = app.locationProvider.getLocation()
                             val simEvent = EewEvent(
