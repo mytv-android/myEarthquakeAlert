@@ -23,6 +23,7 @@ import com.github.mytv.myearthquakealert.data.model.EewEvent
 import com.github.mytv.myearthquakealert.service.AlertData
 import com.github.mytv.myearthquakealert.ui.adaptive.backHandler
 import com.github.mytv.myearthquakealert.ui.theme.AlertBlue
+import com.github.mytv.myearthquakealert.ui.theme.AlertMapBackground
 import com.github.mytv.myearthquakealert.ui.theme.AlertRed
 import com.github.mytv.myearthquakealert.ui.theme.EeqSpacing
 import com.github.mytv.myearthquakealert.ui.theme.MyEarthQuakeAlertTheme
@@ -49,33 +50,28 @@ fun AlertOverlay(
 
     backHandler(onBack = onDismiss)
 
-    Box(
-        modifier = modifier
-            .width(600.dp)
-            .background(
-                color = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.87f),
-                shape = MaterialTheme.shapes.extraLarge,
+    Row(modifier = modifier.width(600.dp)) {
+        Box(
+            modifier = Modifier
+                .width(240.dp)
+                .fillMaxHeight()
+                .background(AlertMapBackground)
+        ) {
+            AlertMap(
+                alertData = alertData,
+                modifier = Modifier.fillMaxSize()
             )
-            .padding(EeqSpacing.md),
-    ) {
-        Column(verticalArrangement = Arrangement.spacedBy(EeqSpacing.sm)) {
+        }
+
+        Column(modifier = Modifier.width(360.dp)) {
             RedTitleBar(
                 sourceName = alertData.event.source,
                 isSimulation = alertData.isSimulation,
             )
-
-            Row(horizontalArrangement = Arrangement.spacedBy(EeqSpacing.sm)) {
-                BlueInfoArea(
-                    alertData = alertData,
-                    remainingSeconds = remainingSeconds,
-                    modifier = Modifier.weight(1f),
-                )
-
-                AlertMap(
-                    alertData = alertData,
-                    modifier = Modifier.weight(1f),
-                )
-            }
+            BlueInfoArea(
+                alertData = alertData,
+                remainingSeconds = remainingSeconds,
+            )
         }
     }
 }
