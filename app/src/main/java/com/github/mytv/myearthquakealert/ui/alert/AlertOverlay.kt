@@ -22,6 +22,7 @@ import com.github.mytv.myearthquakealert.R
 import com.github.mytv.myearthquakealert.data.model.EewEvent
 import com.github.mytv.myearthquakealert.service.AlertData
 import com.github.mytv.myearthquakealert.ui.adaptive.backHandler
+import com.github.mytv.myearthquakealert.ui.theme.AlertBlue
 import com.github.mytv.myearthquakealert.ui.theme.AlertRed
 import com.github.mytv.myearthquakealert.ui.theme.EeqSpacing
 import com.github.mytv.myearthquakealert.ui.theme.MyEarthQuakeAlertTheme
@@ -64,18 +65,11 @@ fun AlertOverlay(
             )
 
             Row(horizontalArrangement = Arrangement.spacedBy(EeqSpacing.sm)) {
-                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(EeqSpacing.sm)) {
-                    CountdownSection(
-                        remainingSeconds = remainingSeconds,
-                        localCsis = alertData.localCsis,
-                    )
-                    AlertDescription(
-                        hypocenter = alertData.event.hypocenter,
-                        magnitude = alertData.event.magnitude,
-                        remainingSeconds = remainingSeconds,
-                        localCsis = alertData.localCsis,
-                    )
-                }
+                BlueInfoArea(
+                    alertData = alertData,
+                    remainingSeconds = remainingSeconds,
+                    modifier = Modifier.weight(1f),
+                )
 
                 AlertMap(
                     alertData = alertData,
@@ -221,53 +215,29 @@ private fun WarningSection(
 }
 
 @Composable
-private fun AlertDescription(
-    hypocenter: String,
-    magnitude: Double,
+private fun BlueInfoArea(
+    alertData: AlertData,
     remainingSeconds: Double,
-    localCsis: Double,
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(EeqSpacing.sm),
+        modifier = modifier
+            .fillMaxWidth()
+            .background(AlertBlue)
+            .padding(EeqSpacing.md),
+        verticalArrangement = Arrangement.spacedBy(EeqSpacing.md),
     ) {
-        Text(
-            text = stringResource(R.string.alert_line1),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.inverseOnSurface,
+        CountdownSection(
+            remainingSeconds = remainingSeconds,
+            localCsis = alertData.localCsis,
         )
-
-        Text(
-            text = buildAnnotatedString {
-                append(stringResource(R.string.alert_line2, "", "").removeSuffix("发生了级地震。"))
-                withStyle(SpanStyle(color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)) {
-                    append(hypocenter)
-                }
-                append("发生了")
-                withStyle(SpanStyle(color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)) {
-                    append("M${magnitude}")
-                }
-                append("级地震。")
-            },
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.inverseOnSurface,
+        EpicenterSection(
+            hypocenter = alertData.event.hypocenter,
+            magnitude = alertData.event.magnitude,
         )
-
-        Text(
-            text = buildAnnotatedString {
-                append("地震波将在")
-                withStyle(SpanStyle(color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)) {
-                    append("${remainingSeconds.toInt()}")
-                }
-                append("秒后到达，预计震级为")
-                withStyle(SpanStyle(color = csisColor(localCsis), fontWeight = FontWeight.Bold)) {
-                    append("CSIS ${localCsis.toInt()}")
-                }
-                append("。")
-            },
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.inverseOnSurface,
+        WarningSection(
+            remainingSeconds = remainingSeconds,
+            localCsis = alertData.localCsis,
         )
     }
 }
@@ -315,12 +285,12 @@ private fun CountdownSectionPreview() {
     }
 }
 
-@Preview(name = "Alert Description")
+@Preview(name = "Blue Info Area")
 @Composable
-private fun AlertDescriptionPreview() {
+private fun BlueInfoAreaPreview() {
     MyEarthQuakeAlertTheme(darkTheme = true) {
         Box(modifier = Modifier.background(Color.Black).padding(EeqSpacing.md)) {
-            AlertDescription(hypocenter = "四川成都市", magnitude = 5.5, remainingSeconds = 25.0, localCsis = 4.0)
+            BlueInfoArea(alertData = sampleAlertData, remainingSeconds = 25.0)
         }
     }
 }
