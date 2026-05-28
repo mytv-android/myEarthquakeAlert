@@ -265,28 +265,42 @@ private val sampleAlertData = AlertData(
 @Composable
 private fun AlertOverlayPreview() {
     MyEarthQuakeAlertTheme {
-        Box(modifier = Modifier.background(Color.Black)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+        ) {
             AlertOverlay(alertData = sampleAlertData, onDismiss = {})
         }
     }
 }
 
-@Preview(name = "Countdown Section")
+@Preview(name = "Red Title Bar")
 @Composable
-private fun CountdownSectionPreview() {
-    MyEarthQuakeAlertTheme(darkTheme = true) {
-        Box(modifier = Modifier.background(Color.Black).padding(EeqSpacing.md)) {
-            CountdownSection(remainingSeconds = 25.0, localCsis = 4.0)
-        }
+private fun RedTitleBarPreview() {
+    MyEarthQuakeAlertTheme {
+        RedTitleBar(sourceName = "中国地震台网", isSimulation = true)
     }
 }
 
 @Preview(name = "Blue Info Area")
 @Composable
 private fun BlueInfoAreaPreview() {
-    MyEarthQuakeAlertTheme(darkTheme = true) {
-        Box(modifier = Modifier.background(Color.Black).padding(EeqSpacing.md)) {
-            BlueInfoArea(alertData = sampleAlertData, remainingSeconds = 25.0)
+    MyEarthQuakeAlertTheme {
+        BlueInfoArea(alertData = sampleAlertData, remainingSeconds = 25.0)
+    }
+}
+
+@Preview(name = "Countdown Section")
+@Composable
+private fun CountdownSectionPreview() {
+    MyEarthQuakeAlertTheme {
+        Box(
+            modifier = Modifier
+                .background(AlertBlue)
+                .padding(EeqSpacing.md)
+        ) {
+            CountdownSection(remainingSeconds = 25.0, localCsis = 4.0)
         }
     }
 }
