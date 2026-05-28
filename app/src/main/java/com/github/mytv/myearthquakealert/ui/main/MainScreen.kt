@@ -4,6 +4,8 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,6 +27,7 @@ import com.github.mytv.myearthquakealert.service.EewMonitorService
 import com.github.mytv.myearthquakealert.ui.adaptive.AdaptiveLayout
 import com.github.mytv.myearthquakealert.ui.adaptive.currentLayoutMode
 import com.github.mytv.myearthquakealert.ui.adaptive.LayoutMode
+import com.github.mytv.myearthquakealert.ui.theme.EeqSpacing
 import com.github.mytv.myearthquakealert.util.canDrawOverlays
 import com.github.mytv.myearthquakealert.util.openOverlaySettings
 import kotlinx.coroutines.launch
@@ -33,6 +36,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
+    onNavigateToAbout: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val app = context.applicationContext as MyEarthQuakeAlertApp
@@ -56,13 +60,30 @@ fun MainScreen(
 
     val currentSettings = settings ?: return
 
+    var showMenu by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.app_name)) },
                 actions = {
                     ConnectionStatusChip(state = connectionState)
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(EeqSpacing.sm))
+                    IconButton(onClick = { showMenu = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "Menu")
+                    }
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.about)) },
+                            onClick = {
+                                showMenu = false
+                                onNavigateToAbout()
+                            }
+                        )
+                    }
                 },
             )
         },
@@ -71,9 +92,9 @@ fun MainScreen(
         val settingsPane: @Composable () -> Unit = {
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(EeqSpacing.md)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(EeqSpacing.md),
             ) {
                 if (!context.canDrawOverlays()) {
                     Card(
@@ -81,14 +102,23 @@ fun MainScreen(
                             containerColor = MaterialTheme.colorScheme.errorContainer,
                         ),
                     ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
+                        Column(modifier = Modifier.padding(EeqSpacing.md)) {
                             Text(
                                 text = stringResource(R.string.overlay_permission_required),
                                 style = MaterialTheme.typography.bodyMedium,
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Button(onClick = { context.openOverlaySettings() }) {
-                                Text(stringResource(R.string.grant_permission))
+                            Spacer(modifier = Modifier.height(EeqSpacing.sm))
+                            Card(
+                                onClick = { context.openOverlaySettings() },
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.error,
+                                    contentColor = MaterialTheme.colorScheme.onError,
+                                ),
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.grant_permission),
+                                    modifier = Modifier.padding(horizontal = EeqSpacing.md, vertical = EeqSpacing.sm),
+                                )
                             }
                         }
                     }
@@ -175,12 +205,12 @@ fun MainScreen(
         }
 
         val listPane: @Composable () -> Unit = {
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier.padding(EeqSpacing.md)) {
                 Text(
                     text = stringResource(R.string.earthquake_history),
                     style = MaterialTheme.typography.titleLarge,
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(EeqSpacing.sm))
                 if (isLoadingHistory.value) {
                     CircularProgressIndicator()
                 } else {
