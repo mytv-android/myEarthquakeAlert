@@ -154,6 +154,39 @@ private fun CountdownSection(
 }
 
 @Composable
+private fun EpicenterSection(
+    hypocenter: String,
+    magnitude: Double,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Text(
+            text = buildAnnotatedString {
+                append("震源：")
+                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                    append(hypocenter)
+                }
+            },
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.White,
+        )
+        Text(
+            text = buildAnnotatedString {
+                append("震级：")
+                withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = Color(0xFFFFEB3B))) {
+                    append("M${magnitude}")
+                }
+            },
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.White,
+        )
+    }
+}
+
+@Composable
 private fun AlertDescription(
     hypocenter: String,
     magnitude: Double,
