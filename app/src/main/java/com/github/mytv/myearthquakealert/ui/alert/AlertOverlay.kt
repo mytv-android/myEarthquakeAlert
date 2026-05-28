@@ -21,6 +21,7 @@ import com.github.mytv.myearthquakealert.R
 import com.github.mytv.myearthquakealert.data.model.EewEvent
 import com.github.mytv.myearthquakealert.service.AlertData
 import com.github.mytv.myearthquakealert.ui.adaptive.backHandler
+import com.github.mytv.myearthquakealert.ui.theme.AlertRed
 import com.github.mytv.myearthquakealert.ui.theme.EeqSpacing
 import com.github.mytv.myearthquakealert.ui.theme.MyEarthQuakeAlertTheme
 import com.github.mytv.myearthquakealert.ui.theme.csisColor
@@ -56,7 +57,7 @@ fun AlertOverlay(
             .padding(EeqSpacing.md),
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(EeqSpacing.sm)) {
-            AlertHeader(
+            RedTitleBar(
                 sourceName = alertData.event.source,
                 isSimulation = alertData.isSimulation,
             )
@@ -86,26 +87,31 @@ fun AlertOverlay(
 }
 
 @Composable
-private fun AlertHeader(
+private fun RedTitleBar(
     sourceName: String,
     isSimulation: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .background(AlertRed)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = stringResource(R.string.alert_title) + "（${sourceName}）",
             style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.inverseOnSurface,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
         )
         if (isSimulation) {
             Text(
                 text = stringResource(R.string.simulation_label),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.error,
+                color = Color.White,
             )
         }
     }
