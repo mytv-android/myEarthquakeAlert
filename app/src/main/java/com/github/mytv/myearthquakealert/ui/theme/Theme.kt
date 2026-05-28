@@ -15,17 +15,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
-private val AlertRed = Color(0xFFB3261E)
-private val AlertRedContainer = Color(0xFFF9DEDC)
+private val ThemeErrorRed = Color(0xFFB3261E)
+private val ThemeErrorRedContainer = Color(0xFFF9DEDC)
 
 private val EeqLightColorScheme = lightColorScheme(
-    error = AlertRed,
-    errorContainer = AlertRedContainer,
+    error = ThemeErrorRed,
+    errorContainer = ThemeErrorRedContainer,
 )
 
 private val EeqDarkColorScheme = darkColorScheme(
-    error = AlertRed,
-    errorContainer = AlertRedContainer,
+    error = ThemeErrorRed,
+    errorContainer = ThemeErrorRedContainer,
 )
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -55,8 +55,8 @@ fun MyEarthQuakeAlertTheme(
     }
 
     val colorScheme = baseColorScheme.copy(
-        error = AlertRed,
-        errorContainer = AlertRedContainer,
+        error = ThemeErrorRed,
+        errorContainer = ThemeErrorRedContainer,
     )
 
     MaterialTheme(

@@ -16,10 +16,16 @@ val Csis10 = Color(0xFF880E4F)
 val Csis11 = Color(0xFF4A148C)
 val Csis12 = Color(0xFF8B0000)
 
-val AlertRed = Color(0xFFB3261E)
-val AlertRedContainer = Color(0xFFF9DEDC)
+val ConnectionGreen = Color(0xFF4CAF50)
+val ConnectingYellow = Color(0xFFFFC107)
+val DisconnectedRed = Color(0xFFF44336)
+
 val PWaveBlue = Color(0xFF2196F3)
 val SWaveRed = Color(0xFFF44336)
+
+val AlertRed = Color(0xFFE60012)
+val AlertBlue = Color(0xFF1565C0)
+val AlertMapBackground = Color(0xFF212121)
 
 fun csisColor(intensity: Double): Color {
     return when {
