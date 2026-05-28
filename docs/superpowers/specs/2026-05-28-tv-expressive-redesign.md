@@ -191,7 +191,7 @@ object EeqSpacing {
 |--------|------|-------|
 | 4.dp | SourceSelector | xs |
 | 8.dp | ThresholdSettings, EarthquakeHistoryList | sm |
-| 12.dp | AlertOverlay, EarthquakeHistoryList, ConnectionStatusChip | → sm（8dp 系统，12→8 或 16） |
+| 12.dp | AlertOverlay, EarthquakeHistoryList padding | → sm（8dp 系统，统一到 8dp） |
 | 16.dp | ServiceToggleCard, MainScreen, AlertOverlay | md |
 | 40.dp | IntensityBadge 尺寸 | → xxl (48dp)（badge 从 40→48，更 Expressive） |
 | 600.dp | AlertOverlay 宽度 | 不改（overlay 宽度，非 spacing） |
@@ -228,7 +228,7 @@ object EeqSpacing {
 - onRight → slider 值 +0.5
 - onContinuousLongLeft/Right → 连续步进
 - Slider 自身 enabled=false，不允许触摸直接拖动
-- 手机端可通过触摸 Card 后左右滑动（handleDragGestures）
+- 手机端可通过触摸 Card 后左右滑动（handleDragGestures，可选实现，不阻塞核心）
 
 ### 6.5 AlertOverlay IconButton → FocusableIcon
 
