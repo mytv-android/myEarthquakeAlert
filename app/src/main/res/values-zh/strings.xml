@@ -23,4 +23,44 @@
     <string name="magnitude_label">震级：</string>
     <string name="arrival_time">地震波将在 %1$d 秒后到达</string>
     <string name="expected_intensity">预计烈度：</string>
+
+    <!-- About Screen -->
+    <string name="about">关于</string>
+    <string name="app_tagline">地震预警 · 实时监测</string>
+    <string name="app_description">基于 Jetpack Compose 开发的 Android 地震预警应用，支持手机、平板和 Android TV。</string>
+    <string name="version_info">版本信息</string>
+    <string name="current_version">当前版本</string>
+    <string name="version_code">版本代码</string>
+    <string name="build_date">构建时间</string>
+    <string name="check_update">检查更新</string>
+    <string name="view_changelog">查看更新日志</string>
+    <string name="data_sources">数据来源</string>
+    <string name="data_source_eew">地震预警数据</string>
+    <string name="data_source_map">地图服务</string>
+    <string name="data_source_algorithm">算法参考</string>
+    <string name="license">开源协议</string>
+    <string name="view_full_license">查看完整协议</string>
+    <string name="acknowledgments">致谢</string>
+    <string name="acknowledgment_wolfx">Wolfx Project</string>
+    <string name="acknowledgment_kanameishi">kanameishi 项目</string>
+    <string name="acknowledgment_osm">OpenStreetMap 贡献者</string>
+    <string name="acknowledgment_developers">所有提供帮助的开发者</string>
+
+    <!-- Update Feature -->
+    <string name="update_available">发现新版本</string>
+    <string name="update_version">版本 %s</string>
+    <string name="update_size">大小：%s</string>
+    <string name="update_now">立即更新</string>
+    <string name="update_later">稍后</string>
+    <string name="update_checking">正在检查更新…</string>
+    <string name="update_up_to_date">已是最新版本</string>
+    <string name="update_downloading">正在下载更新…</string>
+    <string name="update_download_progress">%d%% (%s / %s)</string>
+    <string name="update_download_speed">%s/s</string>
+    <string name="update_install">安装</string>
+    <string name="update_error">检查更新失败</string>
+    <string name="update_error_network">网络连接失败，请检查网络设置</string>
+    <string name="update_error_rate_limit">请求过于频繁，请稍后再试</string>
+    <string name="update_retry">重试</string>
+    <string name="cancel">取消</string>
 </resources>
