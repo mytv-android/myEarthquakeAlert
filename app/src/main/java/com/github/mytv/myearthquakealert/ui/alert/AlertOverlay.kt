@@ -187,6 +187,40 @@ private fun EpicenterSection(
 }
 
 @Composable
+private fun WarningSection(
+    remainingSeconds: Double,
+    localCsis: Double,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Text(
+            text = buildAnnotatedString {
+                append("地震波将在 ")
+                withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = Color(0xFFFFEB3B))) {
+                    append("${remainingSeconds.toInt()}")
+                }
+                append(" 秒后到达")
+            },
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.White,
+        )
+        Text(
+            text = buildAnnotatedString {
+                append("预计烈度：")
+                withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = csisColor(localCsis))) {
+                    append("CSIS ${localCsis.toInt()}")
+                }
+            },
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.White,
+        )
+    }
+}
+
+@Composable
 private fun AlertDescription(
     hypocenter: String,
     magnitude: Double,
