@@ -3,6 +3,7 @@ package com.github.mytv.myearthquakealert.ui.about
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -13,8 +14,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.github.mytv.myearthquakealert.BuildConfig
@@ -196,11 +197,17 @@ private fun AppInfoCard() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(EeqSpacing.sm),
         ) {
-            Image(
-                painter = painterResource(R.mipmap.ic_launcher),
-                contentDescription = null,
-                modifier = Modifier.size(72.dp),
-            )
+            val ctx = LocalContext.current
+            val launcherBitmap = remember {
+                BitmapFactory.decodeResource(ctx.resources, R.mipmap.ic_launcher)?.asImageBitmap()
+            }
+            if (launcherBitmap != null) {
+                Image(
+                    bitmap = launcherBitmap,
+                    contentDescription = null,
+                    modifier = Modifier.size(72.dp),
+                )
+            }
             Text(
                 text = stringResource(R.string.app_name),
                 style = MaterialTheme.typography.titleLarge,

@@ -11,6 +11,7 @@ import com.github.mytv.myearthquakealert.data.repository.SettingsRepository
 import com.github.mytv.myearthquakealert.data.repository.UpdateRepository
 import com.github.mytv.myearthquakealert.data.websocket.EewWebSocketClient
 import com.github.mytv.myearthquakealert.util.LocationProvider
+import com.github.mytv.myearthquakealert.util.LogExporter
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -18,6 +19,11 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 
 class MyEarthQuakeAlertApp : Application() {
+
+    override fun onCreate() {
+        super.onCreate()
+        LogExporter.init(this)
+    }
 
     private val dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
