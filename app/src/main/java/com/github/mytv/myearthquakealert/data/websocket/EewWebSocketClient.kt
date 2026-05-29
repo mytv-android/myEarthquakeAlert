@@ -1,5 +1,6 @@
 package com.github.mytv.myearthquakealert.data.websocket
 
+import android.util.Log
 import com.github.mytv.myearthquakealert.data.source.EewSource
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,11 +11,16 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
+import java.util.concurrent.TimeUnit
 
 class EewWebSocketClient(
-    private val client: OkHttpClient = OkHttpClient(),
+    private val client: OkHttpClient = OkHttpClient.Builder()
+        .readTimeout(0, TimeUnit.SECONDS)
+        .pingInterval(30, TimeUnit.SECONDS)
+        .build(),
 ) {
     private var webSocket: WebSocket? = null
+    private var currentSourceUrl: String? = null
 
     private val _messages = Channel<String>(Channel.BUFFERED)
     val messages = _messages.receiveAsFlow()
@@ -27,8 +33,12 @@ class EewWebSocketClient(
     }
 
     fun connect(source: EewSource) {
+        if (currentSourceUrl == source.wsUrl && _connectionState.value == ConnectionState.CONNECTED) {
+            return
+        }
         disconnect()
         _connectionState.value = ConnectionState.CONNECTING
+        currentSourceUrl = source.wsUrl
 
         val request = Request.Builder()
             .url(source.wsUrl)
@@ -49,6 +59,7 @@ class EewWebSocketClient(
             }
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: okhttp3.Response?) {
+                Log.w("EewWebSocket", "Connection failure: ${t.message}")
                 _connectionState.value = ConnectionState.DISCONNECTED
             }
         })
@@ -57,6 +68,7 @@ class EewWebSocketClient(
     fun disconnect() {
         webSocket?.close(1000, null)
         webSocket = null
+        currentSourceUrl = null
         _connectionState.value = ConnectionState.DISCONNECTED
     }
 }

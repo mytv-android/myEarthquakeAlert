@@ -1,6 +1,11 @@
 package com.github.mytv.myearthquakealert.ui.main
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -11,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.github.mytv.myearthquakealert.MyEarthQuakeAlertApp
 import com.github.mytv.myearthquakealert.R
 import com.github.mytv.myearthquakealert.data.model.EewEvent
@@ -55,6 +61,50 @@ fun MainScreen(
     }
 
     var showMenu by remember { mutableStateOf(false) }
+
+    // Permission launchers
+    val overlayPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { /* result handled by checking canDrawOverlays on next recomposition */ }
+
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            EewMonitorService.start(context)
+            scope.launch { app.settingsRepository.updateServiceEnabled(true) }
+        } else {
+            scope.launch { app.settingsRepository.updateServiceEnabled(false) }
+            Toast.makeText(context, context.getString(R.string.overlay_permission_required), Toast.LENGTH_LONG).show()
+        }
+    }
+
+    fun requestOverlayPermission() {
+        context.openOverlaySettings()
+    }
+
+    fun hasNotificationPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+    }
+
+    fun hasLocationPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+               ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val locationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                              permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        if (!locationGranted) {
+            Toast.makeText(context, context.getString(R.string.location_permission_required), Toast.LENGTH_LONG).show()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -101,7 +151,7 @@ fun MainScreen(
                             )
                             Spacer(modifier = Modifier.height(EeqSpacing.sm))
                             Card(
-                                onClick = { context.openOverlaySettings() },
+                                onClick = { requestOverlayPermission() },
                                 colors = CardDefaults.cardColors(
                                     containerColor = MaterialTheme.colorScheme.error,
                                     contentColor = MaterialTheme.colorScheme.onError,
@@ -120,20 +170,28 @@ fun MainScreen(
                     enabled = settings.serviceEnabled,
                     onToggle = { enabled ->
                         scope.launch {
-                            app.settingsRepository.updateServiceEnabled(enabled)
                             if (enabled) {
-                                if (context.canDrawOverlays()) {
-                                    EewMonitorService.start(context)
-                                } else {
+                                if (!context.canDrawOverlays()) {
                                     app.settingsRepository.updateServiceEnabled(false)
                                     Toast.makeText(
                                         context,
                                         context.getString(R.string.overlay_permission_required),
                                         Toast.LENGTH_LONG,
                                     ).show()
+                                    requestOverlayPermission()
+                                    return@launch
                                 }
+                                if (!hasNotificationPermission()) {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                        return@launch
+                                    }
+                                }
+                                EewMonitorService.start(context)
+                                app.settingsRepository.updateServiceEnabled(true)
                             } else {
                                 EewMonitorService.stop(context)
+                                app.settingsRepository.updateServiceEnabled(false)
                             }
                         }
                     },
@@ -159,14 +217,28 @@ fun MainScreen(
 
                 SimulationCard(
                     onSimulate = {
+                        // Check overlay permission first
                         if (!context.canDrawOverlays()) {
                             Toast.makeText(
                                 context,
                                 context.getString(R.string.overlay_permission_required),
                                 Toast.LENGTH_LONG,
                             ).show()
+                            requestOverlayPermission()
                             return@SimulationCard
                         }
+
+                        // Proactively request location permission if not granted
+                        if (!hasLocationPermission()) {
+                            locationPermissionLauncher.launch(
+                                arrayOf(
+                                    Manifest.permission.ACCESS_FINE_LOCATION,
+                                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                                )
+                            )
+                            return@SimulationCard
+                        }
+
                         scope.launch {
                             try {
                                 val location = app.locationProvider.getLocation()
@@ -199,6 +271,12 @@ fun MainScreen(
                                     )
                                 )
                                 AlertOverlayService.show(context)
+                            } catch (e: SecurityException) {
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.location_permission_required),
+                                    Toast.LENGTH_LONG,
+                                ).show()
                             } catch (e: Exception) {
                                 Toast.makeText(
                                     context,

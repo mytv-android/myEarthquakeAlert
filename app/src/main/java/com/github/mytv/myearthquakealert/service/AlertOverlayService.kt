@@ -1,24 +1,32 @@
 package com.github.mytv.myearthquakealert.service
 
 import android.annotation.SuppressLint
-import android.os.Build
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.graphics.PixelFormat
+import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import android.view.Gravity
 import android.view.WindowManager
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
+import androidx.core.app.NotificationCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
+import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import com.github.mytv.myearthquakealert.MainActivity
+import com.github.mytv.myearthquakealert.R
 import com.github.mytv.myearthquakealert.ui.alert.AlertOverlay
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -46,6 +54,7 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         super.onCreate()
         savedStateRegistryController.performRestore(null)
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
+        createNotificationChannel()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -60,8 +69,34 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         return START_NOT_STICKY
     }
 
+    private fun createNotificationChannel() {
+        val channel = NotificationChannel(
+            OVERLAY_CHANNEL_ID,
+            getString(R.string.alert_title),
+            NotificationManager.IMPORTANCE_LOW
+        )
+        val manager = getSystemService(NotificationManager::class.java)
+        manager.createNotificationChannel(channel)
+    }
+
     private fun showAlert() {
         if (overlayView != null) return
+
+        // Start as foreground service to comply with Android 12+ restrictions
+        val notification = NotificationCompat.Builder(this, OVERLAY_CHANNEL_ID)
+            .setContentTitle(getString(R.string.app_name))
+            .setContentText(getString(R.string.alert_title))
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentIntent(
+                PendingIntent.getActivity(
+                    this, 0,
+                    Intent(this, MainActivity::class.java),
+                    PendingIntent.FLAG_IMMUTABLE
+                )
+            )
+            .build()
+
+        startForeground(OVERLAY_NOTIFICATION_ID, notification)
 
         lifecycleRegistry.currentState = Lifecycle.State.RESUMED
 
@@ -104,8 +139,10 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         try {
             windowManager?.addView(composeView, params)
         } catch (e: Exception) {
+            Log.w(TAG, "Failed to add overlay view", e)
             overlayView = null
             lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+            stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
             return
         }
@@ -132,6 +169,7 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         overlayView = null
 
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+        stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
 
@@ -149,13 +187,16 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
     }
 
     companion object {
+        private const val TAG = "AlertOverlayService"
+        private const val OVERLAY_CHANNEL_ID = "alert_overlay"
+        private const val OVERLAY_NOTIFICATION_ID = 2
         const val ACTION_SHOW = "com.github.mytv.myearthquakealert.SHOW_ALERT"
         const val ACTION_DISMISS = "com.github.mytv.myearthquakealert.DISMISS_ALERT"
 
         fun show(context: android.content.Context) {
             val intent = Intent(context, AlertOverlayService::class.java)
             intent.action = ACTION_SHOW
-            context.startService(intent)
+            context.startForegroundService(intent)
         }
 
         fun dismiss(context: android.content.Context) {

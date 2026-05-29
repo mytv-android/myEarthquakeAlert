@@ -9,12 +9,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.github.mytv.myearthquakealert.MainActivity
 import com.github.mytv.myearthquakealert.MyEarthQuakeAlertApp
 import com.github.mytv.myearthquakealert.R
 import com.github.mytv.myearthquakealert.data.repository.SettingsRepository
 import com.github.mytv.myearthquakealert.data.source.EewSource
+import com.github.mytv.myearthquakealert.data.websocket.EewWebSocketClient
 import com.github.mytv.myearthquakealert.domain.AlertEvaluator
 import com.github.mytv.myearthquakealert.domain.SeismicCalculator
 import com.github.mytv.myearthquakealert.util.LocationProvider
@@ -25,6 +27,8 @@ class EewMonitorService : Service() {
 
     private val serviceScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private var monitorJob: Job? = null
+    private var alertJob: Job? = null
+    private var reconnectJob: Job? = null
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -44,6 +48,8 @@ class EewMonitorService : Service() {
 
     override fun onDestroy() {
         monitorJob?.cancel()
+        alertJob?.cancel()
+        reconnectJob?.cancel()
         serviceScope.cancel()
         super.onDestroy()
     }
@@ -55,12 +61,12 @@ class EewMonitorService : Service() {
             ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
         )
 
-        monitorJob = serviceScope.launch {
-            val app = applicationContext as MyEarthQuakeAlertApp
-            val repository = app.eewRepository
-            val settingsRepo = app.settingsRepository
-            val locationProvider = app.locationProvider
+        val app = applicationContext as MyEarthQuakeAlertApp
+        val repository = app.eewRepository
+        val settingsRepo = app.settingsRepository
 
+        monitorJob?.cancel()
+        monitorJob = serviceScope.launch {
             var currentSource: EewSource? = null
 
             settingsRepo.settings.collect { settings ->
@@ -73,10 +79,29 @@ class EewMonitorService : Service() {
             }
         }
 
-        serviceScope.launch {
-            val app = applicationContext as MyEarthQuakeAlertApp
-            val repository = app.eewRepository
-            val settingsRepo = app.settingsRepository
+        // Watch connection state and auto-reconnect on failure
+        reconnectJob?.cancel()
+        reconnectJob = serviceScope.launch {
+            var reconnectAttempts = 0
+            repository.connectionState.collect { state ->
+                if (state == EewWebSocketClient.ConnectionState.DISCONNECTED) {
+                    val settings = settingsRepo.settings.first()
+                    val wasIntentional = !settings.serviceEnabled
+                    if (wasIntentional) return@collect
+
+                    reconnectAttempts++
+                    val delaySeconds = minOf(30L, 2L shl (reconnectAttempts - 1))
+                    Log.w(TAG, "WebSocket disconnected, reconnecting in ${delaySeconds}s (attempt $reconnectAttempts)")
+                    delay(delaySeconds * 1000)
+                    repository.connectWebSocket(settings.selectedSource)
+                } else if (state == EewWebSocketClient.ConnectionState.CONNECTED) {
+                    reconnectAttempts = 0
+                }
+            }
+        }
+
+        alertJob?.cancel()
+        alertJob = serviceScope.launch {
             val locationProvider = app.locationProvider
 
             repository.eewMessages.collect { event ->
@@ -123,6 +148,8 @@ class EewMonitorService : Service() {
         val app = applicationContext as MyEarthQuakeAlertApp
         app.eewRepository.disconnectWebSocket()
         monitorJob?.cancel()
+        alertJob?.cancel()
+        reconnectJob?.cancel()
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
@@ -152,6 +179,7 @@ class EewMonitorService : Service() {
     }
 
     companion object {
+        private const val TAG = "EewMonitorService"
         const val CHANNEL_ID = "eew_monitor"
         const val NOTIFICATION_ID = 1
         const val ACTION_START = "com.github.mytv.myearthquakealert.START_MONITOR"
