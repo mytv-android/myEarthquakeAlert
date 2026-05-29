@@ -17,16 +17,14 @@ import com.github.mytv.myearthquakealert.MyEarthQuakeAlertApp
 import com.github.mytv.myearthquakealert.R
 import com.github.mytv.myearthquakealert.data.model.EewEvent
 import com.github.mytv.myearthquakealert.data.model.EarthquakeInfo
+import com.github.mytv.myearthquakealert.data.repository.UserSettings
 import com.github.mytv.myearthquakealert.data.source.EewSource
-import com.github.mytv.myearthquakealert.data.websocket.EewWebSocketClient
-import com.github.mytv.myearthquakealert.domain.AlertEvaluator
 import com.github.mytv.myearthquakealert.domain.SeismicCalculator
 import com.github.mytv.myearthquakealert.service.ActiveAlertHolder
+import com.github.mytv.myearthquakealert.service.AlertData
 import com.github.mytv.myearthquakealert.service.AlertOverlayService
 import com.github.mytv.myearthquakealert.service.EewMonitorService
 import com.github.mytv.myearthquakealert.ui.adaptive.AdaptiveLayout
-import com.github.mytv.myearthquakealert.ui.adaptive.currentLayoutMode
-import com.github.mytv.myearthquakealert.ui.adaptive.LayoutMode
 import com.github.mytv.myearthquakealert.ui.theme.EeqSpacing
 import com.github.mytv.myearthquakealert.util.canDrawOverlays
 import com.github.mytv.myearthquakealert.util.openOverlaySettings
@@ -42,7 +40,7 @@ fun MainScreen(
     val app = context.applicationContext as MyEarthQuakeAlertApp
     val scope = rememberCoroutineScope()
 
-    val settings by app.settingsRepository.settings.collectAsState(initial = null)
+    val settings by app.settingsRepository.settings.collectAsState(initial = UserSettings())
     val connectionState by app.eewRepository.connectionState.collectAsState()
     val earthquakes = remember { mutableStateListOf<EarthquakeInfo>() }
     val isLoadingHistory = remember { mutableStateOf(false) }
@@ -57,8 +55,6 @@ fun MainScreen(
             isLoadingHistory.value = false
         }
     }
-
-    val currentSettings = settings ?: return
 
     var showMenu by remember { mutableStateOf(false) }
 
@@ -91,7 +87,9 @@ fun MainScreen(
     ) { padding ->
         val settingsPane: @Composable () -> Unit = {
             Column(
-                modifier = Modifier.padding(EeqSpacing.md),
+                modifier = Modifier
+                    .padding(EeqSpacing.md)
+                    .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(EeqSpacing.md),
             ) {
                 if (!context.canDrawOverlays()) {
@@ -123,7 +121,7 @@ fun MainScreen(
                 }
 
                 ServiceToggleCard(
-                    enabled = currentSettings.serviceEnabled,
+                    enabled = settings.serviceEnabled,
                     onToggle = { enabled ->
                         scope.launch {
                             app.settingsRepository.updateServiceEnabled(enabled)
@@ -146,20 +144,20 @@ fun MainScreen(
                 )
 
                 SourceSelector(
-                    selected = currentSettings.selectedSource,
+                    selected = settings.selectedSource,
                     onSelected = { source ->
                         scope.launch { app.settingsRepository.updateSelectedSource(source) }
                     },
                 )
 
                 ThresholdSettings(
-                    minMagnitude = currentSettings.actionMinMagnitude,
+                    minMagnitude = settings.actionMinMagnitude,
                     onMinMagnitudeChange = { scope.launch { app.settingsRepository.updateActionMinMagnitude(it) } },
-                    minIntensity = currentSettings.actionMinIntensity,
+                    minIntensity = settings.actionMinIntensity,
                     onMinIntensityChange = { scope.launch { app.settingsRepository.updateActionMinIntensity(it) } },
-                    intenseThreshold = currentSettings.intenseThreshold,
+                    intenseThreshold = settings.intenseThreshold,
                     onIntenseThresholdChange = { scope.launch { app.settingsRepository.updateIntenseThreshold(it) } },
-                    allowDismissWithBack = currentSettings.allowDismissWithBack,
+                    allowDismissWithBack = settings.allowDismissWithBack,
                     onAllowDismissWithBackChange = { scope.launch { app.settingsRepository.updateAllowDismissWithBack(it) } },
                 )
 
@@ -194,7 +192,7 @@ fun MainScreen(
                                 val arrival = SeismicCalculator.calcWaveArrival(10.0, 40.0)
 
                                 ActiveAlertHolder.showAlert(
-                                    com.github.mytv.myearthquakealert.service.AlertData(
+                                    AlertData(
                                         event = simEvent,
                                         userLatitude = location.latitude,
                                         userLongitude = location.longitude,
@@ -205,10 +203,10 @@ fun MainScreen(
                                     )
                                 )
                                 AlertOverlayService.show(context)
-                            } catch (e: SecurityException) {
+                            } catch (e: Exception) {
                                 Toast.makeText(
                                     context,
-                                    context.getString(R.string.location_permission_required),
+                                    e.message ?: context.getString(R.string.simulation_test),
                                     Toast.LENGTH_LONG,
                                 ).show()
                             }
@@ -249,6 +247,7 @@ fun MainScreen(
             settingsPane = settingsPane,
             listPane = listPane,
             detailPane = detailPane,
+            contentPadding = padding,
         )
     }
 }

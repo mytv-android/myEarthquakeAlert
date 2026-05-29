@@ -3,8 +3,10 @@ package com.github.mytv.myearthquakealert.ui.adaptive
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -12,8 +14,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.github.mytv.myearthquakealert.ui.theme.MyEarthQuakeAlertTheme
 
@@ -38,12 +40,14 @@ fun AdaptiveLayout(
     settingsPane: @Composable () -> Unit,
     listPane: @Composable () -> Unit,
     detailPane: @Composable () -> Unit,
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     when (currentLayoutMode()) {
         LayoutMode.COMPACT -> {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(contentPadding)
                     .verticalScroll(rememberScrollState()),
             ) {
                 settingsPane()
@@ -51,8 +55,16 @@ fun AdaptiveLayout(
             }
         }
         LayoutMode.MEDIUM -> {
-            Row(modifier = Modifier.fillMaxSize()) {
-                Box(modifier = Modifier.weight(1f)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(contentPadding)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                ) {
                     settingsPane()
                 }
                 Box(modifier = Modifier.weight(2f)) {
@@ -61,8 +73,16 @@ fun AdaptiveLayout(
             }
         }
         LayoutMode.EXPANDED -> {
-            Row(modifier = Modifier.fillMaxSize()) {
-                Box(modifier = Modifier.weight(1f)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(contentPadding)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                ) {
                     settingsPane()
                 }
                 Box(modifier = Modifier.weight(1f)) {

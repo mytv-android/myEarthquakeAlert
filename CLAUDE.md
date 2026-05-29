@@ -10,3 +10,4 @@ Android earthquake alert app built with Jetpack Compose, supporting phones, tabl
   3. Verify all `R.string.*`, `R.drawable.*` references resolve to existing resources
   4. Check for XML syntax errors and mismatched tags
 - Do NOT commit if any build-breaking issue is found. Fix first, then commit.
+- Build with `gradlew assembleDebug` (JAVA_HOME="C:\Program Files\Android\Android Studio\jbr") to verify compilation passes.

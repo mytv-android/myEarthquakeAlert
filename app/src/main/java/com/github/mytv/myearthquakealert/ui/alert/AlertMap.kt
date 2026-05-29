@@ -1,24 +1,31 @@
 package com.github.mytv.myearthquakealert.ui.alert
 
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.viewinterop.AndroidView
-import com.github.mytv.myearthquakealert.data.model.EewEvent
+import androidx.compose.ui.unit.sp
+import com.github.mytv.myearthquakealert.domain.SeismicCalculator
 import com.github.mytv.myearthquakealert.service.AlertData
+import com.github.mytv.myearthquakealert.ui.theme.AlertMapBackground
 import com.github.mytv.myearthquakealert.ui.theme.MyEarthQuakeAlertTheme
 import com.github.mytv.myearthquakealert.ui.theme.PWaveBlue
 import com.github.mytv.myearthquakealert.ui.theme.SWaveRed
-import org.osmdroid.config.Configuration
-import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Marker
-import org.osmdroid.views.overlay.Polygon
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 
 @Composable
 fun AlertMap(
@@ -30,72 +37,94 @@ fun AlertMap(
     DisposableEffect(Unit) {
         val timer = Thread {
             while (!Thread.currentThread().isInterrupted) {
-                Thread.sleep(1000)
-                elapsedSeconds += 1f
+                try {
+                    Thread.sleep(1000)
+                    elapsedSeconds += 1f
+                } catch (_: InterruptedException) {
+                    break
+                }
             }
         }
         timer.start()
         onDispose { timer.interrupt() }
     }
 
-    AndroidView(
-        factory = { context ->
-            Configuration.getInstance().load(context, context.getSharedPreferences("osmdroid", 0))
-            MapView(context).apply {
-                setMultiTouchControls(false)
-                controller.setZoom(6.0)
-            }
-        },
-        update = { mapView ->
-            val epicenter = GeoPoint(alertData.event.latitude, alertData.event.longitude)
-            val device = GeoPoint(alertData.userLatitude, alertData.userLongitude)
+    val depthKm = alertData.event.depth ?: 10.0
+    val pWaveKm = SeismicCalculator.calcWaveRadius(depthKm, elapsedSeconds.toDouble(), true)
+    val sWaveKm = SeismicCalculator.calcWaveRadius(depthKm, elapsedSeconds.toDouble(), false)
 
-            mapView.controller.setCenter(epicenter)
+    val textMeasurer = rememberTextMeasurer()
 
-            mapView.overlays.clear()
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val cx = size.width / 2f
+            val cy = size.height / 2f
+            val maxRadius = minOf(cx, cy) * 0.9f
+            val scale = maxRadius / 500f
 
-            val epicenterMarker = Marker(mapView).apply {
-                position = epicenter
-                title = "震心"
-            }
-            mapView.overlays.add(epicenterMarker)
-
-            val deviceMarker = Marker(mapView).apply {
-                position = device
-                title = "设备"
-            }
-            mapView.overlays.add(deviceMarker)
-
-            val depthKm = alertData.event.depth ?: 10.0
-            val pWaveKm = com.github.mytv.myearthquakealert.domain.SeismicCalculator.calcWaveRadius(
-                depthKm, elapsedSeconds.toDouble(), true
+            drawCircle(
+                color = PWaveBlue.copy(alpha = 0.2f),
+                radius = (pWaveKm * scale).toFloat().coerceAtMost(maxRadius),
+                center = Offset(cx, cy),
             )
-            val sWaveKm = com.github.mytv.myearthquakealert.domain.SeismicCalculator.calcWaveRadius(
-                depthKm, elapsedSeconds.toDouble(), false
+            drawCircle(
+                color = PWaveBlue,
+                radius = (pWaveKm * scale).toFloat().coerceAtMost(maxRadius),
+                center = Offset(cx, cy),
+                style = Stroke(width = 2f),
             )
 
-            if (pWaveKm > 0) {
-                val pCircle = Polygon(mapView).apply {
-                    points = Polygon.pointsAsCircle(epicenter, pWaveKm * 1000.0)
-                    fillPaint.color = PWaveBlue.copy(alpha = 0.2f).hashCode()
-                    outlinePaint.color = PWaveBlue.hashCode()
-                    outlinePaint.strokeWidth = 2f
-                }
-                mapView.overlays.add(pCircle)
-            }
+            drawCircle(
+                color = SWaveRed.copy(alpha = 0.2f),
+                radius = (sWaveKm * scale).toFloat().coerceAtMost(maxRadius),
+                center = Offset(cx, cy),
+            )
+            drawCircle(
+                color = SWaveRed,
+                radius = (sWaveKm * scale).toFloat().coerceAtMost(maxRadius),
+                center = Offset(cx, cy),
+                style = Stroke(width = 2f),
+            )
 
-            if (sWaveKm > 0) {
-                val sCircle = Polygon(mapView).apply {
-                    points = Polygon.pointsAsCircle(epicenter, sWaveKm * 1000.0)
-                    fillPaint.color = SWaveRed.copy(alpha = 0.2f).hashCode()
-                    outlinePaint.color = SWaveRed.hashCode()
-                    outlinePaint.strokeWidth = 2f
-                }
-                mapView.overlays.add(sCircle)
-            }
+            drawCircle(
+                color = Color.White,
+                radius = 6f,
+                center = Offset(cx, cy),
+            )
 
-            mapView.invalidate()
-        },
-        modifier = modifier,
-    )
+            drawText(
+                textMeasurer = textMeasurer,
+                text = "P",
+                topLeft = Offset(cx - 4f, cy - (pWaveKm * scale).toFloat().coerceAtMost(maxRadius) - 16f),
+                style = TextStyle(color = PWaveBlue, fontSize = 12.sp),
+            )
+            drawText(
+                textMeasurer = textMeasurer,
+                text = "S",
+                topLeft = Offset(cx - 4f, cy + (sWaveKm * scale).toFloat().coerceAtMost(maxRadius) + 4f),
+                style = TextStyle(color = SWaveRed, fontSize = 12.sp),
+            )
+        }
+    }
+}
+
+@Preview(name = "Alert Map", device = "spec:width=240dp,height=300dp")
+@Composable
+private fun AlertMapPreview() {
+    MyEarthQuakeAlertTheme {
+        AlertMap(
+            alertData = AlertData(
+                event = com.github.mytv.myearthquakealert.data.model.EewEvent(
+                    id = "preview", eventId = "P", source = "CENC",
+                    reportTime = "", reportNum = 1, originTime = "",
+                    hypocenter = "test", latitude = 30.0, longitude = 104.0,
+                    magnitude = 5.0, depth = 10.0, maxIntensity = 4,
+                ),
+                userLatitude = 31.0, userLongitude = 104.5,
+                pWaveSeconds = 15.0, sWaveSeconds = 30.0, localCsis = 4.0,
+                isSimulation = true,
+            ),
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
 }

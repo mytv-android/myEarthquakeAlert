@@ -93,7 +93,15 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
             y = 100
         }
 
-        windowManager?.addView(composeView, params)
+        try {
+            windowManager?.addView(composeView, params)
+        } catch (e: Exception) {
+            overlayView = null
+            lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+            stopSelf()
+            return
+        }
+
         overlayView = composeView
 
         val alertData = ActiveAlertHolder.activeAlert.value ?: return
@@ -108,7 +116,10 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         ActiveAlertHolder.dismissAlert()
 
         overlayView?.let {
-            windowManager?.removeView(it)
+            try {
+                windowManager?.removeView(it)
+            } catch (_: Exception) {
+            }
         }
         overlayView = null
 
@@ -119,7 +130,12 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
     override fun onDestroy() {
         autoDismissJob?.cancel()
         serviceScope.cancel()
-        overlayView?.let { windowManager?.removeView(it) }
+        overlayView?.let {
+            try {
+                windowManager?.removeView(it)
+            } catch (_: Exception) {
+            }
+        }
         overlayView = null
         super.onDestroy()
     }
