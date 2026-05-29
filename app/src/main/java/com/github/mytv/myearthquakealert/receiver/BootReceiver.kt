@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.github.mytv.myearthquakealert.MyEarthQuakeAlertApp
-import com.github.mytv.myearthquakealert.data.repository.SettingsRepository
 import com.github.mytv.myearthquakealert.service.EewMonitorService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,11 +21,16 @@ class BootReceiver : BroadcastReceiver() {
             return
         }
 
+        val pendingResult = goAsync()
         scope.launch {
-            val app = context.applicationContext as MyEarthQuakeAlertApp
-            val settings = app.settingsRepository.settings.first()
-            if (settings.serviceEnabled) {
-                EewMonitorService.start(context)
+            try {
+                val app = context.applicationContext as MyEarthQuakeAlertApp
+                val settings = app.settingsRepository.settings.first()
+                if (settings.serviceEnabled) {
+                    EewMonitorService.start(context)
+                }
+            } finally {
+                pendingResult.finish()
             }
         }
     }

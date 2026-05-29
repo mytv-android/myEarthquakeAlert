@@ -79,11 +79,8 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         manager.createNotificationChannel(channel)
     }
 
-    private fun showAlert() {
-        if (overlayView != null) return
-
-        // Start as foreground service to comply with Android 12+ restrictions
-        val notification = NotificationCompat.Builder(this, OVERLAY_CHANNEL_ID)
+    private fun buildNotification(): Notification {
+        return NotificationCompat.Builder(this, OVERLAY_CHANNEL_ID)
             .setContentTitle(getString(R.string.app_name))
             .setContentText(getString(R.string.alert_title))
             .setSmallIcon(R.drawable.ic_notification)
@@ -95,9 +92,27 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
                 )
             )
             .build()
+    }
 
-        startForeground(OVERLAY_NOTIFICATION_ID, notification)
+    private fun showAlert() {
+        // If already showing, just update the auto-dismiss timer
+        if (overlayView != null) {
+            val alertData = ActiveAlertHolder.activeAlert.value ?: return
+            autoDismissJob?.cancel()
+            autoDismissJob = serviceScope.launch {
+                delay(((alertData.sWaveSeconds + 10) * 1000).toLong())
+                dismissAlert()
+            }
+            return
+        }
 
+        // Start as foreground service first, before any other work
+        startForeground(OVERLAY_NOTIFICATION_ID, buildNotification())
+
+        // Ensure lifecycle is at least CREATED before moving to RESUMED
+        if (lifecycleRegistry.currentState == Lifecycle.State.DESTROYED) {
+            lifecycleRegistry.currentState = Lifecycle.State.CREATED
+        }
         lifecycleRegistry.currentState = Lifecycle.State.RESUMED
 
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
@@ -141,7 +156,7 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         } catch (e: Exception) {
             Log.w(TAG, "Failed to add overlay view", e)
             overlayView = null
-            lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+            lifecycleRegistry.currentState = Lifecycle.State.CREATED
             stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
             return
@@ -168,7 +183,7 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         }
         overlayView = null
 
-        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+        lifecycleRegistry.currentState = Lifecycle.State.CREATED
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
@@ -183,6 +198,7 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
             }
         }
         overlayView = null
+        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         super.onDestroy()
     }
 

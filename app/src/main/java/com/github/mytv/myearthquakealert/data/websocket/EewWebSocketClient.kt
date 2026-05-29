@@ -19,7 +19,9 @@ class EewWebSocketClient(
         .pingInterval(30, TimeUnit.SECONDS)
         .build(),
 ) {
+    @Volatile
     private var webSocket: WebSocket? = null
+    @Volatile
     private var currentSourceUrl: String? = null
 
     private val _messages = Channel<String>(Channel.BUFFERED)
@@ -32,6 +34,7 @@ class EewWebSocketClient(
         DISCONNECTED, CONNECTING, CONNECTED,
     }
 
+    @Synchronized
     fun connect(source: EewSource) {
         if (currentSourceUrl == source.wsUrl && _connectionState.value == ConnectionState.CONNECTED) {
             return
@@ -44,7 +47,7 @@ class EewWebSocketClient(
             .url(source.wsUrl)
             .build()
 
-        webSocket = client.newWebSocket(request, object : WebSocketListener() {
+        val listener = object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: okhttp3.Response) {
                 _connectionState.value = ConnectionState.CONNECTED
             }
@@ -60,11 +63,16 @@ class EewWebSocketClient(
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: okhttp3.Response?) {
                 Log.w("EewWebSocket", "Connection failure: ${t.message}")
-                _connectionState.value = ConnectionState.DISCONNECTED
+                if (currentSourceUrl == source.wsUrl) {
+                    _connectionState.value = ConnectionState.DISCONNECTED
+                }
             }
-        })
+        }
+
+        webSocket = client.newWebSocket(request, listener)
     }
 
+    @Synchronized
     fun disconnect() {
         webSocket?.close(1000, null)
         webSocket = null

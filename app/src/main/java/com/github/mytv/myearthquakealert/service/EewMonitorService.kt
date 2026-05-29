@@ -14,7 +14,6 @@ import androidx.core.app.NotificationCompat
 import com.github.mytv.myearthquakealert.MainActivity
 import com.github.mytv.myearthquakealert.MyEarthQuakeAlertApp
 import com.github.mytv.myearthquakealert.R
-import com.github.mytv.myearthquakealert.data.repository.SettingsRepository
 import com.github.mytv.myearthquakealert.data.source.EewSource
 import com.github.mytv.myearthquakealert.data.websocket.EewWebSocketClient
 import com.github.mytv.myearthquakealert.domain.AlertEvaluator
@@ -29,6 +28,7 @@ class EewMonitorService : Service() {
     private var monitorJob: Job? = null
     private var alertJob: Job? = null
     private var reconnectJob: Job? = null
+    private var isMonitoring = false
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -47,6 +47,7 @@ class EewMonitorService : Service() {
     }
 
     override fun onDestroy() {
+        isMonitoring = false
         monitorJob?.cancel()
         alertJob?.cancel()
         reconnectJob?.cancel()
@@ -55,6 +56,9 @@ class EewMonitorService : Service() {
     }
 
     private fun startMonitoring() {
+        if (isMonitoring) return
+        isMonitoring = true
+
         startForeground(
             NOTIFICATION_ID,
             createNotification(getString(R.string.service_monitoring)),
@@ -79,7 +83,6 @@ class EewMonitorService : Service() {
             }
         }
 
-        // Watch connection state and auto-reconnect on failure
         reconnectJob?.cancel()
         reconnectJob = serviceScope.launch {
             var reconnectAttempts = 0
@@ -93,7 +96,9 @@ class EewMonitorService : Service() {
                     val delaySeconds = minOf(30L, 2L shl (reconnectAttempts - 1))
                     Log.w(TAG, "WebSocket disconnected, reconnecting in ${delaySeconds}s (attempt $reconnectAttempts)")
                     delay(delaySeconds * 1000)
-                    repository.connectWebSocket(settings.selectedSource)
+                    if (isMonitoring) {
+                        repository.connectWebSocket(settings.selectedSource)
+                    }
                 } else if (state == EewWebSocketClient.ConnectionState.CONNECTED) {
                     reconnectAttempts = 0
                 }
@@ -136,15 +141,14 @@ class EewMonitorService : Service() {
                             localCsis = localCsis,
                         )
                     )
-                    val overlayIntent = Intent(this@EewMonitorService, AlertOverlayService::class.java)
-                    overlayIntent.action = AlertOverlayService.ACTION_SHOW
-                    startService(overlayIntent)
+                    AlertOverlayService.show(this@EewMonitorService)
                 }
             }
         }
     }
 
     private fun stopMonitoring() {
+        isMonitoring = false
         val app = applicationContext as MyEarthQuakeAlertApp
         app.eewRepository.disconnectWebSocket()
         monitorJob?.cancel()
