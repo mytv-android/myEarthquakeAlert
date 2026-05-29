@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.first
 
 class EewMonitorService : Service() {
 
-    private val serviceScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var monitorJob: Job? = null
     private var alertJob: Job? = null
     private var reconnectJob: Job? = null
@@ -39,9 +39,23 @@ class EewMonitorService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
-        when (action) {
-            ACTION_START -> startMonitoring()
-            ACTION_STOP -> stopMonitoring()
+        try {
+            when (action) {
+                ACTION_START -> startMonitoring()
+                ACTION_STOP -> stopMonitoring()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in onStartCommand action=$action", e)
+            if (action == ACTION_START) {
+                // Ensure foreground notification even on error to avoid ANR
+                try {
+                    startForeground(
+                        NOTIFICATION_ID,
+                        createNotification(getString(R.string.service_monitoring)),
+                        ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
+                    )
+                } catch (_: Exception) {}
+            }
         }
         return START_STICKY
     }
@@ -89,8 +103,7 @@ class EewMonitorService : Service() {
             repository.connectionState.collect { state ->
                 if (state == EewWebSocketClient.ConnectionState.DISCONNECTED) {
                     val settings = settingsRepo.settings.first()
-                    val wasIntentional = !settings.serviceEnabled
-                    if (wasIntentional) return@collect
+                    if (!settings.serviceEnabled) return@collect
 
                     reconnectAttempts++
                     val delaySeconds = minOf(30L, 2L shl (reconnectAttempts - 1))
@@ -110,38 +123,42 @@ class EewMonitorService : Service() {
             val locationProvider = app.locationProvider
 
             repository.eewMessages.collect { event ->
-                val settings = settingsRepo.settings.first()
-                val location = locationProvider.getLocation()
+                try {
+                    val settings = settingsRepo.settings.first()
+                    val location = locationProvider.getLocation()
 
-                val distance = SeismicCalculator.haversineDistance(
-                    location.latitude, location.longitude,
-                    event.latitude, event.longitude
-                )
-                val depth = event.depth ?: 10.0
-                val arrival = SeismicCalculator.calcWaveArrival(depth, distance)
-                val localCsis = SeismicCalculator.calcLocalIntensity(
-                    event.magnitude, depth, distance
-                )
-
-                val shouldAlert = AlertEvaluator.shouldAlert(
-                    localCsis = localCsis,
-                    magnitude = event.magnitude,
-                    minIntensity = settings.actionMinIntensity,
-                    minMagnitude = settings.actionMinMagnitude,
-                )
-
-                if (shouldAlert) {
-                    ActiveAlertHolder.showAlert(
-                        AlertData(
-                            event = event,
-                            userLatitude = location.latitude,
-                            userLongitude = location.longitude,
-                            pWaveSeconds = arrival.pWaveSeconds,
-                            sWaveSeconds = arrival.sWaveSeconds,
-                            localCsis = localCsis,
-                        )
+                    val distance = SeismicCalculator.haversineDistance(
+                        location.latitude, location.longitude,
+                        event.latitude, event.longitude
                     )
-                    AlertOverlayService.show(this@EewMonitorService)
+                    val depth = event.depth ?: 10.0
+                    val arrival = SeismicCalculator.calcWaveArrival(depth, distance)
+                    val localCsis = SeismicCalculator.calcLocalIntensity(
+                        event.magnitude, depth, distance
+                    )
+
+                    val shouldAlert = AlertEvaluator.shouldAlert(
+                        localCsis = localCsis,
+                        magnitude = event.magnitude,
+                        minIntensity = settings.actionMinIntensity,
+                        minMagnitude = settings.actionMinMagnitude,
+                    )
+
+                    if (shouldAlert) {
+                        ActiveAlertHolder.showAlert(
+                            AlertData(
+                                event = event,
+                                userLatitude = location.latitude,
+                                userLongitude = location.longitude,
+                                pWaveSeconds = arrival.pWaveSeconds,
+                                sWaveSeconds = arrival.sWaveSeconds,
+                                localCsis = localCsis,
+                            )
+                        )
+                        AlertOverlayService.show(this@EewMonitorService)
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error processing EEW message", e)
                 }
             }
         }
@@ -151,6 +168,7 @@ class EewMonitorService : Service() {
         isMonitoring = false
         val app = applicationContext as MyEarthQuakeAlertApp
         app.eewRepository.disconnectWebSocket()
+        serviceScope.launch { app.settingsRepository.updateServiceEnabled(false) }
         monitorJob?.cancel()
         alertJob?.cancel()
         reconnectJob?.cancel()
@@ -198,7 +216,9 @@ class EewMonitorService : Service() {
         fun stop(context: Context) {
             val intent = Intent(context, EewMonitorService::class.java)
             intent.action = ACTION_STOP
-            context.startService(intent)
+            // Use startForegroundService to satisfy Android 12+ requirements
+            // since the service is already in foreground state
+            context.startForegroundService(intent)
         }
     }
 }

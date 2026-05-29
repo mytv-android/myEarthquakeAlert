@@ -6,6 +6,7 @@ import android.content.Intent
 import android.location.LocationManager
 import android.net.Uri
 import android.provider.Settings
+import android.util.Log
 import com.github.mytv.myearthquakealert.data.api.WolfxApi
 import com.github.mytv.myearthquakealert.data.model.UserLocation
 
@@ -19,21 +20,30 @@ class LocationProvider(
 
     @SuppressLint("MissingPermission")
     private fun getGpsLocation(): UserLocation? {
-        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-            ?: return null
-        return UserLocation(
-            latitude = location.latitude,
-            longitude = location.longitude,
-            source = "gps",
-        )
+        return try {
+            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+                ?: return null
+            UserLocation(
+                latitude = location.latitude,
+                longitude = location.longitude,
+                source = "gps",
+            )
+        } catch (e: SecurityException) {
+            Log.w(TAG, "Location permission not granted", e)
+            null
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to get GPS location", e)
+            null
+        }
     }
 
     private suspend fun getIpLocation(): UserLocation {
         val response = try {
             api.getGeoIp()
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to get IP location", e)
             return UserLocation(0.0, 0.0, "none")
         }
         return UserLocation(
@@ -41,6 +51,10 @@ class LocationProvider(
             longitude = response.longitude ?: 0.0,
             source = "ip",
         )
+    }
+
+    companion object {
+        private const val TAG = "LocationProvider"
     }
 }
 

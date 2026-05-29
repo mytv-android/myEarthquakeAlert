@@ -62,9 +62,19 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
     @SuppressLint("ClickableViewAccessibility")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
-        when (action) {
-            ACTION_SHOW -> showAlert()
-            ACTION_DISMISS -> dismissAlert()
+        try {
+            when (action) {
+                ACTION_SHOW -> showAlert()
+                ACTION_DISMISS -> dismissAlert()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in onStartCommand action=$action", e)
+            // Ensure foreground state to avoid crash
+            if (action == ACTION_SHOW) {
+                try {
+                    startForeground(OVERLAY_NOTIFICATION_ID, buildNotification())
+                } catch (_: Exception) {}
+            }
         }
         return START_NOT_STICKY
     }
@@ -218,7 +228,7 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         fun dismiss(context: android.content.Context) {
             val intent = Intent(context, AlertOverlayService::class.java)
             intent.action = ACTION_DISMISS
-            context.startService(intent)
+            context.startForegroundService(intent)
         }
     }
 }

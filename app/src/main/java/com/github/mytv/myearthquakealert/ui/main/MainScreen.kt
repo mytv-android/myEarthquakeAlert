@@ -30,6 +30,7 @@ import com.github.mytv.myearthquakealert.service.AlertOverlayService
 import com.github.mytv.myearthquakealert.service.EewMonitorService
 import com.github.mytv.myearthquakealert.ui.adaptive.AdaptiveLayout
 import com.github.mytv.myearthquakealert.ui.theme.EeqSpacing
+import com.github.mytv.myearthquakealert.util.LogExporter
 import com.github.mytv.myearthquakealert.util.canDrawOverlays
 import com.github.mytv.myearthquakealert.util.openOverlaySettings
 import kotlinx.coroutines.launch
@@ -286,6 +287,10 @@ fun MainScreen(
                             }
                         }
                     },
+                )
+
+                LogExportCard(
+                    onExport = { LogExporter.export(context) },
                 )
             }
         }
