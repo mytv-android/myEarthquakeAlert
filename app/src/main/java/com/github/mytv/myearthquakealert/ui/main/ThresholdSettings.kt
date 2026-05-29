@@ -34,6 +34,7 @@ fun ThresholdSettings(
         val magFocused by magInteractionSource.collectIsFocusedAsState()
 
         Card(
+            onClick = {},
             modifier = Modifier
                 .fillMaxWidth()
                 .handleKeyEvents(
@@ -64,10 +65,9 @@ fun ThresholdSettings(
                 }
                 Slider(
                     value = minMagnitude.toFloat(),
-                    onValueChange = {},
+                    onValueChange = { onMinMagnitudeChange(it.toDouble()) },
                     valueRange = 0f..9f,
                     steps = 8,
-                    enabled = false,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -80,6 +80,7 @@ fun ThresholdSettings(
         val intensityFocused by intensityInteractionSource.collectIsFocusedAsState()
 
         Card(
+            onClick = {},
             modifier = Modifier
                 .fillMaxWidth()
                 .handleKeyEvents(
@@ -110,10 +111,9 @@ fun ThresholdSettings(
                 }
                 Slider(
                     value = minIntensity.toFloat(),
-                    onValueChange = {},
+                    onValueChange = { onMinIntensityChange(it.toInt()) },
                     valueRange = 0f..12f,
                     steps = 11,
-                    enabled = false,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -126,6 +126,7 @@ fun ThresholdSettings(
         val dismissFocused by dismissInteractionSource.collectIsFocusedAsState()
 
         Card(
+            onClick = { onAllowDismissWithBackChange(!allowDismissWithBack) },
             modifier = Modifier
                 .fillMaxWidth()
                 .handleKeyEvents(

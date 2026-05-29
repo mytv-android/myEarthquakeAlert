@@ -26,6 +26,7 @@ fun ServiceToggleCard(
     val isFocused by interactionSource.collectIsFocusedAsState()
 
     Card(
+        onClick = { onToggle(!enabled) },
         modifier = modifier
             .fillMaxWidth()
             .handleKeyEvents(

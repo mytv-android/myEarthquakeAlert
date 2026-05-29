@@ -167,37 +167,53 @@ fun MainScreen(
 
                 SimulationCard(
                     onSimulate = {
+                        if (!context.canDrawOverlays()) {
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.overlay_permission_required),
+                                Toast.LENGTH_LONG,
+                            ).show()
+                            return@SimulationCard
+                        }
                         scope.launch {
-                            val location = app.locationProvider.getLocation()
-                            val simEvent = EewEvent(
-                                id = "sim-1",
-                                eventId = "SIMULATION",
-                                source = EewSource.CENC.name,
-                                reportTime = "",
-                                reportNum = 1,
-                                originTime = "",
-                                hypocenter = "模拟震源",
-                                latitude = 0.0,
-                                longitude = 0.0,
-                                magnitude = 3.0,
-                                depth = 10.0,
-                                maxIntensity = 3,
-                            )
-
-                            val arrival = SeismicCalculator.calcWaveArrival(10.0, 40.0)
-
-                            ActiveAlertHolder.showAlert(
-                                com.github.mytv.myearthquakealert.service.AlertData(
-                                    event = simEvent,
-                                    userLatitude = location.latitude,
-                                    userLongitude = location.longitude,
-                                    pWaveSeconds = arrival.pWaveSeconds,
-                                    sWaveSeconds = arrival.sWaveSeconds,
-                                    localCsis = 3.0,
-                                    isSimulation = true,
+                            try {
+                                val location = app.locationProvider.getLocation()
+                                val simEvent = EewEvent(
+                                    id = "sim-1",
+                                    eventId = "SIMULATION",
+                                    source = EewSource.CENC.name,
+                                    reportTime = "",
+                                    reportNum = 1,
+                                    originTime = "",
+                                    hypocenter = "模拟震源",
+                                    latitude = 0.0,
+                                    longitude = 0.0,
+                                    magnitude = 3.0,
+                                    depth = 10.0,
+                                    maxIntensity = 3,
                                 )
-                            )
-                            AlertOverlayService.show(context)
+
+                                val arrival = SeismicCalculator.calcWaveArrival(10.0, 40.0)
+
+                                ActiveAlertHolder.showAlert(
+                                    com.github.mytv.myearthquakealert.service.AlertData(
+                                        event = simEvent,
+                                        userLatitude = location.latitude,
+                                        userLongitude = location.longitude,
+                                        pWaveSeconds = arrival.pWaveSeconds,
+                                        sWaveSeconds = arrival.sWaveSeconds,
+                                        localCsis = 3.0,
+                                        isSimulation = true,
+                                    )
+                                )
+                                AlertOverlayService.show(context)
+                            } catch (e: SecurityException) {
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.location_permission_required),
+                                    Toast.LENGTH_LONG,
+                                ).show()
+                            }
                         }
                     },
                 )

@@ -18,6 +18,7 @@
     <string name="simulation_label">SIMULATION</string>
     <string name="earthquake_history">Recent Earthquakes</string>
     <string name="overlay_permission_required">Overlay permission is required to show earthquake alerts</string>
+    <string name="location_permission_required">Location permission is required for simulation</string>
     <string name="grant_permission">Grant Permission</string>
     <string name="epicenter_label">Epicenter:</string>
     <string name="magnitude_label">Magnitude:</string>

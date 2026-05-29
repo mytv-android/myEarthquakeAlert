@@ -46,6 +46,7 @@ private fun EarthquakeHistoryItem(
     val scale by animateFloatAsState(targetValue = if (isFocused) 1.01f else 1f, label = "scale")
 
     Card(
+        onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
             .scale(scale)
