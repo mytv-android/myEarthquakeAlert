@@ -13,6 +13,9 @@ import android.os.IBinder
 import android.util.Log
 import android.view.Gravity
 import android.view.WindowManager
+import androidx.activity.OnBackPressedDispatcher
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
@@ -132,13 +135,23 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
             it.setViewTreeSavedStateRegistryOwner(this)
         }
 
+        val backPressedDispatcher = OnBackPressedDispatcher()
+
         composeView.setContent {
-            val alertData by ActiveAlertHolder.activeAlert.collectAsState()
-            if (alertData != null) {
-                AlertOverlay(
-                    alertData = alertData!!,
-                    onDismiss = { dismissAlert() },
-                )
+            CompositionLocalProvider(
+                LocalOnBackPressedDispatcherOwner provides object :
+                    androidx.activity.OnBackPressedDispatcherOwner {
+                    override val lifecycle get() = lifecycleRegistry
+                    override val onBackPressedDispatcher get() = backPressedDispatcher
+                }
+            ) {
+                val alertData by ActiveAlertHolder.activeAlert.collectAsState()
+                if (alertData != null) {
+                    AlertOverlay(
+                        alertData = alertData!!,
+                        onDismiss = { dismissAlert() },
+                    )
+                }
             }
         }
 
