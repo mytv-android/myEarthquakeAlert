@@ -20,6 +20,7 @@
     <string name="overlay_permission_required">Overlay permission is required to show earthquake alerts</string>
     <string name="location_permission_required">Location permission is required for simulation</string>
     <string name="grant_permission">Grant Permission</string>
+    <string name="notification_channel_name">Earthquake Monitor</string>
     <string name="epicenter_label">Epicenter:</string>
     <string name="magnitude_label">Magnitude:</string>
     <string name="arrival_time">Seismic waves will arrive in %1$d seconds</string>

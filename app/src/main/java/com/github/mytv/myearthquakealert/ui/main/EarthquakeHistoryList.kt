@@ -4,8 +4,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,8 +25,8 @@ fun EarthquakeHistoryList(
 ) {
     if (earthquakes.isEmpty()) return
 
-    LazyColumn(modifier = modifier.fillMaxSize()) {
-        items(earthquakes) { eq ->
+    Column(modifier = modifier.fillMaxWidth()) {
+        earthquakes.forEach { eq ->
             EarthquakeHistoryItem(earthquake = eq, onClick = {})
             Spacer(modifier = Modifier.height(EeqSpacing.sm))
         }

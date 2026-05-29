@@ -1,17 +1,17 @@
 package com.github.mytv.myearthquakealert.service
 
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.IBinder
+import androidx.core.app.NotificationCompat
 import com.github.mytv.myearthquakealert.MainActivity
 import com.github.mytv.myearthquakealert.MyEarthQuakeAlertApp
 import com.github.mytv.myearthquakealert.R
-import com.github.mytv.myearthquakealert.data.repository.EewRepository
 import com.github.mytv.myearthquakealert.data.repository.SettingsRepository
 import com.github.mytv.myearthquakealert.data.source.EewSource
 import com.github.mytv.myearthquakealert.domain.AlertEvaluator
@@ -48,7 +48,11 @@ class EewMonitorService : Service() {
     }
 
     private fun startMonitoring() {
-        startForeground(NOTIFICATION_ID, createNotification("正在监测地震活动"))
+        startForeground(
+            NOTIFICATION_ID,
+            createNotification(getString(R.string.service_monitoring)),
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
+        )
 
         monitorJob = serviceScope.launch {
             val app = applicationContext as MyEarthQuakeAlertApp
@@ -125,12 +129,10 @@ class EewMonitorService : Service() {
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             CHANNEL_ID,
-            "地震监测服务",
+            getString(R.string.notification_channel_name),
             NotificationManager.IMPORTANCE_LOW
-        ).apply {
-            description = "持续监测地震预警数据"
-        }
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        )
+        val manager = getSystemService(NotificationManager::class.java)
         manager.createNotificationChannel(channel)
     }
 
@@ -140,8 +142,8 @@ class EewMonitorService : Service() {
             Intent(this, MainActivity::class.java),
             PendingIntent.FLAG_IMMUTABLE
         )
-        return Notification.Builder(this, CHANNEL_ID)
-            .setContentTitle("地震速报")
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(getString(R.string.app_name))
             .setContentText(text)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentIntent(pendingIntent)

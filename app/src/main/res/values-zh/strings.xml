@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">地震速报</string>
-    <string name="service_monitoring">正在监测地震活动</string>
+    <string name="service_monitoring">正在监测地震预警…</string>
     <string name="service_toggle">监测服务</string>
     <string name="source_selector">数据源</string>
     <string name="min_magnitude">最低震级</string>
@@ -20,6 +20,8 @@
     <string name="overlay_permission_required">需要悬浮窗权限以显示地震预警</string>
     <string name="location_permission_required">需要位置权限才能使用模拟功能</string>
     <string name="grant_permission">授予权限</string>
+    <string name="notification_channel_name">地震监测</string>
+    <string name="service_monitoring">正在监测地震预警…</string>
     <string name="epicenter_label">震源：</string>
     <string name="magnitude_label">震级：</string>
     <string name="arrival_time">地震波将在 %1$d 秒后到达</string>

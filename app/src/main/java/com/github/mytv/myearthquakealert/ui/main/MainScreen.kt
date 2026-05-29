@@ -91,9 +91,7 @@ fun MainScreen(
     ) { padding ->
         val settingsPane: @Composable () -> Unit = {
             Column(
-                modifier = Modifier
-                    .padding(EeqSpacing.md)
-                    .verticalScroll(rememberScrollState()),
+                modifier = Modifier.padding(EeqSpacing.md),
                 verticalArrangement = Arrangement.spacedBy(EeqSpacing.md),
             ) {
                 if (!context.canDrawOverlays()) {
