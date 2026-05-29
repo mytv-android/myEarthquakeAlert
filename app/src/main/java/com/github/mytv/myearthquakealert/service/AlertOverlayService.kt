@@ -1,6 +1,7 @@
 package com.github.mytv.myearthquakealert.service
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.app.Service
 import android.content.Intent
 import android.graphics.PixelFormat
@@ -81,10 +82,17 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
             }
         }
 
+        val windowType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        } else {
+            @Suppress("DEPRECATION")
+            WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
+        }
+
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            windowType,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
             PixelFormat.TRANSLUCENT,

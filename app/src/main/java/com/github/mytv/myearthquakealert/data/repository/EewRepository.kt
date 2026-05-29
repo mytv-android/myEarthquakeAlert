@@ -7,7 +7,7 @@ import com.github.mytv.myearthquakealert.data.source.EewSource
 import com.github.mytv.myearthquakealert.data.websocket.EewWebSocketClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -20,8 +20,12 @@ class EewRepository(
 
     val connectionState: StateFlow<EewWebSocketClient.ConnectionState> = webSocketClient.connectionState
 
-    val eewMessages: Flow<EewEvent> = webSocketClient.messages.map { raw ->
-        parseEewMessage(raw)
+    val eewMessages: Flow<EewEvent> = webSocketClient.messages.mapNotNull { raw ->
+        try {
+            parseEewMessage(raw)
+        } catch (_: Exception) {
+            null
+        }
     }
 
     fun connectWebSocket(source: EewSource) {

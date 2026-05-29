@@ -2,8 +2,6 @@ package com.github.mytv.myearthquakealert.ui.main
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
@@ -87,9 +85,7 @@ fun MainScreen(
     ) { padding ->
         val settingsPane: @Composable () -> Unit = {
             Column(
-                modifier = Modifier
-                    .padding(EeqSpacing.md)
-                    .verticalScroll(rememberScrollState()),
+                modifier = Modifier.padding(EeqSpacing.md),
                 verticalArrangement = Arrangement.spacedBy(EeqSpacing.md),
             ) {
                 if (!context.canDrawOverlays()) {

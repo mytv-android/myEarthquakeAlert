@@ -4,7 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -25,7 +25,7 @@ import com.github.mytv.myearthquakealert.ui.theme.SWaveRed
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import kotlinx.coroutines.delay
 
 @Composable
 fun AlertMap(
@@ -34,19 +34,11 @@ fun AlertMap(
 ) {
     var elapsedSeconds by remember { mutableFloatStateOf(0f) }
 
-    DisposableEffect(Unit) {
-        val timer = Thread {
-            while (!Thread.currentThread().isInterrupted) {
-                try {
-                    Thread.sleep(1000)
-                    elapsedSeconds += 1f
-                } catch (_: InterruptedException) {
-                    break
-                }
-            }
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(1000)
+            elapsedSeconds += 1f
         }
-        timer.start()
-        onDispose { timer.interrupt() }
     }
 
     val depthKm = alertData.event.depth ?: 10.0
