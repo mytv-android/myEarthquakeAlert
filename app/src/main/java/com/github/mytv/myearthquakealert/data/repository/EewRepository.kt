@@ -1,5 +1,6 @@
 package com.github.mytv.myearthquakealert.data.repository
 
+import android.util.Log
 import com.github.mytv.myearthquakealert.data.api.*
 import com.github.mytv.myearthquakealert.data.model.EewEvent
 import com.github.mytv.myearthquakealert.data.model.EarthquakeInfo
@@ -23,7 +24,8 @@ class EewRepository(
     val eewMessages: Flow<EewEvent> = webSocketClient.messages.mapNotNull { raw ->
         try {
             parseEewMessage(raw)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.w("EewRepository", "Failed to parse EEW message: ${e.message}", e)
             null
         }
     }
@@ -107,7 +109,7 @@ class EewRepository(
                     longitude = resp.Longitude,
                     magnitude = resp.Magunitude,
                     depth = null,
-                    maxIntensity = 0,
+                    maxIntensity = 0.0,
                     isFinal = resp.isFinal,
                 )
             }

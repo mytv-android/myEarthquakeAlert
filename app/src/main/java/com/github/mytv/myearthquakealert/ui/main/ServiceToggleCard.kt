@@ -3,6 +3,9 @@ package com.github.mytv.myearthquakealert.ui.main
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,7 +37,8 @@ fun ServiceToggleCard(
                 onSelect = { onToggle(!enabled) },
             ),
         colors = CardDefaults.cardColors(
-            containerColor = if (isFocused) MaterialTheme.colorScheme.surfaceContainerHigh
+            containerColor = if (enabled) MaterialTheme.colorScheme.primaryContainer
+                             else if (isFocused) MaterialTheme.colorScheme.surfaceContainerHigh
                              else MaterialTheme.colorScheme.surfaceContainerLow,
         ),
     ) {
@@ -42,11 +46,26 @@ fun ServiceToggleCard(
             modifier = Modifier.padding(EeqSpacing.md),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = stringResource(R.string.service_toggle),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.weight(1f),
+            Icon(
+                imageVector = if (enabled) Icons.Filled.NotificationsActive else Icons.Filled.NotificationsOff,
+                contentDescription = null,
+                tint = if (enabled) MaterialTheme.colorScheme.primary
+                       else MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            Spacer(modifier = Modifier.width(EeqSpacing.md))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.service_toggle),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = if (enabled) stringResource(R.string.service_active)
+                           else stringResource(R.string.service_inactive),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (enabled) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             Switch(
                 enabled = false,
                 checked = enabled,

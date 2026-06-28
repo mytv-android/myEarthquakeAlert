@@ -8,7 +8,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -137,8 +139,14 @@ fun MainScreen(
         val settingsPane: @Composable () -> Unit = {
             Column(
                 modifier = Modifier.padding(EeqSpacing.md),
-                verticalArrangement = Arrangement.spacedBy(EeqSpacing.md),
+                verticalArrangement = Arrangement.spacedBy(EeqSpacing.sm),
             ) {
+                // ── Section: Service ──
+                SectionHeader(
+                    icon = Icons.Filled.NotificationsActive,
+                    title = stringResource(R.string.section_service),
+                )
+
                 if (!context.canDrawOverlays()) {
                     Card(
                         colors = CardDefaults.cardColors(
@@ -198,6 +206,9 @@ fun MainScreen(
                     },
                 )
 
+                Spacer(modifier = Modifier.height(EeqSpacing.sm))
+
+                // ── Section: Data Source ──
                 SourceSelector(
                     selected = settings.selectedSource,
                     onSelected = { source ->
@@ -205,6 +216,9 @@ fun MainScreen(
                     },
                 )
 
+                Spacer(modifier = Modifier.height(EeqSpacing.sm))
+
+                // ── Section: Alert Thresholds ──
                 ThresholdSettings(
                     minMagnitude = settings.actionMinMagnitude,
                     onMinMagnitudeChange = { scope.launch { app.settingsRepository.updateActionMinMagnitude(it) } },
@@ -214,6 +228,14 @@ fun MainScreen(
                     onIntenseThresholdChange = { scope.launch { app.settingsRepository.updateIntenseThreshold(it) } },
                     allowDismissWithBack = settings.allowDismissWithBack,
                     onAllowDismissWithBackChange = { scope.launch { app.settingsRepository.updateAllowDismissWithBack(it) } },
+                )
+
+                Spacer(modifier = Modifier.height(EeqSpacing.sm))
+
+                // ── Section: Tools ──
+                SectionHeader(
+                    icon = Icons.Filled.Build,
+                    title = stringResource(R.string.section_tools),
                 )
 
                 SimulationCard(
@@ -255,7 +277,7 @@ fun MainScreen(
                                     longitude = 0.0,
                                     magnitude = 3.0,
                                     depth = 10.0,
-                                    maxIntensity = 3,
+                                    maxIntensity = 3.0,
                                 )
 
                                 val arrival = SeismicCalculator.calcWaveArrival(10.0, 40.0)
@@ -297,11 +319,6 @@ fun MainScreen(
 
         val listPane: @Composable () -> Unit = {
             Column(modifier = Modifier.padding(EeqSpacing.md)) {
-                Text(
-                    text = stringResource(R.string.earthquake_history),
-                    style = MaterialTheme.typography.titleLarge,
-                )
-                Spacer(modifier = Modifier.height(EeqSpacing.sm))
                 if (isLoadingHistory.value) {
                     CircularProgressIndicator()
                 } else {

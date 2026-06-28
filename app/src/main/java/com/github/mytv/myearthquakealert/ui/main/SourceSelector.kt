@@ -2,17 +2,24 @@ package com.github.mytv.myearthquakealert.ui.main
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,14 +44,14 @@ fun SourceSelector(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(EeqSpacing.sm)) {
-        Text(
-            text = stringResource(R.string.source_selector),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = EeqSpacing.sm),
+        SectionHeader(
+            icon = Icons.Filled.CloudDownload,
+            title = stringResource(R.string.section_data_source),
         )
         EewSource.entries.forEach { source ->
             SourceItem(
                 label = source.label,
+                description = source.description,
                 isSelected = source == selected,
                 onSelect = { onSelected(source) },
             )
@@ -55,6 +62,7 @@ fun SourceSelector(
 @Composable
 private fun SourceItem(
     label: String,
+    description: String,
     isSelected: Boolean,
     onSelect: () -> Unit,
     modifier: Modifier = Modifier,
@@ -101,18 +109,38 @@ private fun SourceItem(
             modifier = Modifier.padding(horizontal = EeqSpacing.md, vertical = EeqSpacing.sm),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
-                modifier = Modifier.weight(1f),
-            )
-            if (isSelected) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "✓",
+                    text = label,
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
                 )
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            // Radio-button style indicator
+            Box(contentAlignment = Alignment.Center) {
+                Surface(
+                    shape = CircleShape,
+                    color = if (isSelected) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.surfaceVariant,
+                    border = BorderStroke(
+                        2.dp,
+                        if (isSelected) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.outline,
+                    ),
+                    modifier = Modifier.size(20.dp),
+                ) {}
+                if (isSelected) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(10.dp),
+                    ) {}
+                }
             }
         }
     }

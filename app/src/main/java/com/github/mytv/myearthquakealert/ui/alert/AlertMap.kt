@@ -110,7 +110,7 @@ private fun AlertMapPreview() {
                     id = "preview", eventId = "P", source = "CENC",
                     reportTime = "", reportNum = 1, originTime = "",
                     hypocenter = "test", latitude = 30.0, longitude = 104.0,
-                    magnitude = 5.0, depth = 10.0, maxIntensity = 4,
+                    magnitude = 5.0, depth = 10.0, maxIntensity = 4.0,
                 ),
                 userLatitude = 31.0, userLongitude = 104.5,
                 pWaveSeconds = 15.0, sWaveSeconds = 30.0, localCsis = 4.0,

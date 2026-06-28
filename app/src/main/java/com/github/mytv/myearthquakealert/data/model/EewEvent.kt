@@ -15,6 +15,6 @@ data class EewEvent(
     val longitude: Double,
     val magnitude: Double,
     val depth: Double? = null,
-    val maxIntensity: Int = 0,
+    val maxIntensity: Double = 0.0,
     val isFinal: Boolean = false,
 )

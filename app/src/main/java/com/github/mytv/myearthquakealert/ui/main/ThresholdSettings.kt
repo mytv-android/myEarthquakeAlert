@@ -3,6 +3,11 @@ package com.github.mytv.myearthquakealert.ui.main
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Backup
+import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -10,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import com.github.mytv.myearthquakealert.R
 import com.github.mytv.myearthquakealert.ui.adaptive.handleKeyEvents
@@ -29,6 +35,11 @@ fun ThresholdSettings(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
+        SectionHeader(
+            icon = Icons.Filled.Tune,
+            title = stringResource(R.string.section_thresholds),
+        )
+
         // ── Magnitude slider card ──────────────────────────────────────
         val magInteractionSource = remember { MutableInteractionSource() }
         val magFocused by magInteractionSource.collectIsFocusedAsState()
@@ -53,15 +64,34 @@ fun ThresholdSettings(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        text = stringResource(R.string.min_magnitude),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Text(
-                        text = "M$minMagnitude",
-                        style = MaterialTheme.typography.titleMedium,
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(EeqSpacing.sm),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Speed,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(18.dp),
+                        )
+                        Text(
+                            text = stringResource(R.string.min_magnitude),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                    }
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                    ) {
+                        Text(
+                            text = "M$minMagnitude",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.padding(horizontal = EeqSpacing.sm, vertical = 2.dp),
+                        )
+                    }
                 }
                 Slider(
                     value = minMagnitude.toFloat(),
@@ -99,15 +129,34 @@ fun ThresholdSettings(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        text = stringResource(R.string.min_intensity),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Text(
-                        text = "$minIntensity",
-                        style = MaterialTheme.typography.titleMedium,
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(EeqSpacing.sm),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Warning,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(18.dp),
+                        )
+                        Text(
+                            text = stringResource(R.string.min_intensity),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                    }
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                    ) {
+                        Text(
+                            text = "$minIntensity",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.padding(horizontal = EeqSpacing.sm, vertical = 2.dp),
+                        )
+                    }
                 }
                 Slider(
                     value = minIntensity.toFloat(),
@@ -121,7 +170,7 @@ fun ThresholdSettings(
 
         Spacer(modifier = Modifier.height(EeqSpacing.sm))
 
-        // ── Allow-dismiss-with-back card (same pattern as ServiceToggleCard) ──
+        // ── Allow-dismiss-with-back card ──
         val dismissInteractionSource = remember { MutableInteractionSource() }
         val dismissFocused by dismissInteractionSource.collectIsFocusedAsState()
 
@@ -142,6 +191,13 @@ fun ThresholdSettings(
                 modifier = Modifier.padding(EeqSpacing.md),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                Icon(
+                    imageVector = Icons.Filled.Backup,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(18.dp),
+                )
+                Spacer(modifier = Modifier.width(EeqSpacing.sm))
                 Text(
                     text = stringResource(R.string.allow_dismiss),
                     style = MaterialTheme.typography.bodyLarge,

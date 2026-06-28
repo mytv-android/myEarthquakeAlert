@@ -66,4 +66,19 @@
     <string name="update_retry">重试</string>
     <string name="cancel">取消</string>
     <string name="export_log">导出日志</string>
+
+    <!-- Section Headers -->
+    <string name="section_service">服务</string>
+    <string name="section_data_source">数据源</string>
+    <string name="section_thresholds">预警阈值</string>
+    <string name="section_tools">工具</string>
+
+    <!-- Service Status -->
+    <string name="service_active">监测中</string>
+    <string name="service_inactive">已暂停</string>
+
+    <!-- Subtitles -->
+    <string name="simulation_subtitle">使用模拟数据测试预警覆盖层</string>
+    <string name="export_log_subtitle">导出诊断日志以便排查问题</string>
+    <string name="no_earthquakes">暂无最近地震记录</string>
 </resources>

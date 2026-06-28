@@ -66,4 +66,19 @@
     <string name="update_retry">Retry</string>
     <string name="cancel">Cancel</string>
     <string name="export_log">Export Log</string>
+
+    <!-- Section Headers -->
+    <string name="section_service">Service</string>
+    <string name="section_data_source">Data Source</string>
+    <string name="section_thresholds">Alert Thresholds</string>
+    <string name="section_tools">Tools</string>
+
+    <!-- Service Status -->
+    <string name="service_active">Monitoring active</string>
+    <string name="service_inactive">Monitoring paused</string>
+
+    <!-- Subtitles -->
+    <string name="simulation_subtitle">Test alert with simulated data</string>
+    <string name="export_log_subtitle">Export diagnostic logs</string>
+    <string name="no_earthquakes">No recent earthquakes</string>
 </resources>

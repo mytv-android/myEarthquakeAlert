@@ -246,7 +246,7 @@ private val sampleAlertData = AlertData(
         longitude = 104.0,
         magnitude = 5.5,
         depth = 10.0,
-        maxIntensity = 4,
+        maxIntensity = 4.0,
     ),
     userLatitude = 31.0,
     userLongitude = 104.5,

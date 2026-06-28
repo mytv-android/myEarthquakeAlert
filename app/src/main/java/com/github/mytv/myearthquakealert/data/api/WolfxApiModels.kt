@@ -16,7 +16,7 @@ data class ScEewResponse(
     val Longitude: Double = 0.0,
     @SerialName("Magunitude") val Magunitude: Double = 0.0,
     val Depth: Double? = null,
-    val MaxIntensity: Int = 0,
+    val MaxIntensity: Double = 0.0,
 )
 
 @Serializable
@@ -32,7 +32,7 @@ data class CencEewResponse(
     val Longitude: Double = 0.0,
     val Magnitude: Double = 0.0,
     val Depth: Double? = null,
-    val MaxIntensity: Int = 0,
+    val MaxIntensity: Double = 0.0,
 )
 
 @Serializable
@@ -63,7 +63,7 @@ data class CqEewResponse(
     val Longitude: Double = 0.0,
     val Magnitude: Double = 0.0,
     val Depth: Double? = null,
-    val MaxIntensity: Int = 0,
+    val MaxIntensity: Double = 0.0,
 )
 
 @Serializable
