@@ -66,4 +66,24 @@ object SeismicCalculator {
         }
         return (lo + hi) / 2
     }
+
+    data class GeoOffset(val latitude: Double, val longitude: Double)
+
+    /**
+     * Point at [distanceKm] from ([lat], [lon]) along [bearingDeg] (clockwise from north).
+     * Used to place simulated epicenters at a realistic distance from the user.
+     */
+    fun offsetPoint(lat: Double, lon: Double, bearingDeg: Double, distanceKm: Double): GeoOffset {
+        val phi1 = Math.toRadians(lat)
+        val lambda1 = Math.toRadians(lon)
+        val theta = Math.toRadians(bearingDeg)
+        val delta = distanceKm / EARTH_RADIUS_KM
+
+        val phi2 = asin(sin(phi1) * cos(delta) + cos(phi1) * sin(delta) * cos(theta))
+        val lambda2 = lambda1 + atan2(
+            sin(theta) * sin(delta) * cos(phi1),
+            cos(delta) - sin(phi1) * sin(phi2),
+        )
+        return GeoOffset(Math.toDegrees(phi2), Math.toDegrees(lambda2))
+    }
 }

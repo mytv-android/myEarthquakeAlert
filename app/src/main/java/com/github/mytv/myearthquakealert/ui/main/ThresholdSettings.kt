@@ -5,6 +5,7 @@ import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Backup
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Warning
@@ -161,6 +162,71 @@ fun ThresholdSettings(
                 Slider(
                     value = minIntensity.toFloat(),
                     onValueChange = { onMinIntensityChange(it.toInt()) },
+                    valueRange = 0f..12f,
+                    steps = 11,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(EeqSpacing.sm))
+
+        // ── Intense threshold slider card ──────────────────────────────
+        val intenseInteractionSource = remember { MutableInteractionSource() }
+        val intenseFocused by intenseInteractionSource.collectIsFocusedAsState()
+
+        Card(
+            onClick = {},
+            modifier = Modifier
+                .fillMaxWidth()
+                .handleKeyEvents(
+                    interactionSource = intenseInteractionSource,
+                    onLeft = { onIntenseThresholdChange((intenseThreshold - 1).coerceIn(0, 12)) },
+                    onRight = { onIntenseThresholdChange((intenseThreshold + 1).coerceIn(0, 12)) },
+                    onContinuousLongLeft = { onIntenseThresholdChange((intenseThreshold - 1).coerceIn(0, 12)) },
+                    onContinuousLongRight = { onIntenseThresholdChange((intenseThreshold + 1).coerceIn(0, 12)) },
+                ),
+            colors = CardDefaults.cardColors(
+                containerColor = if (intenseFocused) MaterialTheme.colorScheme.surfaceContainerHigh
+                else MaterialTheme.colorScheme.surfaceContainerLow,
+            ),
+        ) {
+            Column(modifier = Modifier.padding(EeqSpacing.md)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(EeqSpacing.sm),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Bolt,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(18.dp),
+                        )
+                        Text(
+                            text = stringResource(R.string.intense_threshold),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                    }
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                    ) {
+                        Text(
+                            text = "$intenseThreshold",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.padding(horizontal = EeqSpacing.sm, vertical = 2.dp),
+                        )
+                    }
+                }
+                Slider(
+                    value = intenseThreshold.toFloat(),
+                    onValueChange = { onIntenseThresholdChange(it.toInt()) },
                     valueRange = 0f..12f,
                     steps = 11,
                     modifier = Modifier.fillMaxWidth(),

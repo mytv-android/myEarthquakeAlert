@@ -29,5 +29,11 @@ enum class EewSource(
         description = "Chongqing Earthquake Administration",
         wsUrl = "wss://ws-api.wolfx.jp/cq_eew",
         httpUrl = "https://api.wolfx.jp/cq_eew.json",
-    ),
+    );
+
+    companion object {
+        /** Display label for an [EewEvent.source] value (stored as enum name). */
+        fun labelOf(name: String): String =
+            entries.firstOrNull { it.name == name }?.label ?: name
+    }
 }

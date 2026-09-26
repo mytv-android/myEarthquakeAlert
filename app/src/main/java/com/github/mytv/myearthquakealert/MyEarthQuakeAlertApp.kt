@@ -16,18 +16,33 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import org.osmdroid.config.Configuration
 import retrofit2.Retrofit
+import java.io.File
 
 class MyEarthQuakeAlertApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
         LogExporter.init(this)
+        initOsmdroid()
+    }
+
+    private fun initOsmdroid() {
+        Configuration.getInstance().apply {
+            userAgentValue = packageName
+            osmdroidBasePath = File(cacheDir, "osmdroid")
+            osmdroidTileCache = File(osmdroidBasePath, "tiles")
+            load(this@MyEarthQuakeAlertApp, getSharedPreferences("osmdroid", MODE_PRIVATE))
+        }
     }
 
     private val dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+    }
 
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()

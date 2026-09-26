@@ -9,7 +9,9 @@ import android.app.Service
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.WindowManager
@@ -29,6 +31,7 @@ import androidx.savedstate.SavedStateRegistryOwner
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.github.mytv.myearthquakealert.MainActivity
+import com.github.mytv.myearthquakealert.MyEarthQuakeAlertApp
 import com.github.mytv.myearthquakealert.R
 import com.github.mytv.myearthquakealert.ui.alert.AlertOverlay
 import kotlinx.coroutines.CoroutineScope
@@ -37,6 +40,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
@@ -129,15 +133,38 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         lifecycleRegistry.currentState = Lifecycle.State.RESUMED
 
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        val app = application as MyEarthQuakeAlertApp
 
         val composeView = ComposeView(this).also {
             it.setViewTreeLifecycleOwner(this)
             it.setViewTreeSavedStateRegistryOwner(this)
         }
 
+        // Raw Back key handling: this window has no Activity above it, so the
+        // framework's back dispatch never reaches a dispatcher here. Intercept the
+        // key at the view level: consume it always, dismiss only when allowed.
+        composeView.isFocusable = true
+        composeView.isFocusableInTouchMode = true
+        composeView.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == android.view.KeyEvent.KEYCODE_BACK && event.action == android.view.KeyEvent.ACTION_UP) {
+                Log.i(TAG, "Back key received by overlay")
+                serviceScope.launch {
+                    val allow = app.settingsRepository.settings.first().allowDismissWithBack
+                    Log.i(TAG, "Back key: allowDismissWithBack=$allow")
+                    if (allow) postDismiss()
+                }
+                true
+            } else {
+                false
+            }
+        }
+
         val backPressedDispatcher = OnBackPressedDispatcher()
 
         composeView.setContent {
+            val settings by app.settingsRepository.settings.collectAsState(
+                initial = com.github.mytv.myearthquakealert.data.repository.UserSettings()
+            )
             CompositionLocalProvider(
                 LocalOnBackPressedDispatcherOwner provides object :
                     androidx.activity.OnBackPressedDispatcherOwner {
@@ -146,10 +173,13 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
                 }
             ) {
                 val alertData by ActiveAlertHolder.activeAlert.collectAsState()
-                if (alertData != null) {
+                alertData?.let { data ->
                     AlertOverlay(
-                        alertData = alertData!!,
-                        onDismiss = { dismissAlert() },
+                        alertData = data,
+                        onDismiss = { postDismiss() },
+                        allowBackDismiss = settings.allowDismissWithBack,
+                        intenseThreshold = settings.intenseThreshold,
+                        mapStyle = settings.mapStyle,
                     )
                 }
             }
@@ -162,12 +192,12 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
             WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
         }
 
+        // Focusable so Back / D-pad reach the overlay; keep the screen on while alerting.
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT,
             windowType,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
+            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
             PixelFormat.TRANSLUCENT,
         ).apply {
             gravity = Gravity.CENTER
@@ -175,6 +205,9 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
         try {
             windowManager?.addView(composeView, params)
+            composeView.post {
+                composeView.requestFocus()
+            }
         } catch (e: Exception) {
             Log.w(TAG, "Failed to add overlay view", e)
             overlayView = null
@@ -193,7 +226,17 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         }
     }
 
+    /**
+     * Defer teardown until after the current input event completes — removing the
+     * focused window mid-dispatch lets the same key fall through to whatever is
+     * underneath (e.g. Back finishing the activity behind the overlay).
+     */
+    private fun postDismiss() {
+        Handler(Looper.getMainLooper()).post { dismissAlert() }
+    }
+
     private fun dismissAlert() {
+        Log.i(TAG, "dismissAlert")
         autoDismissJob?.cancel()
         ActiveAlertHolder.dismissAlert()
 

@@ -2,6 +2,7 @@ package com.github.mytv.myearthquakealert.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+// ── CSIS intensity scale ────────────────────────────────────────────────────
 val Csis0 = Color(0xFFCCCCCC)
 val Csis1 = Color(0xFF6A7828)
 val Csis2 = Color(0xFF4A7A2E)
@@ -15,17 +16,6 @@ val Csis9 = Color(0xFFB71C1C)
 val Csis10 = Color(0xFF880E4F)
 val Csis11 = Color(0xFF4A148C)
 val Csis12 = Color(0xFF8B0000)
-
-val ConnectionGreen = Color(0xFF4CAF50)
-val ConnectingYellow = Color(0xFFFFC107)
-val DisconnectedRed = Color(0xFFF44336)
-
-val PWaveBlue = Color(0xFF2196F3)
-val SWaveRed = Color(0xFFF44336)
-
-val AlertRed = Color(0xFFE60012)
-val AlertBlue = Color(0xFF1565C0)
-val AlertMapBackground = Color(0xFF212121)
 
 fun csisColor(intensity: Double): Color {
     return when {
@@ -44,3 +34,24 @@ fun csisColor(intensity: Double): Color {
         else -> Csis12
     }
 }
+
+// ── Status colors ───────────────────────────────────────────────────────────
+val ConnectionGreen = Color(0xFF4CAF50)
+val ConnectingYellow = Color(0xFFFFC107)
+val DisconnectedRed = Color(0xFFF44336)
+
+// ── Seismic wave / alert chrome ────────────────────────────────────────────
+val PWaveBlue = Color(0xFF2196F3)
+val SWaveRed = Color(0xFFF44336)
+
+/** Alert accent red — full-bleed header bars, epicenter marks. */
+val AlertRed = Color(0xFFE60012)
+
+/** Body panel behind alert text — deep navy, high contrast under white type. */
+val AlertBlue = Color(0xFF0F2540)
+
+/** Opaque takeover backdrop behind the alert — nothing beneath should bleed through. */
+val AlertScrim = Color(0xFF0A0F18)
+
+/** Neutral backdrop behind map tiles while they load. */
+val AlertMapBackground = Color(0xFFE6EAF0)

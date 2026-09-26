@@ -12,6 +12,7 @@ data class AlertData(
     val pWaveSeconds: Double,
     val sWaveSeconds: Double,
     val localCsis: Double,
+    val distanceKm: Double = 0.0,
     val isSimulation: Boolean = false,
 )
 

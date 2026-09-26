@@ -268,7 +268,7 @@ private fun DataSourcesCard(onOpenLink: (String) -> Unit) {
             )
             DataSourceItem(
                 label = stringResource(R.string.data_source_map),
-                value = "OpenStreetMap",
+                value = "AMap / OpenStreetMap",
                 onClick = { onOpenLink("https://www.openstreetmap.org/") },
             )
             DataSourceItem(

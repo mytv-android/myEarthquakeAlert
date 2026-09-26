@@ -9,9 +9,6 @@
     <string name="allow_dismiss">允许使用返回键关闭</string>
     <string name="simulation_test">模拟测试</string>
     <string name="alert_title">紧急地震速报</string>
-    <string name="alert_line1">这是紧急地震速报，请注意强烈摇晃。</string>
-    <string name="alert_line2">%1$s发生了%2$s级地震。</string>
-    <string name="alert_line3">地震波将在%1$d秒后到达，预计震级为%2$s。</string>
     <string name="connection_connected">已连接</string>
     <string name="connection_connecting">连接中</string>
     <string name="connection_disconnected">已断开</string>
@@ -23,8 +20,6 @@
     <string name="notification_channel_name">地震监测</string>
     <string name="epicenter_label">震源：</string>
     <string name="magnitude_label">震级：</string>
-    <string name="arrival_time">地震波将在 %1$d 秒后到达</string>
-    <string name="expected_intensity">预计烈度：</string>
 
     <!-- About Screen -->
     <string name="about">关于</string>
@@ -81,4 +76,38 @@
     <string name="simulation_subtitle">使用模拟数据测试预警覆盖层</string>
     <string name="export_log_subtitle">导出诊断日志以便排查问题</string>
     <string name="no_earthquakes">暂无最近地震记录</string>
+
+    <!-- Alert Overlay v2 -->
+    <string name="alert_dismiss">我知道了</string>
+    <string name="alert_countdown_hint">地震波到达倒计时</string>
+    <string name="alert_waves_arrived">地震波已到达</string>
+    <string name="alert_wave_p">P波</string>
+    <string name="alert_wave_s">S波</string>
+    <string name="alert_wave_state_arrived">已到达</string>
+    <string name="alert_wave_state_in">%1$d秒</string>
+    <string name="alert_report_no">第%1$d报</string>
+    <string name="alert_intense_label">强烈震动</string>
+    <string name="alert_distance_km">距震中 %1$s km</string>
+    <string name="alert_intensity_unit">烈度</string>
+    <string name="alert_intensity_expected">预计烈度</string>
+
+    <!-- Map -->
+    <string name="map_tile_style">地图样式</string>
+    <string name="map_style_amap">高德地图</string>
+    <string name="map_style_osm">OpenStreetMap</string>
+    <string name="map_hint_select">点击圆点查看详情</string>
+    <string name="distance_to_you">距你 %1$s km</string>
+    <string name="depth_label">深度：</string>
+
+    <!-- Tabs -->
+    <string name="tab_monitor">监测</string>
+    <string name="tab_recent">记录</string>
+    <string name="tab_settings">设置</string>
+
+    <!-- States -->
+    <string name="refresh">刷新</string>
+    <string name="retry">重试</string>
+    <string name="history_load_failed">加载失败，请检查网络连接</string>
+    <string name="intense_threshold">强震阈值 (CSIS)</string>
+    <string name="monitor_status_title">监测状态</string>
 </resources>

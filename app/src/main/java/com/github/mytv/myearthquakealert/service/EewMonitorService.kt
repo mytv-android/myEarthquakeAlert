@@ -124,6 +124,12 @@ class EewMonitorService : Service() {
 
             repository.eewMessages.collect { event ->
                 try {
+                    // Guard against malformed reports with a null-island epicenter.
+                    if (event.latitude == 0.0 && event.longitude == 0.0) {
+                        Log.w(TAG, "Skipping EEW report with empty epicenter: ${event.eventId}")
+                        return@collect
+                    }
+
                     val settings = settingsRepo.settings.first()
                     val location = locationProvider.getLocation()
 
@@ -153,6 +159,7 @@ class EewMonitorService : Service() {
                                 pWaveSeconds = arrival.pWaveSeconds,
                                 sWaveSeconds = arrival.sWaveSeconds,
                                 localCsis = localCsis,
+                                distanceKm = distance,
                             )
                         )
                         AlertOverlayService.show(this@EewMonitorService)

@@ -9,9 +9,6 @@
     <string name="allow_dismiss">Allow dismiss with Back key</string>
     <string name="simulation_test">Simulation Test</string>
     <string name="alert_title">Earthquake Early Warning</string>
-    <string name="alert_line1">This is an earthquake early warning. Please prepare for strong shaking.</string>
-    <string name="alert_line2">%1$s experienced a %2$s earthquake.</string>
-    <string name="alert_line3">Seismic waves will arrive in %1$d seconds. Estimated intensity: %2$s.</string>
     <string name="connection_connected">Connected</string>
     <string name="connection_connecting">Connecting</string>
     <string name="connection_disconnected">Disconnected</string>
@@ -23,8 +20,6 @@
     <string name="notification_channel_name">Earthquake Monitor</string>
     <string name="epicenter_label">Epicenter:</string>
     <string name="magnitude_label">Magnitude:</string>
-    <string name="arrival_time">Seismic waves will arrive in %1$d seconds</string>
-    <string name="expected_intensity">Expected intensity:</string>
 
     <!-- About Screen -->
     <string name="about">About</string>
@@ -81,4 +76,38 @@
     <string name="simulation_subtitle">Test alert with simulated data</string>
     <string name="export_log_subtitle">Export diagnostic logs</string>
     <string name="no_earthquakes">No recent earthquakes</string>
+
+    <!-- Alert Overlay v2 -->
+    <string name="alert_dismiss">I understand</string>
+    <string name="alert_countdown_hint">Time until wave arrival</string>
+    <string name="alert_waves_arrived">Seismic waves have arrived</string>
+    <string name="alert_wave_p">P wave</string>
+    <string name="alert_wave_s">S wave</string>
+    <string name="alert_wave_state_arrived">Arrived</string>
+    <string name="alert_wave_state_in">%1$d s</string>
+    <string name="alert_report_no">Report %1$d</string>
+    <string name="alert_intense_label">Strong shaking</string>
+    <string name="alert_distance_km">%1$s km from epicenter</string>
+    <string name="alert_intensity_unit">CSIS</string>
+    <string name="alert_intensity_expected">Expected intensity</string>
+
+    <!-- Map -->
+    <string name="map_tile_style">Map style</string>
+    <string name="map_style_amap">AMap</string>
+    <string name="map_style_osm">OpenStreetMap</string>
+    <string name="map_hint_select">Tap a marker for details</string>
+    <string name="distance_to_you">%1$s km away</string>
+    <string name="depth_label">Depth:</string>
+
+    <!-- Tabs -->
+    <string name="tab_monitor">Monitor</string>
+    <string name="tab_recent">Recent</string>
+    <string name="tab_settings">Settings</string>
+
+    <!-- States -->
+    <string name="refresh">Refresh</string>
+    <string name="retry">Retry</string>
+    <string name="history_load_failed">Failed to load. Check your network.</string>
+    <string name="intense_threshold">Intense threshold (CSIS)</string>
+    <string name="monitor_status_title">Monitoring status</string>
 </resources>

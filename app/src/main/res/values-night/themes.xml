@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.MyEarthQuakeAlert" parent="@android:style/Theme.DeviceDefault.NoActionBar" />
+    <style name="Theme.MyEarthQuakeAlert" parent="@android:style/Theme.DeviceDefault.NoActionBar">
+        <item name="android:windowBackground">#0F1419</item>
+    </style>
 </resources>

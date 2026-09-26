@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.github.mytv.myearthquakealert.data.source.EewSource
+import com.github.mytv.myearthquakealert.ui.map.EewMapStyle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -18,6 +19,7 @@ data class UserSettings(
     val actionMinIntensity: Int = 0,
     val intenseThreshold: Int = 5,
     val allowDismissWithBack: Boolean = true,
+    val mapStyle: EewMapStyle = EewMapStyle.AMAP,
 )
 
 class SettingsRepository(private val dataStore: DataStore<Preferences>) {
@@ -29,6 +31,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val ACTION_MIN_INTENSITY = intPreferencesKey("action_min_intensity")
         val INTENSE_THRESHOLD = intPreferencesKey("intense_threshold")
         val ALLOW_DISMISS_WITH_BACK = booleanPreferencesKey("allow_dismiss_with_back")
+        val MAP_STYLE = stringPreferencesKey("map_style")
     }
 
     val settings: Flow<UserSettings> = dataStore.data.map { prefs ->
@@ -43,6 +46,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
             actionMinIntensity = prefs[Keys.ACTION_MIN_INTENSITY] ?: 0,
             intenseThreshold = prefs[Keys.INTENSE_THRESHOLD] ?: 5,
             allowDismissWithBack = prefs[Keys.ALLOW_DISMISS_WITH_BACK] ?: true,
+            mapStyle = EewMapStyle.fromName(prefs[Keys.MAP_STYLE]),
         )
     }
 
@@ -68,5 +72,9 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
     suspend fun updateAllowDismissWithBack(allow: Boolean) {
         dataStore.edit { it[Keys.ALLOW_DISMISS_WITH_BACK] = allow }
+    }
+
+    suspend fun updateMapStyle(style: EewMapStyle) {
+        dataStore.edit { it[Keys.MAP_STYLE] = style.name }
     }
 }

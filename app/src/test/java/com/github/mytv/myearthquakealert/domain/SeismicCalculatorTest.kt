@@ -77,4 +77,25 @@ class SeismicCalculatorTest {
         val sR = SeismicCalculator.calcWaveRadius(10.0, 60.0, isPWave = false)
         assertTrue("P-wave radius should be larger than S-wave at same time", pR > sR)
     }
+
+    @Test
+    fun offsetPoint_northByOneDegree_isAbout111km() {
+        val p = SeismicCalculator.offsetPoint(0.0, 0.0, 0.0, 111.19)
+        assertEquals(1.0, p.latitude, 0.01)
+        assertEquals(0.0, p.longitude, 0.01)
+    }
+
+    @Test
+    fun offsetPoint_haversineRoundTrip() {
+        val p = SeismicCalculator.offsetPoint(30.6, 104.1, 60.0, 85.0)
+        val dist = SeismicCalculator.haversineDistance(30.6, 104.1, p.latitude, p.longitude)
+        assertEquals(85.0, dist, 0.5)
+    }
+
+    @Test
+    fun offsetPoint_zeroDistance_returnsSamePoint() {
+        val p = SeismicCalculator.offsetPoint(30.6, 104.1, 123.0, 0.0)
+        assertEquals(30.6, p.latitude, 1e-6)
+        assertEquals(104.1, p.longitude, 1e-6)
+    }
 }

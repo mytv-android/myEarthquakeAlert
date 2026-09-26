@@ -17,7 +17,10 @@ class EewRepository(
     private val api: WolfxApi,
     private val webSocketClient: EewWebSocketClient,
 ) {
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+    }
 
     val connectionState: StateFlow<EewWebSocketClient.ConnectionState> = webSocketClient.connectionState
 
@@ -39,20 +42,28 @@ class EewRepository(
     }
 
     suspend fun getEarthquakeHistory(): List<EarthquakeInfo> {
-        val map = api.getCencEqlist()
-        return map.entries.mapNotNull { (key, entry) ->
-            val no = key.toIntOrNull() ?: return@mapNotNull null
-            EarthquakeInfo(
-                no = no,
-                type = entry.type,
-                time = entry.time,
-                location = entry.location,
-                magnitude = entry.magnitude,
-                depth = entry.depth,
-                latitude = entry.latitude,
-                longitude = entry.longitude,
-                intensity = entry.intensity,
-            )
+        val raw = api.getCencEqlist()
+        return raw.entries.mapNotNull { (key, element) ->
+            // Entries are keyed "No1".."No50"; other keys (e.g. "md5") are skipped.
+            val no = key.removePrefix("No").toIntOrNull() ?: return@mapNotNull null
+            val obj = element as? kotlinx.serialization.json.JsonObject ?: return@mapNotNull null
+            try {
+                val entry = json.decodeFromJsonElement(EarthquakeListEntry.serializer(), obj)
+                EarthquakeInfo(
+                    no = no,
+                    type = entry.type,
+                    time = entry.time,
+                    location = entry.location,
+                    magnitude = entry.magnitude,
+                    depth = entry.depth,
+                    latitude = entry.latitude,
+                    longitude = entry.longitude,
+                    intensity = entry.intensity,
+                )
+            } catch (e: Exception) {
+                Log.w("EewRepository", "Skipping malformed history entry $key: ${e.message}")
+                null
+            }
         }.sortedBy { it.no }
     }
 
