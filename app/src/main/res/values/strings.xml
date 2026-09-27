@@ -85,11 +85,15 @@
     <string name="alert_wave_s">S wave</string>
     <string name="alert_wave_state_arrived">Arrived</string>
     <string name="alert_wave_state_in">%1$d s</string>
-    <string name="alert_report_no">Report %1$d</string>
+    <string name="alert_report_no">#%1$d</string>
     <string name="alert_intense_label">Strong shaking</string>
     <string name="alert_distance_km">%1$s km from epicenter</string>
     <string name="alert_intensity_unit">CSIS</string>
     <string name="alert_intensity_expected">Expected intensity</string>
+    <string name="alert_title_source">%1$s (%2$s)</string>
+    <string name="alert_depth_km">Depth %1$s km</string>
+    <string name="alert_warn_zone">%1$d+ expected</string>
+    <string name="alert_seconds_unit">s</string>
 
     <!-- Map -->
     <string name="map_tile_style">Map style</string>

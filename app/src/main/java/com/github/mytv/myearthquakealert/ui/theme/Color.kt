@@ -47,11 +47,15 @@ val SWaveRed = Color(0xFFF44336)
 /** Alert accent red — full-bleed header bars, epicenter marks. */
 val AlertRed = Color(0xFFE60012)
 
-/** Body panel behind alert text — deep navy, high contrast under white type. */
-val AlertBlue = Color(0xFF0F2540)
-
 /** Opaque takeover backdrop behind the alert — nothing beneath should bleed through. */
 val AlertScrim = Color(0xFF0A0F18)
 
-/** Neutral backdrop behind map tiles while they load. */
-val AlertMapBackground = Color(0xFFE6EAF0)
+// ── Broadcast-style alert palette (fixed colors, theme-independent) ────────
+/** NHK-style panel white for the source-info band. */
+val BroadcastWhite = Color(0xFFFFFFFF)
+val BroadcastInk = Color(0xFF16191E)
+val BroadcastInkSoft = Color(0xFF5C6570)
+/** Deep broadcast blue for the countdown band. */
+val BroadcastBlue = Color(0xFF0F5FA6)
+/** NHK-style caution yellow — tags, highlight zones. */
+val CautionYellow = Color(0xFFFFE100)

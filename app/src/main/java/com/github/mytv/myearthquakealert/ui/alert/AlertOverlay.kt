@@ -5,15 +5,12 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -22,8 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -38,9 +37,13 @@ import com.github.mytv.myearthquakealert.ui.map.EarthquakeMap
 import com.github.mytv.myearthquakealert.ui.map.EarthquakeMapMode
 import com.github.mytv.myearthquakealert.ui.map.EewMapStyle
 import com.github.mytv.myearthquakealert.ui.map.MapPoint
-import com.github.mytv.myearthquakealert.ui.theme.AlertBlue
 import com.github.mytv.myearthquakealert.ui.theme.AlertRed
 import com.github.mytv.myearthquakealert.ui.theme.AlertScrim
+import com.github.mytv.myearthquakealert.ui.theme.BroadcastBlue
+import com.github.mytv.myearthquakealert.ui.theme.BroadcastInk
+import com.github.mytv.myearthquakealert.ui.theme.BroadcastInkSoft
+import com.github.mytv.myearthquakealert.ui.theme.BroadcastWhite
+import com.github.mytv.myearthquakealert.ui.theme.CautionYellow
 import com.github.mytv.myearthquakealert.ui.theme.EeqSpacing
 import com.github.mytv.myearthquakealert.ui.theme.MyEarthQuakeAlertTheme
 import com.github.mytv.myearthquakealert.ui.theme.PWaveBlue
@@ -50,6 +53,11 @@ import kotlinx.coroutines.delay
 import kotlin.math.ceil
 import kotlin.math.max
 
+/**
+ * Full-takeover alert in broadcast-graphic style: a map panel with the expected
+ * strong-shaking zone, and a red / white / blue info stack — the same visual
+ * grammar as TV emergency earthquake bulletins.
+ */
 @Composable
 fun AlertOverlay(
     alertData: AlertData,
@@ -80,161 +88,149 @@ fun AlertOverlay(
     val sArrived = elapsedSeconds >= alertData.sWaveSeconds
     val intense = AlertEvaluator.isIntense(alertData.localCsis, intenseThreshold)
 
+    // Radius of the area expected to reach the strong-shaking threshold.
+    val warnZoneRadiusKm = remember(
+        alertData.event.eventId, alertData.event.magnitude, depthKm, intenseThreshold,
+    ) {
+        if (intenseThreshold <= 0) {
+            null
+        } else {
+            var lo = 0.0
+            var hi = 2000.0
+            repeat(40) {
+                val mid = (lo + hi) / 2.0
+                if (SeismicCalculator.calcLocalIntensity(alertData.event.magnitude, depthKm, mid) >= intenseThreshold) {
+                    lo = mid
+                } else {
+                    hi = mid
+                }
+            }
+            val r = (lo + hi) / 2.0
+            if (r in 3.0..1999.0) r else null
+        }
+    }
+    val warnZoneLabel = if (warnZoneRadiusKm != null) {
+        stringResource(R.string.alert_warn_zone).format(intenseThreshold)
+    } else {
+        null
+    }
+
     BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
             .background(AlertScrim),
     ) {
         val wide = maxWidth >= 600.dp && maxWidth > maxHeight
+        val totalWidth = maxWidth
+        val totalHeight = maxHeight
 
-        val mapPane: @Composable () -> Unit = {
-            AlertMapPane(
+        val mapPanel: @Composable (Modifier) -> Unit = { panelModifier ->
+            AlertMapPanel(
                 alertData = alertData,
                 pWaveRadiusKm = pWaveRadius,
                 sWaveRadiusKm = sWaveRadius,
+                warnZoneRadiusKm = warnZoneRadiusKm,
+                warnZoneLabel = warnZoneLabel,
                 mapStyle = mapStyle,
+                modifier = panelModifier,
             )
         }
 
+        val infoStack: @Composable (Modifier) -> Unit = { stackModifier ->
+            Column(modifier = stackModifier.fillMaxWidth()) {
+                AlertHeaderBar(alertData = alertData, intense = intense)
+                SourceSection(alertData = alertData)
+                CountdownSection(
+                    alertData = alertData,
+                    sRemaining = sRemaining,
+                    sArrived = sArrived,
+                    elapsedSeconds = elapsedSeconds,
+                    modifier = Modifier.weight(1f),
+                )
+                AlertDismissButton(
+                    onDismiss = onDismiss,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(EeqSpacing.md),
+                )
+            }
+        }
+
         if (wide) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                AlertHeader(alertData = alertData, intense = intense)
-                Row(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                    Box(modifier = Modifier.weight(1.15f).fillMaxHeight()) { mapPane() }
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight(),
-                    ) {
-                        AlertInfoPane(
-                            alertData = alertData,
-                            sRemaining = sRemaining,
-                            sArrived = sArrived,
-                            elapsedSeconds = elapsedSeconds,
-                            intense = intense,
-                            modifier = Modifier.weight(1f),
-                        )
-                        AlertDismissButton(
-                            onDismiss = onDismiss,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = EeqSpacing.md, vertical = EeqSpacing.sm),
-                        )
-                    }
-                }
+            Row(modifier = Modifier.fillMaxSize()) {
+                mapPanel(
+                    Modifier
+                        .fillMaxHeight()
+                        .width(totalWidth * 0.36f)
+                        .border(2.dp, BroadcastWhite.copy(alpha = 0.9f))
+                )
+                infoStack(
+                    Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                )
             }
         } else {
-            // The map fills the whole window and the chrome overlays it. This is
-            // deliberate: the AndroidView interop draws embedded views starting at
-            // the window origin regardless of slot position, so a full-window slot
-            // is the one geometry whose drawing always matches the plan.
-            Box(modifier = Modifier.fillMaxSize()) {
-                AlertMapPane(
-                    alertData = alertData,
-                    pWaveRadiusKm = pWaveRadius,
-                    sWaveRadiusKm = sWaveRadius,
-                    mapStyle = mapStyle,
-                    showChips = false,
+            Column(modifier = Modifier.fillMaxSize()) {
+                mapPanel(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(totalHeight * 0.42f)
+                        .border(2.dp, BroadcastWhite.copy(alpha = 0.9f))
                 )
-                Column(modifier = Modifier.fillMaxSize()) {
-                    AlertHeader(alertData = alertData, intense = intense)
-                    Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                        DistanceChip(
-                            alertData = alertData,
-                            modifier = Modifier
-                                .align(Alignment.TopStart)
-                                .padding(EeqSpacing.sm),
-                        )
-                        WaveLegend(
-                            modifier = Modifier
-                                .align(Alignment.BottomStart)
-                                .padding(EeqSpacing.sm),
-                        )
-                    }
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(AlertBlue),
-                    ) {
-                        AlertInfoPane(
-                            alertData = alertData,
-                            sRemaining = sRemaining,
-                            sArrived = sArrived,
-                            elapsedSeconds = elapsedSeconds,
-                            intense = intense,
-                            compact = true,
-                        )
-                        AlertDismissButton(
-                            onDismiss = onDismiss,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = EeqSpacing.md, vertical = EeqSpacing.sm),
-                        )
-                    }
-                }
+                infoStack(Modifier.weight(1f))
             }
         }
     }
 }
 
 // ---------------------------------------------------------------------------
-// Header
+// Red header bar
 // ---------------------------------------------------------------------------
 
 @Composable
-private fun AlertHeader(
+private fun AlertHeaderBar(
     alertData: AlertData,
     intense: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val reportLabel = if (alertData.event.reportNum > 0) {
-        stringResource(R.string.alert_report_no).format(alertData.event.reportNum)
-    } else {
-        null
-    }
+    val title = stringResource(R.string.alert_title_source).format(
+        stringResource(R.string.alert_title),
+        EewSource.labelOf(alertData.event.source),
+    )
+
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(64.dp)
             .background(AlertRed)
-            .padding(horizontal = EeqSpacing.md, vertical = 6.dp),
+            .padding(horizontal = EeqSpacing.md, vertical = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column {
-            Text(
-                text = stringResource(R.string.alert_title),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Black,
-                color = Color.White,
-            )
-            Text(
-                text = buildString {
-                    append(EewSource.labelOf(alertData.event.source))
-                    if (reportLabel != null) {
-                        append(" · ")
-                        append(reportLabel)
-                    }
-                },
-                style = MaterialTheme.typography.labelMedium,
-                color = Color.White.copy(alpha = 0.85f),
-            )
-        }
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Black,
+            color = Color.White,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f, fill = false),
+        )
         Row(horizontalArrangement = Arrangement.spacedBy(EeqSpacing.sm)) {
             if (alertData.isSimulation) {
-                AlertTag(text = stringResource(R.string.simulation_label), pulsing = false)
+                BroadcastTag(text = stringResource(R.string.simulation_label), pulsing = false)
             }
             if (intense) {
-                AlertTag(text = stringResource(R.string.alert_intense_label), pulsing = true)
+                BroadcastTag(text = stringResource(R.string.alert_intense_label), pulsing = true)
             }
         }
     }
 }
 
 @Composable
-private fun AlertTag(text: String, pulsing: Boolean) {
+private fun BroadcastTag(text: String, pulsing: Boolean) {
     val alpha = if (pulsing) {
-        val transition = rememberInfiniteTransition(label = "alertTag")
+        val transition = rememberInfiniteTransition(label = "broadcastTag")
         val value by transition.animateFloat(
             initialValue = 0.45f,
             targetValue = 1f,
@@ -242,40 +238,229 @@ private fun AlertTag(text: String, pulsing: Boolean) {
                 animation = tween(durationMillis = 550),
                 repeatMode = RepeatMode.Reverse,
             ),
-            label = "alertTagAlpha",
+            label = "broadcastTagAlpha",
         )
         value
     } else {
         1f
     }
     Surface(
-        shape = RoundedCornerShape(6.dp),
-        color = Color.White.copy(alpha = 0.22f * alpha + 0.08f),
+        shape = RoundedCornerShape(4.dp),
+        color = CautionYellow.copy(alpha = alpha),
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Bold,
-            color = Color.White.copy(alpha = alpha),
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+            color = BroadcastInk,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
         )
     }
 }
 
 // ---------------------------------------------------------------------------
-// Map pane
+// White source section
 // ---------------------------------------------------------------------------
 
 @Composable
-private fun AlertMapPane(
+private fun SourceSection(
+    alertData: AlertData,
+    modifier: Modifier = Modifier,
+) {
+    val depthText = alertData.event.depth?.let {
+        stringResource(R.string.alert_depth_km).format("%.0f".format(it))
+    }
+    val distanceText = if (alertData.distanceKm > 0.0) {
+        stringResource(R.string.alert_distance_km).format("%.0f".format(alertData.distanceKm))
+    } else {
+        null
+    }
+    val reportText = if (alertData.event.reportNum > 0) {
+        stringResource(R.string.alert_report_no).format(alertData.event.reportNum)
+    } else {
+        null
+    }
+    val details = listOfNotNull(depthText, distanceText, reportText).joinToString(" · ")
+    val csis = alertData.localCsis
+    val chipColor = csisColor(csis)
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(BroadcastWhite)
+            .padding(horizontal = EeqSpacing.md, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = "${alertData.event.hypocenter}  M%.1f".format(alertData.event.magnitude),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = BroadcastInk,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            if (details.isNotEmpty()) {
+                Text(
+                    text = details,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = BroadcastInkSoft,
+                    maxLines = 1,
+                )
+            }
+        }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(start = EeqSpacing.md),
+        ) {
+            Text(
+                text = stringResource(R.string.alert_intensity_expected),
+                style = MaterialTheme.typography.labelSmall,
+                color = BroadcastInkSoft,
+            )
+            Box(
+                modifier = Modifier
+                    .padding(top = 2.dp)
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(chipColor)
+                    .padding(horizontal = 12.dp, vertical = 2.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = csis.toInt().toString(),
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Black),
+                    color = if (chipColor.luminance() > 0.45f) Color.Black else Color.White,
+                )
+            }
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Blue countdown section
+// ---------------------------------------------------------------------------
+
+@Composable
+private fun CountdownSection(
+    alertData: AlertData,
+    sRemaining: Double,
+    sArrived: Boolean,
+    elapsedSeconds: Float,
+    modifier: Modifier = Modifier,
+) {
+    val number = if (sArrived) {
+        max(0f, elapsedSeconds - alertData.sWaveSeconds.toFloat()).toInt()
+    } else {
+        ceil(sRemaining).toInt()
+    }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(BroadcastBlue)
+            .padding(EeqSpacing.md),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Text(
+            text = if (sArrived) stringResource(R.string.alert_waves_arrived)
+                   else stringResource(R.string.alert_countdown_hint),
+            style = MaterialTheme.typography.labelMedium,
+            color = Color.White.copy(alpha = 0.8f),
+        )
+        Row(verticalAlignment = Alignment.Bottom) {
+            Text(
+                text = number.toString(),
+                color = Color.White,
+                style = MaterialTheme.typography.displayLarge.copy(
+                    fontSize = 76.sp,
+                    fontWeight = FontWeight.Black,
+                    fontFeatureSettings = "tnum",
+                ),
+            )
+            Text(
+                text = stringResource(R.string.alert_seconds_unit),
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.White.copy(alpha = 0.9f),
+                modifier = Modifier.padding(start = 6.dp, bottom = 12.dp),
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(EeqSpacing.sm),
+            modifier = Modifier.padding(top = EeqSpacing.sm),
+        ) {
+            WaveStatusChip(
+                label = stringResource(R.string.alert_wave_p),
+                color = PWaveBlue,
+                secondsRemaining = alertData.pWaveSeconds - elapsedSeconds,
+            )
+            WaveStatusChip(
+                label = stringResource(R.string.alert_wave_s),
+                color = SWaveRed,
+                secondsRemaining = alertData.sWaveSeconds - elapsedSeconds,
+            )
+        }
+    }
+}
+
+@Composable
+private fun WaveStatusChip(
+    label: String,
+    color: Color,
+    secondsRemaining: Double,
+    modifier: Modifier = Modifier,
+) {
+    val arrived = secondsRemaining <= 0.0
+    Surface(
+        shape = RoundedCornerShape(8.dp),
+        color = Color.White.copy(alpha = if (arrived) 0.12f else 0.2f),
+        modifier = modifier,
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(if (arrived) Color.White.copy(alpha = 0.6f) else color),
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White,
+            )
+            Text(
+                text = if (arrived) {
+                    stringResource(R.string.alert_wave_state_arrived)
+                } else {
+                    stringResource(R.string.alert_wave_state_in).format(ceil(secondsRemaining).toInt())
+                },
+                style = MaterialTheme.typography.labelMedium,
+                color = if (arrived) Color.White.copy(alpha = 0.6f) else Color.White,
+            )
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Map panel
+// ---------------------------------------------------------------------------
+
+@Composable
+private fun AlertMapPanel(
     alertData: AlertData,
     pWaveRadiusKm: Double,
     sWaveRadiusKm: Double,
+    warnZoneRadiusKm: Double?,
+    warnZoneLabel: String?,
     mapStyle: EewMapStyle,
     modifier: Modifier = Modifier,
-    showChips: Boolean = true,
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier) {
         EarthquakeMap(
             style = mapStyle,
             mode = EarthquakeMapMode.ALERT,
@@ -285,52 +470,40 @@ private fun AlertMapPane(
             epicenter = MapPoint(alertData.event.latitude, alertData.event.longitude),
             pWaveRadiusKm = pWaveRadiusKm,
             sWaveRadiusKm = sWaveRadiusKm,
+            warnZoneRadiusKm = warnZoneRadiusKm,
             showDistanceLine = true,
-            showAttribution = showChips,
+            showAttribution = false,
         )
 
-        if (showChips) {
-            DistanceChip(
-                alertData = alertData,
+        if (alertData.distanceKm > 0.0) {
+            MapChip(
+                text = stringResource(R.string.alert_distance_km)
+                    .format("%.0f".format(alertData.distanceKm)),
                 modifier = Modifier
                     .align(Alignment.TopStart)
                     .padding(EeqSpacing.sm),
             )
-            WaveLegend(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(EeqSpacing.sm),
-            )
         }
-    }
-}
 
-@Composable
-private fun DistanceChip(alertData: AlertData, modifier: Modifier = Modifier) {
-    if (alertData.distanceKm > 0.0) {
-        MapChip(
-            text = stringResource(R.string.alert_distance_km)
-                .format("%.0f".format(alertData.distanceKm)),
-            modifier = modifier,
-        )
-    }
-}
-
-@Composable
-private fun WaveLegend(modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(EeqSpacing.xs),
-    ) {
-        WaveChip(color = PWaveBlue, label = stringResource(R.string.alert_wave_p))
-        WaveChip(color = SWaveRed, label = stringResource(R.string.alert_wave_s))
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(EeqSpacing.sm),
+            horizontalArrangement = Arrangement.spacedBy(EeqSpacing.xs),
+        ) {
+            LegendChip(color = PWaveBlue, label = stringResource(R.string.alert_wave_p))
+            LegendChip(color = SWaveRed, label = stringResource(R.string.alert_wave_s))
+            if (warnZoneLabel != null) {
+                LegendChip(color = CautionYellow, label = warnZoneLabel)
+            }
+        }
     }
 }
 
 @Composable
 private fun MapChip(text: String, modifier: Modifier = Modifier) {
     Surface(
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(6.dp),
         color = Color(0xCC000000),
         modifier = modifier,
     ) {
@@ -338,21 +511,21 @@ private fun MapChip(text: String, modifier: Modifier = Modifier) {
             text = text,
             style = MaterialTheme.typography.labelMedium,
             color = Color.White,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
         )
     }
 }
 
 @Composable
-private fun WaveChip(color: Color, label: String) {
+private fun LegendChip(color: Color, label: String) {
     Surface(
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(6.dp),
         color = Color(0xCC000000),
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
         ) {
             Box(
                 modifier = Modifier
@@ -370,236 +543,6 @@ private fun WaveChip(color: Color, label: String) {
 }
 
 // ---------------------------------------------------------------------------
-// Info pane
-// ---------------------------------------------------------------------------
-
-@Composable
-private fun AlertInfoPane(
-    alertData: AlertData,
-    sRemaining: Double,
-    sArrived: Boolean,
-    elapsedSeconds: Float,
-    intense: Boolean,
-    modifier: Modifier = Modifier,
-    compact: Boolean = false,
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(AlertBlue)
-            .padding(horizontal = EeqSpacing.lg, vertical = if (compact) EeqSpacing.md else EeqSpacing.lg),
-        verticalArrangement = Arrangement.spacedBy(if (compact) EeqSpacing.sm else EeqSpacing.md),
-    ) {
-        // ── Countdown + CSIS badge ──
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            CountdownBlock(
-                sRemaining = sRemaining,
-                sArrived = sArrived,
-                elapsedSeconds = elapsedSeconds,
-                sWaveSeconds = alertData.sWaveSeconds,
-                intense = intense,
-            )
-            CsisBadge(csis = alertData.localCsis, compact = compact)
-        }
-
-        // ── P/S wave status ──
-        Row(horizontalArrangement = Arrangement.spacedBy(EeqSpacing.sm)) {
-            WaveStatusChip(
-                label = stringResource(R.string.alert_wave_p),
-                color = PWaveBlue,
-                secondsRemaining = alertData.pWaveSeconds - elapsedSeconds,
-            )
-            WaveStatusChip(
-                label = stringResource(R.string.alert_wave_s),
-                color = SWaveRed,
-                secondsRemaining = alertData.sWaveSeconds - elapsedSeconds,
-            )
-        }
-
-        // ── Epicenter / magnitude / depth / distance ──
-        Row(modifier = Modifier.fillMaxWidth()) {
-            StatTile(
-                label = stringResource(R.string.epicenter_label),
-                value = alertData.event.hypocenter.ifBlank { "—" },
-                modifier = Modifier.weight(1.4f),
-            )
-            StatTile(
-                label = stringResource(R.string.magnitude_label),
-                value = "M%.1f".format(alertData.event.magnitude),
-                valueColor = Color(0xFFFFD54F),
-                modifier = Modifier.weight(0.8f),
-            )
-            alertData.event.depth?.let { depth ->
-                StatTile(
-                    label = stringResource(R.string.depth_label),
-                    value = "%.0f km".format(depth),
-                    modifier = Modifier.weight(0.9f),
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun CountdownBlock(
-    sRemaining: Double,
-    sArrived: Boolean,
-    elapsedSeconds: Float,
-    sWaveSeconds: Double,
-    intense: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    val number = if (sArrived) {
-        max(0f, elapsedSeconds - sWaveSeconds.toFloat()).toInt()
-    } else {
-        ceil(sRemaining).toInt()
-    }
-
-    Column(modifier = modifier) {
-        Text(
-            text = if (sArrived) stringResource(R.string.alert_waves_arrived)
-                   else stringResource(R.string.alert_countdown_hint),
-            style = MaterialTheme.typography.labelMedium,
-            color = Color.White.copy(alpha = 0.75f),
-        )
-        Row(verticalAlignment = Alignment.Bottom) {
-            Text(
-                text = number.toString(),
-                color = if (intense && !sArrived) Color(0xFFFFD54F) else Color.White,
-                style = MaterialTheme.typography.displayLarge.copy(
-                    fontSize = 76.sp,
-                    fontWeight = FontWeight.Black,
-                    fontFeatureSettings = "tnum",
-                ),
-            )
-            Text(
-                text = "秒",
-                style = MaterialTheme.typography.headlineSmall,
-                color = Color.White.copy(alpha = 0.85f),
-                modifier = Modifier.padding(start = 6.dp, bottom = 12.dp),
-            )
-        }
-    }
-}
-
-@Composable
-private fun CsisBadge(csis: Double, compact: Boolean, modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        Box(
-            modifier = Modifier
-                .size(if (compact) 68.dp else 84.dp)
-                .clip(RoundedCornerShape(18.dp))
-                .background(csisColor(csis)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = csis.toInt().toString(),
-                    style = MaterialTheme.typography.displaySmall.copy(
-                        fontWeight = FontWeight.Black,
-                        fontSize = if (compact) 30.sp else 38.sp,
-                    ),
-                    color = Color.White,
-                )
-                Text(
-                    text = stringResource(R.string.alert_intensity_unit),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color.White.copy(alpha = 0.9f),
-                )
-            }
-        }
-        Text(
-            text = stringResource(R.string.alert_intensity_expected),
-            style = MaterialTheme.typography.labelSmall,
-            color = Color.White.copy(alpha = 0.75f),
-        )
-    }
-}
-
-@Composable
-private fun WaveStatusChip(
-    label: String,
-    color: Color,
-    secondsRemaining: Double,
-    modifier: Modifier = Modifier,
-) {
-    val arrived = secondsRemaining <= 0.0
-    Surface(
-        shape = RoundedCornerShape(10.dp),
-        color = Color.White.copy(alpha = if (arrived) 0.08f else 0.14f),
-        modifier = modifier,
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            if (arrived) {
-                Icon(
-                    imageVector = Icons.Filled.Check,
-                    contentDescription = null,
-                    tint = color,
-                    modifier = Modifier.size(14.dp),
-                )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(color),
-                )
-            }
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.White,
-            )
-            Text(
-                text = if (arrived) {
-                    stringResource(R.string.alert_wave_state_arrived)
-                } else {
-                    stringResource(R.string.alert_wave_state_in).format(ceil(secondsRemaining).toInt())
-                },
-                style = MaterialTheme.typography.labelMedium,
-                color = if (arrived) Color.White.copy(alpha = 0.6f) else color,
-            )
-        }
-    }
-}
-
-@Composable
-private fun StatTile(
-    label: String,
-    value: String,
-    modifier: Modifier = Modifier,
-    valueColor: Color = Color.White,
-) {
-    Column(modifier = modifier) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelSmall,
-            color = Color.White.copy(alpha = 0.65f),
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = valueColor,
-            maxLines = 1,
-        )
-    }
-}
-
-// ---------------------------------------------------------------------------
 // Dismiss
 // ---------------------------------------------------------------------------
 
@@ -611,12 +554,11 @@ private fun AlertDismissButton(
     Button(
         onClick = onDismiss,
         modifier = modifier.height(52.dp),
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(10.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.White.copy(alpha = 0.14f),
-            contentColor = Color.White,
+            containerColor = BroadcastWhite,
+            contentColor = BroadcastInk,
         ),
-        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.4f)),
     ) {
         Text(
             text = stringResource(R.string.alert_dismiss),
@@ -634,47 +576,39 @@ private val sampleAlertData = AlertData(
     event = EewEvent(
         id = "preview-1",
         eventId = "PREVIEW",
-        source = "中国地震台网",
+        source = EewSource.CENC.name,
         reportTime = "2024-01-15 10:30:00",
         reportNum = 2,
         originTime = "2024-01-15 10:29:00",
-        hypocenter = "四川成都市",
-        latitude = 30.5,
-        longitude = 104.0,
+        hypocenter = "四川宜宾市长宁县",
+        latitude = 28.5,
+        longitude = 104.7,
         magnitude = 5.5,
         depth = 10.0,
-        maxIntensity = 4.0,
+        maxIntensity = 5.0,
     ),
-    userLatitude = 31.0,
-    userLongitude = 104.5,
+    userLatitude = 29.0,
+    userLongitude = 105.1,
     pWaveSeconds = 15.0,
     sWaveSeconds = 30.0,
-    localCsis = 4.0,
+    localCsis = 5.0,
     distanceKm = 78.0,
     isSimulation = true,
 )
 
-@Preview(name = "Alert Header")
+@Preview(name = "Alert Panels", device = "spec:width=520dp,height=360dp")
 @Composable
-private fun AlertHeaderPreview() {
+private fun AlertPanelsPreview() {
     MyEarthQuakeAlertTheme {
         Column {
-            AlertHeader(alertData = sampleAlertData, intense = false)
-            AlertHeader(alertData = sampleAlertData.copy(isSimulation = false), intense = true)
+            AlertHeaderBar(alertData = sampleAlertData, intense = true)
+            SourceSection(alertData = sampleAlertData)
+            CountdownSection(
+                alertData = sampleAlertData,
+                sRemaining = 23.0,
+                sArrived = false,
+                elapsedSeconds = 7f,
+            )
         }
-    }
-}
-
-@Preview(name = "Alert Info Pane", device = "spec:width=600dp,height=360dp")
-@Composable
-private fun AlertInfoPanePreview() {
-    MyEarthQuakeAlertTheme {
-        AlertInfoPane(
-            alertData = sampleAlertData,
-            sRemaining = 23.0,
-            sArrived = false,
-            elapsedSeconds = 7f,
-            intense = false,
-        )
     }
 }

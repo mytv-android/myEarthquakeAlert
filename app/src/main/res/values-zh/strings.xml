@@ -90,6 +90,10 @@
     <string name="alert_distance_km">距震中 %1$s km</string>
     <string name="alert_intensity_unit">烈度</string>
     <string name="alert_intensity_expected">预计烈度</string>
+    <string name="alert_title_source">%1$s（%2$s）</string>
+    <string name="alert_depth_km">深度 %1$s km</string>
+    <string name="alert_warn_zone">预计%1$d以上</string>
+    <string name="alert_seconds_unit">秒</string>
 
     <!-- Map -->
     <string name="map_tile_style">地图样式</string>

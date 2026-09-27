@@ -71,6 +71,7 @@ fun EarthquakeMap(
     epicenter: MapPoint? = null,
     pWaveRadiusKm: Double? = null,
     sWaveRadiusKm: Double? = null,
+    warnZoneRadiusKm: Double? = null,
     showDistanceLine: Boolean = false,
     quakes: List<QuakeMarker> = emptyList(),
     selectedQuakeId: String? = null,
@@ -179,6 +180,12 @@ fun EarthquakeMap(
                 mv.overlays.clear()
 
             if (mode == EarthquakeMapMode.ALERT && epicenter != null) {
+                // Expected strong-shaking zone (broadcast-style yellow highlight).
+                warnZoneRadiusKm?.takeIf { it > 1.0 }?.let { r ->
+                    mv.overlays.add(
+                        warningZonePolygon(mv, epicenter.toGeoPoint(), r, density)
+                    )
+                }
                 sWaveRadiusKm?.takeIf { it > 1.0 }?.let { r ->
                     mv.overlays.add(
                         wavePolygon(mv, epicenter.toGeoPoint(), r, sWaveColor, density)
@@ -209,7 +216,7 @@ fun EarthquakeMap(
                 mv.overlays.add(
                     dotMarker(
                         mv, context, epicenter.toGeoPoint(),
-                        drawable = dotDrawable(context, epicenterColor, 0xFFFFFFFF.toInt(), 8f, 0x55E60012),
+                        drawable = crossDrawable(context, epicenterColor),
                     )
                 )
             }
@@ -275,6 +282,20 @@ private fun wavePolygon(
     isGeodesic = true
 }
 
+/** Translucent yellow disc for the area expected to reach the strong-shaking threshold. */
+private fun warningZonePolygon(
+    mapView: MapView,
+    center: GeoPoint,
+    radiusKm: Double,
+    density: Float,
+): Polygon = Polygon(mapView).apply {
+    setPoints(circlePoints(center.latitude, center.longitude, radiusKm, segments = 96))
+    fillColor = 0x40FFE100
+    outlinePaint.color = 0xFFFFE100.toInt()
+    outlinePaint.strokeWidth = 3f * density
+    isGeodesic = true
+}
+
 private fun distanceLine(
     mapView: MapView,
     from: GeoPoint,
@@ -298,6 +319,33 @@ private fun dotMarker(
     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
     infoWindow = null
     isDraggable = false
+}
+
+/** Broadcast-style epicenter cross: bold colored X over a white outline. */
+private fun crossDrawable(context: Context, colorArgb: Int): Drawable {
+    val density = context.resources.displayMetrics.density
+    val size = (32f * density).toInt()
+    val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    val pad = 6f * density
+
+    val outline = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFFFFFFFF.toInt()
+        strokeWidth = 8f * density
+        strokeCap = Paint.Cap.ROUND
+    }
+    val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = colorArgb
+        strokeWidth = 5f * density
+        strokeCap = Paint.Cap.ROUND
+    }
+
+    canvas.drawLine(pad, pad, size - pad, size - pad, outline)
+    canvas.drawLine(size - pad, pad, pad, size - pad, outline)
+    canvas.drawLine(pad, pad, size - pad, size - pad, stroke)
+    canvas.drawLine(size - pad, pad, pad, size - pad, stroke)
+
+    return BitmapDrawable(context.resources, bitmap)
 }
 
 /** A round dot with a ring, optionally a soft halo. Center-anchored. */
