@@ -47,9 +47,6 @@ val SWaveRed = Color(0xFFF44336)
 /** Alert accent red — full-bleed header bars, epicenter marks. */
 val AlertRed = Color(0xFFE60012)
 
-/** Opaque takeover backdrop behind the alert — nothing beneath should bleed through. */
-val AlertScrim = Color(0xFF0A0F18)
-
 // ── Broadcast-style alert palette (fixed colors, theme-independent) ────────
 /** NHK-style panel white for the source-info band. */
 val BroadcastWhite = Color(0xFFFFFFFF)

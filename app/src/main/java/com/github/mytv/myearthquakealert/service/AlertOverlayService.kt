@@ -161,6 +161,9 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
         val backPressedDispatcher = OnBackPressedDispatcher()
 
+        val metrics = resources.displayMetrics
+        val landscape = metrics.widthPixels > metrics.heightPixels
+
         composeView.setContent {
             val settings by app.settingsRepository.settings.collectAsState(
                 initial = com.github.mytv.myearthquakealert.data.repository.UserSettings()
@@ -180,6 +183,7 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
                         allowBackDismiss = settings.allowDismissWithBack,
                         intenseThreshold = settings.intenseThreshold,
                         mapStyle = settings.mapStyle,
+                        wideLayout = landscape,
                     )
                 }
             }
@@ -192,15 +196,26 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
             WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
         }
 
-        // Focusable so Back / D-pad reach the overlay; keep the screen on while alerting.
+        // Compact floating card: the window wraps the content, dims the backdrop
+        // slightly, and stays focusable so Back / D-pad reach the overlay.
+        // Width is pinned here (measure-driven layout guesses are unreliable for
+        // wrap windows); the card decides wide/narrow from the screen shape.
+        val windowWidthPx = if (landscape) {
+            (metrics.widthPixels * 0.66f).toInt()
+                .coerceAtMost((720 * metrics.density).toInt())
+        } else {
+            (metrics.widthPixels - 48 * metrics.density).toInt()
+        }
         val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT,
+            windowWidthPx,
+            WindowManager.LayoutParams.WRAP_CONTENT,
             windowType,
-            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
+                    WindowManager.LayoutParams.FLAG_DIM_BEHIND,
             PixelFormat.TRANSLUCENT,
         ).apply {
             gravity = Gravity.CENTER
+            dimAmount = 0.35f
         }
 
         try {

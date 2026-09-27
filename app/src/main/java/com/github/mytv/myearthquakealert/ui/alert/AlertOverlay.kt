@@ -1,10 +1,5 @@
 package com.github.mytv.myearthquakealert.ui.alert
 
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -19,9 +14,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,7 +33,6 @@ import com.github.mytv.myearthquakealert.ui.map.EarthquakeMapMode
 import com.github.mytv.myearthquakealert.ui.map.EewMapStyle
 import com.github.mytv.myearthquakealert.ui.map.MapPoint
 import com.github.mytv.myearthquakealert.ui.theme.AlertRed
-import com.github.mytv.myearthquakealert.ui.theme.AlertScrim
 import com.github.mytv.myearthquakealert.ui.theme.BroadcastBlue
 import com.github.mytv.myearthquakealert.ui.theme.BroadcastInk
 import com.github.mytv.myearthquakealert.ui.theme.BroadcastInkSoft
@@ -48,15 +42,14 @@ import com.github.mytv.myearthquakealert.ui.theme.EeqSpacing
 import com.github.mytv.myearthquakealert.ui.theme.MyEarthQuakeAlertTheme
 import com.github.mytv.myearthquakealert.ui.theme.PWaveBlue
 import com.github.mytv.myearthquakealert.ui.theme.SWaveRed
-import com.github.mytv.myearthquakealert.ui.theme.csisColor
 import kotlinx.coroutines.delay
 import kotlin.math.ceil
 import kotlin.math.max
 
 /**
- * Full-takeover alert in broadcast-graphic style: a map panel with the expected
- * strong-shaking zone, and a red / white / blue info stack — the same visual
- * grammar as TV emergency earthquake bulletins.
+ * Floating alert card in broadcast-bulletin style: a bordered card with a map
+ * panel and a red / white / blue info stack, centered over the dimmed screen
+ * without taking it over. The window itself wraps this card.
  */
 @Composable
 fun AlertOverlay(
@@ -66,6 +59,7 @@ fun AlertOverlay(
     allowBackDismiss: Boolean = true,
     intenseThreshold: Int = 5,
     mapStyle: EewMapStyle = EewMapStyle.AMAP,
+    wideLayout: Boolean = true,
 ) {
     var elapsedSeconds by remember(alertData.event.eventId) { mutableFloatStateOf(0f) }
 
@@ -77,7 +71,7 @@ fun AlertOverlay(
         }
     }
 
-    // Always consume Back while the alert owns the screen — when back-dismiss is
+    // Always consume Back while the alert card owns focus — when back-dismiss is
     // disabled the key is swallowed instead of falling through to the app below.
     backHandler(onBack = { if (allowBackDismiss) onDismiss() })
 
@@ -115,15 +109,9 @@ fun AlertOverlay(
         null
     }
 
-    BoxWithConstraints(
-        modifier = modifier
-            .fillMaxSize()
-            .background(AlertScrim),
-    ) {
-        val wide = maxWidth >= 600.dp && maxWidth > maxHeight
-        val totalWidth = maxWidth
-        val totalHeight = maxHeight
+    val cardShape = RoundedCornerShape(10.dp)
 
+    Box(modifier = modifier) {
         val mapPanel: @Composable (Modifier) -> Unit = { panelModifier ->
             AlertMapPanel(
                 alertData = alertData,
@@ -137,32 +125,33 @@ fun AlertOverlay(
         }
 
         val infoStack: @Composable (Modifier) -> Unit = { stackModifier ->
-            Column(modifier = stackModifier.fillMaxWidth()) {
-                AlertHeaderBar(alertData = alertData, intense = intense)
-                SourceSection(alertData = alertData)
-                CountdownSection(
+            Column(modifier = stackModifier) {
+                AlertHeaderBar(alertData = alertData)
+                SourceBand(alertData = alertData, intense = intense)
+                CountdownBand(
                     alertData = alertData,
                     sRemaining = sRemaining,
                     sArrived = sArrived,
                     elapsedSeconds = elapsedSeconds,
-                    modifier = Modifier.weight(1f),
-                )
-                AlertDismissButton(
+                    intense = intense,
                     onDismiss = onDismiss,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(EeqSpacing.md),
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
 
-        if (wide) {
-            Row(modifier = Modifier.fillMaxSize()) {
+        if (wideLayout) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(360.dp)
+                    .clip(cardShape)
+                    .border(2.dp, BroadcastWhite.copy(alpha = 0.92f), cardShape),
+            ) {
                 mapPanel(
                     Modifier
                         .fillMaxHeight()
-                        .width(totalWidth * 0.36f)
-                        .border(2.dp, BroadcastWhite.copy(alpha = 0.9f))
+                        .fillMaxWidth(0.36f)
                 )
                 infoStack(
                     Modifier
@@ -171,100 +160,82 @@ fun AlertOverlay(
                 )
             }
         } else {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(cardShape)
+                    .border(2.dp, BroadcastWhite.copy(alpha = 0.92f), cardShape),
+            ) {
                 mapPanel(
                     Modifier
                         .fillMaxWidth()
-                        .height(totalHeight * 0.42f)
-                        .border(2.dp, BroadcastWhite.copy(alpha = 0.9f))
+                        .height(170.dp)
                 )
-                infoStack(Modifier.weight(1f))
+                infoStack(Modifier.fillMaxWidth())
             }
         }
     }
 }
 
 // ---------------------------------------------------------------------------
-// Red header bar
+// Red header band — centered broadcast title
 // ---------------------------------------------------------------------------
 
 @Composable
 private fun AlertHeaderBar(
     alertData: AlertData,
-    intense: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val title = stringResource(R.string.alert_title_source).format(
         stringResource(R.string.alert_title),
         EewSource.labelOf(alertData.event.source),
     )
+    val reportText = if (alertData.event.reportNum > 0) {
+        stringResource(R.string.alert_report_no).format(alertData.event.reportNum)
+    } else {
+        null
+    }
+    val subtitle = listOfNotNull(
+        reportText,
+        if (alertData.isSimulation) stringResource(R.string.simulation_label) else null,
+    ).joinToString(" · ")
 
-    Row(
+    Column(
         modifier = modifier
             .fillMaxWidth()
             .background(AlertRed)
-            .padding(horizontal = EeqSpacing.md, vertical = 10.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
+            .padding(horizontal = EeqSpacing.md, vertical = 7.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleMedium.copy(fontSize = 15.sp),
             fontWeight = FontWeight.Black,
             color = Color.White,
+            textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f, fill = false),
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(EeqSpacing.sm)) {
-            if (alertData.isSimulation) {
-                BroadcastTag(text = stringResource(R.string.simulation_label), pulsing = false)
-            }
-            if (intense) {
-                BroadcastTag(text = stringResource(R.string.alert_intense_label), pulsing = true)
-            }
+        if (subtitle.isNotEmpty()) {
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.labelSmall,
+                color = Color.White.copy(alpha = 0.85f),
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+            )
         }
     }
 }
 
-@Composable
-private fun BroadcastTag(text: String, pulsing: Boolean) {
-    val alpha = if (pulsing) {
-        val transition = rememberInfiniteTransition(label = "broadcastTag")
-        val value by transition.animateFloat(
-            initialValue = 0.45f,
-            targetValue = 1f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(durationMillis = 550),
-                repeatMode = RepeatMode.Reverse,
-            ),
-            label = "broadcastTagAlpha",
-        )
-        value
-    } else {
-        1f
-    }
-    Surface(
-        shape = RoundedCornerShape(4.dp),
-        color = CautionYellow.copy(alpha = alpha),
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Bold,
-            color = BroadcastInk,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
-        )
-    }
-}
-
 // ---------------------------------------------------------------------------
-// White source section
+// White source band — hypocenter, magnitude, intensity chip
 // ---------------------------------------------------------------------------
 
 @Composable
-private fun SourceSection(
+private fun SourceBand(
     alertData: AlertData,
+    intense: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val depthText = alertData.event.depth?.let {
@@ -275,26 +246,19 @@ private fun SourceSection(
     } else {
         null
     }
-    val reportText = if (alertData.event.reportNum > 0) {
-        stringResource(R.string.alert_report_no).format(alertData.event.reportNum)
-    } else {
-        null
-    }
-    val details = listOfNotNull(depthText, distanceText, reportText).joinToString(" · ")
-    val csis = alertData.localCsis
-    val chipColor = csisColor(csis)
+    val details = listOfNotNull(depthText, distanceText).joinToString(" · ")
 
     Row(
         modifier = modifier
             .fillMaxWidth()
             .background(BroadcastWhite)
-            .padding(horizontal = EeqSpacing.md, vertical = 10.dp),
+            .padding(horizontal = EeqSpacing.md, vertical = 9.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = "${alertData.event.hypocenter}  M%.1f".format(alertData.event.magnitude),
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleMedium.copy(fontSize = 17.sp),
                 fontWeight = FontWeight.Bold,
                 color = BroadcastInk,
                 maxLines = 1,
@@ -311,7 +275,7 @@ private fun SourceSection(
         }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(start = EeqSpacing.md),
+            modifier = Modifier.padding(start = EeqSpacing.sm),
         ) {
             Text(
                 text = stringResource(R.string.alert_intensity_expected),
@@ -320,16 +284,16 @@ private fun SourceSection(
             )
             Box(
                 modifier = Modifier
-                    .padding(top = 2.dp)
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(chipColor)
-                    .padding(horizontal = 12.dp, vertical = 2.dp),
+                    .padding(top = 1.dp)
+                    .clip(RoundedCornerShape(5.dp))
+                    .background(if (intense) AlertRed else CautionYellow)
+                    .padding(horizontal = 12.dp, vertical = 1.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = csis.toInt().toString(),
+                    text = alertData.localCsis.toInt().toString(),
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Black),
-                    color = if (chipColor.luminance() > 0.45f) Color.Black else Color.White,
+                    color = if (intense) Color.White else BroadcastInk,
                 )
             }
         }
@@ -337,15 +301,17 @@ private fun SourceSection(
 }
 
 // ---------------------------------------------------------------------------
-// Blue countdown section
+// Blue countdown band — large arrival countdown, wave status, dismiss
 // ---------------------------------------------------------------------------
 
 @Composable
-private fun CountdownSection(
+private fun CountdownBand(
     alertData: AlertData,
     sRemaining: Double,
     sArrived: Boolean,
     elapsedSeconds: Float,
+    intense: Boolean,
+    onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val number = if (sArrived) {
@@ -356,9 +322,8 @@ private fun CountdownSection(
 
     Column(
         modifier = modifier
-            .fillMaxWidth()
             .background(BroadcastBlue)
-            .padding(EeqSpacing.md),
+            .padding(horizontal = EeqSpacing.md, vertical = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -373,7 +338,7 @@ private fun CountdownSection(
                 text = number.toString(),
                 color = Color.White,
                 style = MaterialTheme.typography.displayLarge.copy(
-                    fontSize = 76.sp,
+                    fontSize = 68.sp,
                     fontWeight = FontWeight.Black,
                     fontFeatureSettings = "tnum",
                 ),
@@ -382,12 +347,13 @@ private fun CountdownSection(
                 text = stringResource(R.string.alert_seconds_unit),
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.White.copy(alpha = 0.9f),
-                modifier = Modifier.padding(start = 6.dp, bottom = 12.dp),
+                modifier = Modifier.padding(start = 6.dp, bottom = 10.dp),
             )
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(EeqSpacing.sm),
-            modifier = Modifier.padding(top = EeqSpacing.sm),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 6.dp),
         ) {
             WaveStatusChip(
                 label = stringResource(R.string.alert_wave_p),
@@ -398,6 +364,38 @@ private fun CountdownSection(
                 label = stringResource(R.string.alert_wave_s),
                 color = SWaveRed,
                 secondsRemaining = alertData.sWaveSeconds - elapsedSeconds,
+            )
+            if (intense) {
+                Surface(
+                    shape = RoundedCornerShape(4.dp),
+                    color = CautionYellow,
+                ) {
+                    Text(
+                        text = stringResource(R.string.alert_intense_label),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = BroadcastInk,
+                        modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
+                    )
+                }
+            }
+        }
+        Button(
+            onClick = onDismiss,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp)
+                .height(44.dp),
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = BroadcastWhite,
+                contentColor = BroadcastInk,
+            ),
+        ) {
+            Text(
+                text = stringResource(R.string.alert_dismiss),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
             )
         }
     }
@@ -412,18 +410,18 @@ private fun WaveStatusChip(
 ) {
     val arrived = secondsRemaining <= 0.0
     Surface(
-        shape = RoundedCornerShape(8.dp),
-        color = Color.White.copy(alpha = if (arrived) 0.12f else 0.2f),
+        shape = RoundedCornerShape(7.dp),
+        color = Color.White.copy(alpha = if (arrived) 0.12f else 0.18f),
         modifier = modifier,
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+            modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
         ) {
             Box(
                 modifier = Modifier
-                    .size(8.dp)
+                    .size(7.dp)
                     .clip(RoundedCornerShape(4.dp))
                     .background(if (arrived) Color.White.copy(alpha = 0.6f) else color),
             )
@@ -471,25 +469,16 @@ private fun AlertMapPanel(
             pWaveRadiusKm = pWaveRadiusKm,
             sWaveRadiusKm = sWaveRadiusKm,
             warnZoneRadiusKm = warnZoneRadiusKm,
-            showDistanceLine = true,
+            showDistanceLine = false,
+            fitPaddingDp = 36,
             showAttribution = false,
         )
-
-        if (alertData.distanceKm > 0.0) {
-            MapChip(
-                text = stringResource(R.string.alert_distance_km)
-                    .format("%.0f".format(alertData.distanceKm)),
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(EeqSpacing.sm),
-            )
-        }
 
         Row(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(EeqSpacing.sm),
-            horizontalArrangement = Arrangement.spacedBy(EeqSpacing.xs),
+                .padding(6.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             LegendChip(color = PWaveBlue, label = stringResource(R.string.alert_wave_p))
             LegendChip(color = SWaveRed, label = stringResource(R.string.alert_wave_s))
@@ -501,70 +490,28 @@ private fun AlertMapPanel(
 }
 
 @Composable
-private fun MapChip(text: String, modifier: Modifier = Modifier) {
-    Surface(
-        shape = RoundedCornerShape(6.dp),
-        color = Color(0xCC000000),
-        modifier = modifier,
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelMedium,
-            color = Color.White,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
-        )
-    }
-}
-
-@Composable
 private fun LegendChip(color: Color, label: String) {
     Surface(
-        shape = RoundedCornerShape(6.dp),
-        color = Color(0xCC000000),
+        shape = RoundedCornerShape(5.dp),
+        color = Color(0xB3000000),
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
+            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(5.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Box(
                 modifier = Modifier
-                    .size(8.dp)
+                    .size(7.dp)
                     .clip(RoundedCornerShape(4.dp))
                     .background(color),
             )
             Text(
                 text = label,
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
                 color = Color.White,
             )
         }
-    }
-}
-
-// ---------------------------------------------------------------------------
-// Dismiss
-// ---------------------------------------------------------------------------
-
-@Composable
-private fun AlertDismissButton(
-    onDismiss: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Button(
-        onClick = onDismiss,
-        modifier = modifier.height(52.dp),
-        shape = RoundedCornerShape(10.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = BroadcastWhite,
-            contentColor = BroadcastInk,
-        ),
-    ) {
-        Text(
-            text = stringResource(R.string.alert_dismiss),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-        )
     }
 }
 
@@ -596,18 +543,20 @@ private val sampleAlertData = AlertData(
     isSimulation = true,
 )
 
-@Preview(name = "Alert Panels", device = "spec:width=520dp,height=360dp")
+@Preview(name = "Alert Column", device = "spec:width=420dp,height=460dp")
 @Composable
-private fun AlertPanelsPreview() {
+private fun AlertColumnPreview() {
     MyEarthQuakeAlertTheme {
         Column {
-            AlertHeaderBar(alertData = sampleAlertData, intense = true)
-            SourceSection(alertData = sampleAlertData)
-            CountdownSection(
+            AlertHeaderBar(alertData = sampleAlertData)
+            SourceBand(alertData = sampleAlertData, intense = true)
+            CountdownBand(
                 alertData = sampleAlertData,
                 sRemaining = 23.0,
                 sArrived = false,
                 elapsedSeconds = 7f,
+                intense = true,
+                onDismiss = {},
             )
         }
     }

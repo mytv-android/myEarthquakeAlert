@@ -78,6 +78,7 @@ fun EarthquakeMap(
     focusPoint: MapPoint? = null,
     onQuakeClick: ((QuakeMarker) -> Unit)? = null,
     maxFitDistanceKm: Double? = null,
+    fitPaddingDp: Int = 72,
     showAttribution: Boolean = true,
 ) {
     val context = LocalContext.current
@@ -148,7 +149,7 @@ fun EarthquakeMap(
                 mapView.controller.setCenter(fitPoints.first())
             } else {
                 val box = BoundingBox.fromGeoPoints(fitPoints)
-                mapView.zoomToBoundingBox(box, false, (72 * density).toInt())
+                mapView.zoomToBoundingBox(box, false, (fitPaddingDp * density).toInt())
                 val z = mapView.zoomLevelDouble
                 if (z > 4.0) mapView.controller.setZoom(z - 0.5)
             }
