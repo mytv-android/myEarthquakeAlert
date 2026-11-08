@@ -1,0 +1,600 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Common -->
+    <string name="pg_back">Back</string>
+    <string name="pg_decrease">Decrease</string>
+    <string name="pg_increase">Increase</string>
+    <string name="pg_list_separator">", "</string>
+
+    <!-- Time and durations -->
+    <string name="pg_today_at">Today %1$s</string>
+    <string name="pg_yesterday_at">Yesterday %1$s</string>
+    <string name="pg_tomorrow_at">Tomorrow %1$s</string>
+    <string name="pg_dur_dh">%1$d d %2$d h</string>
+    <string name="pg_dur_hm">%1$d h %2$d min</string>
+    <string name="pg_dur_m">%1$d min</string>
+    <string name="pg_dur_s">%1$d s</string>
+    <string name="pg_just_now">Just now</string>
+    <string name="pg_seconds_ago">%1$d s ago</string>
+    <string name="pg_minutes_ago">%1$d min ago</string>
+    <string name="pg_hours_ago">%1$d h ago</string>
+
+    <!-- Monitoring phases -->
+    <string name="pg_phase_monitoring">Monitoring in background</string>
+    <string name="pg_phase_connecting">Connecting…</string>
+    <string name="pg_phase_reconnecting">Reconnecting</string>
+    <string name="pg_phase_degraded">Fallback channel</string>
+    <string name="pg_phase_limited">Limited</string>
+    <string name="pg_phase_paused_until">Paused until %1$s</string>
+    <string name="pg_phase_paused">Paused</string>
+    <string name="pg_phase_off">Background monitoring is off</string>
+    <string name="pg_short_monitoring">Monitoring</string>
+    <string name="pg_short_connecting">Connecting</string>
+    <string name="pg_short_paused_until">Paused until %1$s</string>
+    <string name="pg_short_off">Off</string>
+    <string name="pg_sub_monitoring_uptime">%1$d sources · running for %2$s</string>
+    <string name="pg_sub_monitoring">%1$d sources connected</string>
+    <string name="pg_sub_connecting">Handshaking with %1$d sources</string>
+    <string name="pg_sub_reconnecting">Attempt %1$d, retrying in %2$d s</string>
+    <string name="pg_sub_reconnecting_generic">Connection lost, retrying</string>
+    <string name="pg_sub_degraded">Polling over HTTP every 10 s</string>
+    <string name="pg_sub_limited">Missing permission: %1$s</string>
+    <string name="pg_sub_limited_generic">Some permissions are missing; alerts may not get through</string>
+    <string name="pg_sub_paused">Resumes automatically when the pause ends</string>
+    <string name="pg_sub_off">You won\'t receive any earthquake alerts</string>
+
+    <!-- Delivery requirements -->
+    <string name="pg_req_notifications">Notifications</string>
+    <string name="pg_req_overlay">Display over other apps</string>
+    <string name="pg_req_full_screen">Full-screen alerts</string>
+    <string name="pg_req_location">Precise location</string>
+    <string name="pg_req_battery">Ignore battery optimization</string>
+    <string name="pg_req_dnd">Do Not Disturb access</string>
+    <string name="pg_req_auto_start">System auto-start</string>
+    <string name="pg_req_notifications_desc">Alerts and the ongoing status</string>
+    <string name="pg_req_overlay_desc">Show the alert card on top of other apps</string>
+    <string name="pg_req_full_screen_desc">Full-screen alert on the lock screen (Android 14+)</string>
+    <string name="pg_req_location_desc">Arrival time and local intensity</string>
+    <string name="pg_req_battery_desc">Keeps the system from cutting the connection</string>
+    <string name="pg_req_dnd_desc">Play the alarm through Do Not Disturb for strong quakes</string>
+    <string name="pg_req_auto_start_desc">This system may block starting after a reboot</string>
+
+    <!-- Start origins -->
+    <string name="pg_origin_user">Turned on manually</string>
+    <string name="pg_origin_boot">Started on boot</string>
+    <string name="pg_origin_package_replaced">Resumed after update</string>
+    <string name="pg_origin_watchdog">Restarted by watchdog</string>
+    <string name="pg_origin_sticky">Restarted by the system</string>
+    <string name="pg_origin_pause_ended">Resumed after pause</string>
+    <string name="pg_origin_tile">Quick Settings tile</string>
+    <string name="pg_origin_notification">Notification</string>
+    <string name="pg_origin_watch">Watch</string>
+    <string name="pg_origin_unknown">Other</string>
+
+    <!-- Sources -->
+    <string name="pg_source_cenc">China Earthquake Networks Center</string>
+    <string name="pg_source_sichuan">Sichuan Earthquake Administration</string>
+    <string name="pg_source_fujian">Fujian Earthquake Administration</string>
+    <string name="pg_source_chongqing">Chongqing Earthquake Administration</string>
+    <string name="pg_source_sichuan_short">Sichuan</string>
+    <string name="pg_source_fujian_short">Fujian</string>
+    <string name="pg_source_chongqing_short">Chongqing</string>
+    <string name="pg_sources_summary">%1$s · %2$d sources</string>
+
+    <!-- Command feedback -->
+    <string name="pg_start_failed">Couldn\'t start background monitoring. Try again later.</string>
+    <string name="pg_command_failed">The command didn\'t reach the monitoring service. Try again.</string>
+    <string name="pg_export_failed">Couldn\'t export the diagnostics bundle</string>
+    <string name="pg_open_settings_failed">Couldn\'t open the system setting</string>
+    <string name="pg_no_browser">No app can open this link</string>
+
+    <!-- Pause -->
+    <string name="pg_pause_1h">Pause for 1 hour</string>
+    <string name="pg_pause_resumes_at">Resumes at %1$s</string>
+    <string name="pg_pause_morning">Pause until 08:00</string>
+    <string name="pg_pause_resumes_in">Resumes in %1$s</string>
+    <string name="pg_turn_off_fully">Turn off completely</string>
+    <string name="pg_turn_off_fully_desc">Until you turn the switch back on</string>
+    <string name="pg_pause_or_off_title">Pause or turn off background monitoring?</string>
+    <string name="pg_pause_title">Pause background monitoring</string>
+    <string name="pg_pause_current">Currently paused until %1$s</string>
+    <string name="pg_pause_desc">You won\'t receive any earthquake alerts in the meantime, even with the app open.</string>
+    <string name="pg_turn_off_confirm">Turn off</string>
+    <string name="pg_pause_confirm">Pause</string>
+    <string name="pg_resume_now">Resume now</string>
+
+    <!-- Drill -->
+    <string name="pg_drill_title">Alert drill</string>
+    <string name="pg_drill_desc">The monitoring service injects a simulated report that goes through parsing, evaluation and presentation. The alert is marked as a drill.</string>
+    <string name="pg_drill_run">Start drill</string>
+    <string name="pg_drill_lushan">Lushan M6.1 replay</string>
+    <string name="pg_drill_lushan_desc">1 June 2022, Lushan, Sichuan · depth 17 km · real epicenter</string>
+    <string name="pg_drill_near">Nearby strong quake</string>
+    <string name="pg_drill_near_desc">M6.5 · about 85 km away · full-screen strong alert</string>
+    <string name="pg_drill_far">Distant moderate quake</string>
+    <string name="pg_drill_far_desc">M5.0 · about 300 km away · floating card</string>
+
+    <!-- In-app update -->
+    <string name="pg_channel_stable">Stable</string>
+    <string name="pg_channel_preview">Preview</string>
+    <string name="pg_version_line">Version %1$s (%2$d) · %3$s</string>
+    <string name="pg_update_known_hint">A new version was found last time. Fetch the download details to install it.</string>
+    <string name="pg_update_fetch">Get update</string>
+    <string name="pg_update_never_checked">Not checked yet</string>
+    <string name="pg_update_last_check">Last checked %1$s · %2$s</string>
+    <string name="pg_update_auto_desc">Checks automatically once a day</string>
+    <string name="pg_update_checking_desc">Contacting GitHub Releases…</string>
+    <string name="pg_update_download_install">Download and install</string>
+    <string name="pg_update_downloading">Downloading</string>
+    <string name="pg_update_progress">%1$d%% · %2$s / %3$s</string>
+    <string name="pg_update_monitoring_continues">Monitoring keeps running while downloading</string>
+    <string name="pg_update_cancel_download">Cancel download</string>
+    <string name="pg_update_verifying">Verifying</string>
+    <string name="pg_update_verifying_desc">Checking the package signature and integrity…</string>
+    <string name="pg_update_verified">Downloaded and verified</string>
+    <string name="pg_update_verified_desc">The signature matches the installed app.</string>
+    <string name="pg_update_install_note">Monitoring resumes right after installing, whether or not Start on boot is on.</string>
+    <string name="pg_update_install_now">Install now</string>
+    <string name="pg_update_permission_title">Install permission needed</string>
+    <string name="pg_update_permission_desc">Allow this app to install unknown apps, then come back to continue.</string>
+    <string name="pg_update_install_again">Install again</string>
+    <string name="pg_update_grant">Allow</string>
+    <string name="pg_update_metered_title">Download over mobile data?</string>
+    <string name="pg_update_metered_desc">You\'re not on Wi-Fi. The package is about %1$s.</string>
+    <string name="pg_update_download_anyway">Download anyway</string>
+    <string name="pg_update_published">Published %1$s</string>
+    <string name="pg_update_settings">Update settings</string>
+    <string name="pg_more">More</string>
+    <string name="pg_about_licenses_sources">Licences and data sources</string>
+    <string name="pg_update_auto_check">Check for updates automatically</string>
+    <string name="pg_update_wifi_only">Download on Wi-Fi only</string>
+    <string name="pg_update_wifi_only_desc">Ask before using mobile data</string>
+    <string name="pg_update_channel">Update channel</string>
+    <string name="pg_channel_preview_desc">Early features, may be less stable</string>
+    <string name="pg_channel_stable_desc">Tested releases</string>
+    <string name="pg_update_verification">Package verification</string>
+    <string name="pg_update_verification_desc">Signature and SHA-256 are checked before installing; a failed check never installs</string>
+
+    <!-- About -->
+    <string name="pg_about_update">About &amp; updates</string>
+    <string name="pg_about_eew_value">Wolfx EEW API · CENC, Sichuan, Fujian, Chongqing</string>
+    <string name="pg_about_catalog">Earthquake catalog</string>
+    <string name="pg_about_catalog_value">CENC rapid report catalog</string>
+    <string name="pg_about_map_value">Amap · © OpenStreetMap contributors</string>
+    <string name="pg_about_algorithm_value">Intensity and travel-time model based on kanameishi</string>
+    <string name="pg_about_app_license">App licence</string>
+    <string name="pg_about_source_code">Source code</string>
+    <string name="pg_about_libraries">Open-source libraries</string>
+    <string name="pg_about_libraries_value">Jetpack Compose, Material 3, OkHttp, Retrofit, osmdroid and more</string>
+    <string name="pg_about_changelog">Changelog</string>
+    <string name="pg_about_changelog_value">GitHub Releases</string>
+    <string name="pg_about_thanks_wolfx">Earthquake early-warning data API</string>
+    <string name="pg_about_thanks_kanameishi">Intensity estimation and travel-time tables</string>
+    <string name="pg_about_thanks_osm">Map data</string>
+    <string name="pg_about_thanks_devs">Thanks to all contributors</string>
+
+    <!-- 设置首页 -->
+    <string name="pg_group_monitor">Monitoring</string>
+    <string name="pg_group_alerts">Alerts</string>
+    <string name="pg_group_display">Display</string>
+    <string name="pg_group_location">Location</string>
+    <string name="pg_group_tools">Tools</string>
+    <string name="pg_group_about">About</string>
+    <string name="pg_monitor">Background monitoring</string>
+    <string name="pg_sources">Data sources</string>
+    <string name="pg_pause">Pause</string>
+    <string name="pg_pause_until_short">Until %1$s</string>
+    <string name="pg_not_paused">Not paused</string>
+    <string name="pg_alert_thresholds">Alert thresholds</string>
+    <string name="pg_strong_threshold">Strong-quake threshold</string>
+    <string name="pg_strong_summary">Full screen at local intensity ≥ %1$d</string>
+    <string name="pg_bypass_dnd">Strong quakes bypass Do Not Disturb</string>
+    <string name="pg_bypass_dnd_desc">Alarm sound plays through Do Not Disturb</string>
+    <string name="pg_bypass_dnd_needs">Needs Do Not Disturb access, tap to grant</string>
+    <string name="pg_tts">Spoken alerts</string>
+    <string name="pg_tts_desc">Read out the countdown and intensity</string>
+    <string name="pg_back_dismiss">Back key closes the alert</string>
+    <string name="pg_back_dismiss_desc">When off, only the on-screen buttons close it</string>
+    <string name="pg_theme">Theme</string>
+    <string name="pg_theme_system">System default</string>
+    <string name="pg_theme_light">Light</string>
+    <string name="pg_theme_dark">Dark</string>
+    <string name="pg_layout">Layout</string>
+    <string name="pg_map_amap">Amap standard</string>
+    <string name="pg_map_amap_sat">Amap satellite</string>
+    <string name="pg_map_amap_desc">Detailed roads and place names in China</string>
+    <string name="pg_map_amap_sat_desc">Satellite imagery with roads and labels</string>
+    <string name="pg_map_osm_desc">Open map, better outside China</string>
+    <string name="pg_location_source">Location source</string>
+    <string name="pg_diagnostics">Diagnostics</string>
+    <string name="pg_diag_ok">Service healthy</string>
+    <string name="pg_drill_summary">Lushan M6.1 replay and 2 more scenarios</string>
+    <string name="pg_export">Export diagnostics bundle</string>
+    <string name="pg_export_desc">Log, metrics and self-test results</string>
+    <string name="pg_update_badge">New</string>
+    <string name="pg_about_version_new">%1$s · %2$s available</string>
+    <string name="pg_about_version_current">Version %1$s</string>
+    <string name="pg_about_licenses_desc">Data sources, licences and acknowledgements</string>
+    <string name="pg_boot_last_auto">Started automatically %1$d s after the last boot</string>
+    <string name="pg_mag_any">Any magnitude</string>
+    <string name="pg_mag_min">Magnitude ≥ %1$s</string>
+    <string name="pg_int_any">Any intensity</string>
+    <string name="pg_int_min">Local intensity ≥ %1$d</string>
+
+    <!-- 界面布局 -->
+    <string name="pg_layout_auto">Automatic (recommended)</string>
+    <string name="pg_layout_phone">Phone</string>
+    <string name="pg_layout_medium">Two-pane</string>
+    <string name="pg_layout_tablet">Tablet</string>
+    <string name="pg_layout_tv">TV</string>
+    <string name="pg_layout_kiosk">Kiosk</string>
+    <string name="pg_layout_auto_desc">Based on width, fold posture and device type</string>
+    <string name="pg_layout_phone_desc">Single column + bottom navigation</string>
+    <string name="pg_layout_tablet_desc">Navigation rail + map + side pane</string>
+    <string name="pg_layout_tv_desc">Large type and focus navigation</string>
+    <string name="pg_layout_kiosk_desc">Full-screen map + clock, screen stays on</string>
+    <string name="pg_layout_session_summary">%1$s · this session only</string>
+    <string name="pg_layout_auto_summary">Automatic · currently %1$s</string>
+    <string name="pg_width_compact">Compact width</string>
+    <string name="pg_width_medium">Medium width</string>
+    <string name="pg_width_expanded">Expanded width</string>
+    <string name="pg_layout_size">%1$d × %2$d dp</string>
+    <string name="pg_posture_book">Book posture</string>
+    <string name="pg_posture_tabletop">Tabletop posture</string>
+    <string name="pg_posture_dual">Dual screen</string>
+    <string name="pg_posture_portrait">Portrait</string>
+    <string name="pg_posture_landscape">Landscape</string>
+    <string name="pg_input_remote">Remote</string>
+    <string name="pg_input_touch">Touch</string>
+    <string name="pg_input_pointer">Keyboard and mouse</string>
+    <string name="pg_layout_source_auto">Automatic</string>
+    <string name="pg_layout_source_settings">Set in settings</string>
+    <string name="pg_layout_source_session">This session only</string>
+    <string name="pg_layout_current_auto">Automatic choice right now: %1$s</string>
+    <string name="pg_layout_effective">In effect: %1$s (%2$s)</string>
+    <string name="pg_group_fold">Foldables and dual screens</string>
+    <string name="pg_span_hinge">Split across the hinge</string>
+    <string name="pg_span_hinge_desc">List and details on either side when unfolded</string>
+    <string name="pg_tabletop_split">Tabletop alert split</string>
+    <string name="pg_tabletop_split_desc">Half-open: map on top, controls below</string>
+    <string name="pg_single_screen">Use one screen on dual-screen devices</string>
+    <string name="pg_single_screen_desc">When off, the app spans both screens</string>
+    <string name="pg_group_session">Temporary switch</string>
+    <string name="pg_layout_session">This session only</string>
+    <string name="pg_layout_session_idle">Lasts until you leave the app; also in the overview menu</string>
+    <string name="pg_layout_session_active">Now: %1$s · reverts when you leave the app</string>
+    <string name="pg_layout_session_title">Switch layout for this session</string>
+    <string name="pg_layout_session_desc">Lasts until you leave the app, then the layout from settings returns.</string>
+    <string name="pg_layout_session_none">No temporary layout</string>
+    <string name="pg_layout_session_none_desc">Use the layout from settings</string>
+    <string name="pg_layout_reset">Reset to default</string>
+    <string name="pg_layout_reset_desc">Automatic layout and default foldable options</string>
+    <string name="pg_layout_alert_note">The alert screen ignores this setting and always uses the device\'s real size.</string>
+
+    <!-- 位置 -->
+    <string name="pg_loc_gps">GPS</string>
+    <string name="pg_loc_network">Network location</string>
+    <string name="pg_loc_manual">Manual</string>
+    <string name="pg_loc_ip">IP location</string>
+    <string name="pg_loc_none">No location</string>
+    <string name="pg_loc_summary_manual">Manual · %1$s</string>
+    <string name="pg_loc_summary_manual_unset">Manual · not set yet</string>
+    <string name="pg_loc_summary_auto_now">Automatic · now %1$s</string>
+    <string name="pg_loc_summary_auto">Automatic · GPS, IP as fallback</string>
+    <string name="pg_loc_mode_auto">Automatic</string>
+    <string name="pg_loc_mode_auto_desc">GPS, with an IP estimate as fallback</string>
+    <string name="pg_loc_mode_manual">Manual</string>
+    <string name="pg_loc_mode_manual_desc">A fixed place, no location permission needed</string>
+    <string name="pg_loc_status">Location status</string>
+    <string name="pg_loc_current">Current fix</string>
+    <string name="pg_loc_accuracy">±%1$d m</string>
+    <string name="pg_loc_age">Updated %1$s</string>
+    <string name="pg_loc_ip_warn">IP location can be tens of kilometres off, so arrival times and local intensity may be inaccurate. Grant precise location or set the place manually.</string>
+    <string name="pg_loc_manual_title">Manual location</string>
+    <string name="pg_loc_name">Place name</string>
+    <string name="pg_loc_lat">Latitude</string>
+    <string name="pg_loc_lon">Longitude</string>
+    <string name="pg_loc_invalid_lat">Latitude must be between -90 and 90</string>
+    <string name="pg_loc_invalid_lon">Longitude must be between -180 and 180</string>
+    <string name="pg_loc_save">Save location</string>
+    <string name="pg_loc_saved">Location saved</string>
+    <string name="pg_loc_use_current">Use current location</string>
+    <string name="pg_loc_no_fix">Current location unavailable</string>
+    <string name="pg_loc_presets">Cities</string>
+    <string name="pg_loc_manual_note">The manual location is only used on this device to compute arrival times and local intensity. It is never uploaded.</string>
+    <string-array name="pg_city_names">
+        <item>Beijing</item>
+        <item>Shanghai</item>
+        <item>Guangzhou</item>
+        <item>Shenzhen</item>
+        <item>Chengdu</item>
+        <item>Chongqing</item>
+        <item>Xi\'an</item>
+        <item>Kunming</item>
+        <item>Lanzhou</item>
+        <item>Lhasa</item>
+        <item>Urumqi</item>
+        <item>Fuzhou</item>
+        <item>Taipei</item>
+        <item>Hangzhou</item>
+    </string-array>
+
+    <!-- 数据源与阈值 -->
+    <string name="pg_sources_min">Keep at least one source</string>
+    <string name="pg_sources_note">Reports are de-duplicated by event, so several sources never alert twice. CENC covers the whole country; Sichuan, Fujian and Chongqing are provincial networks.</string>
+    <string name="pg_source_unsubscribed">Not subscribed</string>
+    <string name="pg_link_connected">Connected</string>
+    <string name="pg_link_connected_latency">Connected · latency %1$s s</string>
+    <string name="pg_link_polling">HTTP polling</string>
+    <string name="pg_link_reconnecting">Reconnecting</string>
+    <string name="pg_link_connecting">Connecting</string>
+    <string name="pg_link_disconnected">Disconnected</string>
+    <string name="pg_value_any">Any</string>
+    <string name="pg_value_intensity">%1$d</string>
+    <string name="pg_group_remind">Reminder</string>
+    <string name="pg_group_strong">Strong quakes</string>
+    <string name="pg_group_sound">Sound and controls</string>
+    <string name="pg_min_mag_desc">Quakes below this magnitude don\'t alert</string>
+    <string name="pg_min_int_title">Minimum local intensity</string>
+    <string name="pg_min_int_desc">Below this estimated local intensity, quakes are only recorded</string>
+    <string name="pg_strong_title">Strong alert intensity</string>
+    <string name="pg_strong_desc">Takes over the screen and sounds the alarm</string>
+    <string name="pg_csis_scale">China Seismic Intensity Scale (CSIS)</string>
+    <string name="pg_scale_remind">Remind at ≥ %1$d</string>
+    <string name="pg_scale_strong">Full screen at ≥ %1$d</string>
+    <string name="pg_alert_tiers_note">Above the reminder thresholds: floating card and chime. At the strong alert intensity: full screen, alarm and vibration. Otherwise the quake is only recorded in the list.</string>
+
+    <!-- 开启检查 -->
+    <string name="pg_start_check_title">Turn on background monitoring</string>
+    <string name="pg_start_check_desc">These items decide whether alerts reach you in time.</string>
+    <string name="pg_start_check_missing">%1$d items left. You can still turn it on, but the service will be Limited and may not show full-screen alerts on the lock screen.</string>
+    <string name="pg_start_check_confirm">Turn on</string>
+    <string name="pg_fix_enable">Turn on</string>
+    <string name="pg_fix_settings">Settings</string>
+    <string name="pg_fix_grant">Grant</string>
+
+    <!-- 后台监测 -->
+    <string name="pg_monitor_page">Background monitoring</string>
+    <string name="pg_group_start">Startup</string>
+    <string name="pg_direct_boot">Works before first unlock</string>
+    <string name="pg_direct_boot_desc">Alerts even before you unlock after a reboot</string>
+    <string name="pg_autostart_perm">System auto-start permission</string>
+    <string name="pg_autostart_restricted">%1$s · may block auto-start, tap to allow</string>
+    <string name="pg_autostart_ok">No vendor auto-start restriction found</string>
+    <string name="pg_monitor_note">Detection runs in the background service; the app only shows its status. Closing the app or swiping it away doesn\'t stop detection, and when monitoring is off, opening the app doesn\'t detect either.</string>
+    <string name="pg_monitor_off_note">Detection runs in the background service, whether or not the app is open. Once on, alerts arrive about 1 s after a report is published, and monitoring resumes after a reboot.</string>
+    <string name="pg_group_delivery">Delivery check</string>
+    <string name="pg_delivery_pending">%1$d to fix</string>
+    <string name="pg_delivery_all_ok">All set</string>
+    <string name="pg_pause_row_paused">Until %1$s · %2$s left</string>
+    <string name="pg_pause_row_idle">Pause for an hour or until 08:00</string>
+    <string name="pg_group_recent_starts">Recent starts</string>
+    <string name="pg_no_starts">No starts recorded yet</string>
+    <string name="pg_no_starts_desc">Starts on boot, by the watchdog or by hand are listed here</string>
+    <string name="pg_open_diagnostics">Open diagnostics</string>
+    <string name="pg_open_diagnostics_desc">Connections, heartbeat, latency and the end-to-end self test</string>
+    <string name="pg_meta_heartbeat">Heartbeat %1$s</string>
+    <string name="pg_meta_latency">Latency %1$s s</string>
+    <string name="pg_meta_clock">Clock %1$s s</string>
+    <string name="pg_meta_remaining">%1$s left</string>
+    <string name="pg_meta_resume_any">Resume any time</string>
+    <string name="pg_meta_polling">HTTP polling · %1$s</string>
+
+    <!-- 开机与锁屏 -->
+    <string name="pg_boot_page">Start on boot</string>
+    <string name="pg_boot_this_boot">This boot</string>
+    <string name="pg_boot_this_auto">Started %1$d s after boot</string>
+    <string name="pg_boot_this_none">Not started automatically this boot</string>
+    <string name="pg_boot_this_blocked">Not started automatically this boot; the system may have blocked it</string>
+    <string name="pg_boot_this_running">Started this boot by: %1$s</string>
+    <string name="pg_lock_preview">Lock screen after a reboot</string>
+    <string name="pg_lock_preview_caption">Just restarted · not unlocked yet</string>
+    <string name="pg_lock_app_monitor">%1$s · Background monitoring</string>
+    <string name="pg_lock_off">Background monitoring is off: nothing starts after a reboot and nothing is shown.</string>
+    <string name="pg_lock_paused_title">Paused · resumes at %1$s</string>
+    <string name="pg_lock_paused_body">The resume time was registered again after the reboot</string>
+    <string name="pg_lock_on_title">Monitoring · started %1$d s after boot</string>
+    <string name="pg_lock_on_title_generic">Monitoring · started on boot</string>
+    <string name="pg_lock_on_body">%1$d sources connected · alerts work before unlock</string>
+    <string name="pg_group_reboot">After a reboot</string>
+    <string name="pg_current">Current</string>
+    <string name="pg_boot_case_on_on">Monitoring on · start on boot on</string>
+    <string name="pg_boot_case_on_on_desc">The service starts on the boot broadcast and connects; monitoring and alerts work before unlock.</string>
+    <string name="pg_boot_case_on_off">Monitoring on · start on boot off</string>
+    <string name="pg_boot_case_on_off_desc">The service doesn\'t start and the watchdog won\'t start it; a notification offers Start now.</string>
+    <string name="pg_boot_case_paused_on">Paused · start on boot on</string>
+    <string name="pg_boot_case_paused_on_desc">Stays paused; the resume alarm is registered again and fires on time, or starts right away if the time has passed.</string>
+    <string name="pg_boot_case_paused_off">Paused · start on boot off</string>
+    <string name="pg_boot_case_paused_off_desc">Same as monitoring on with start on boot off: nothing starts, a notification is shown.</string>
+    <string name="pg_boot_case_off">Monitoring off</string>
+    <string name="pg_boot_case_off_desc">Nothing starts and nothing is shown.</string>
+    <string name="pg_group_direct_boot">Before first unlock</string>
+    <string name="pg_direct_boot_long">The boot receiver and the service are Direct Boot aware. Both switches, the pause end and the last location live in device-protected storage, so monitoring starts before you unlock.</string>
+    <string name="pg_group_system_limits">System limits</string>
+    <string name="pg_watchdog_note">The watchdog checks the service every 15 minutes and only restarts it if it ran during this boot, so turning off Start on boot can\'t be bypassed by the watchdog.</string>
+    <string name="pg_update_resume_note">After an in-app update installs, monitoring resumes right away. That isn\'t a boot, so Start on boot doesn\'t apply.</string>
+
+    <!-- 诊断 -->
+    <string name="pg_diag_updated">Updated %1$s</string>
+    <string name="pg_diag_title_connecting">Connecting</string>
+    <string name="pg_diag_title_reconnecting">Reconnecting</string>
+    <string name="pg_diag_title_degraded">Running on the fallback channel</string>
+    <string name="pg_diag_title_limited">Running with limits</string>
+    <string name="pg_diag_title_paused">Monitoring paused</string>
+    <string name="pg_diag_title_off">Monitoring not running</string>
+    <string name="pg_diag_availability">24 h availability %1$s%%</string>
+    <string name="pg_diag_reconnects">%1$d reconnects</string>
+    <string name="pg_diag_longest">Longest outage %1$s</string>
+    <string name="pg_diag_history">History below</string>
+    <string name="pg_diag_paused_until">Resumes at %1$s · history below</string>
+    <string name="pg_diag_since">Since %1$s</string>
+    <string name="pg_diag_running">Running for %1$s</string>
+    <string name="pg_diag_origin">Started by: %1$s</string>
+    <string name="pg_now">Now</string>
+    <string name="pg_diag_pipeline">Data pipeline</string>
+    <string name="pg_diag_end_to_end">End to end %1$s s</string>
+    <string name="pg_pipe_source">Source</string>
+    <string name="pg_pipe_link">Link</string>
+    <string name="pg_pipe_link_value">%1$d / %2$d</string>
+    <string name="pg_pipe_parse">Parse</string>
+    <string name="pg_pipe_evaluate">Evaluate</string>
+    <string name="pg_pipe_present">Present</string>
+    <string name="pg_pipe_idle">Idle</string>
+    <string name="pg_pipe_partial">Partial</string>
+    <string name="pg_pipe_ready">Ready</string>
+    <string name="pg_ms">%1$d ms</string>
+    <string name="pg_seconds_value">%1$s s</string>
+    <string name="pg_diag_sources_connected">%1$d / %2$d connected</string>
+    <string name="pg_src_idle">Monitoring not running</string>
+    <string name="pg_src_last_report">Latest: %1$s · %2$s</string>
+    <string name="pg_src_polling">HTTP polling every 10 s · WebSocket failed %1$d times in a row</string>
+    <string name="pg_src_reconnecting">Reconnect %1$d in %2$d s · %3$d other sources cover meanwhile</string>
+    <string name="pg_src_connecting">Handshaking…</string>
+    <string name="pg_diag_metrics">Metrics</string>
+    <string name="pg_no_data">No data yet</string>
+    <string name="pg_level_good">Normal</string>
+    <string name="pg_level_warn">Warning</string>
+    <string name="pg_level_bad">Problem</string>
+    <string name="pg_level_unknown">No data</string>
+    <string name="pg_metric_heartbeat">Heartbeat</string>
+    <string name="pg_metric_heartbeat_expect">Expected ≤ 60 s</string>
+    <string name="pg_metric_latency">Report latency</string>
+    <string name="pg_metric_latency_p95">Latency p95</string>
+    <string name="pg_unit_s_p50">s p50</string>
+    <string name="pg_metric_latency_detail">p95 %1$s s · %2$d today</string>
+    <string name="pg_metric_reports_today">%1$d reports today</string>
+    <string name="pg_metric_clock">Clock offset</string>
+    <string name="pg_metric_clock_detail">ntp.json · %1$s</string>
+    <string name="pg_metric_location">Location</string>
+    <string name="pg_metric_system">System limits</string>
+    <string name="pg_metric_exempt">Exempt</string>
+    <string name="pg_metric_not_exempt">Optimized</string>
+    <string name="pg_metric_bucket">Standby bucket %1$s</string>
+    <string name="pg_metric_data_saver_on">Data Saver on</string>
+    <string name="pg_metric_data_saver_off">Data Saver off</string>
+    <string name="pg_metric_watchdog">Watchdog</string>
+    <string name="pg_metric_watchdog_next">Next %1$s · service alive</string>
+    <string name="pg_metric_watchdog_restarted">Found the service killed and restarted it in the last 24 h</string>
+    <string name="pg_metric_boot_detail">Last boot %1$s · started automatically</string>
+    <string name="pg_metric_process">Detection process</string>
+    <string name="pg_metric_process_value">Background service</string>
+    <string name="pg_metric_process_detail">Independent of the app UI · %1$s</string>
+    <string name="pg_metric_availability">24 h availability</string>
+    <string name="pg_metric_reconnects">Reconnects</string>
+    <string name="pg_metric_24h">Last 24 h</string>
+    <string name="pg_unit_times">times</string>
+    <string name="pg_diag_open_full">Open full diagnostics</string>
+
+    <!-- 自检 -->
+    <string name="pg_diag_selftest">End-to-end self test</string>
+    <string name="pg_selftest_never">Not run yet</string>
+    <string name="pg_selftest_step">Step %1$d of %2$d</string>
+    <string name="pg_selftest_pass">%1$d passed</string>
+    <string name="pg_selftest_warn">%1$d warnings</string>
+    <string name="pg_selftest_fail">%1$d failed</string>
+    <string name="pg_comma">", "</string>
+    <string name="pg_selftest_checking">Checking…</string>
+    <string name="pg_selftest_waiting">Waiting</string>
+    <string name="pg_selftest_skipped">Skipped</string>
+    <string name="pg_selftest_passed">Passed</string>
+    <string name="pg_selftest_failed">Failed</string>
+    <string name="pg_selftest_fix">Fix</string>
+    <string name="pg_selftest_run">Run self test</string>
+    <string name="pg_selftest_running">Running…</string>
+    <string name="pg_step_network">Network</string>
+    <string name="pg_step_sources">Source connections</string>
+    <string name="pg_step_clock">Clock offset</string>
+    <string name="pg_step_location">Location</string>
+    <string name="pg_step_permissions">Notifications and alert permissions</string>
+    <string name="pg_step_limits">System limits</string>
+    <string name="pg_step_pipeline">Parse and evaluate</string>
+    <string name="pg_step_presentation">Alert presentation</string>
+    <string name="pg_step_network_desc">api.wolfx.jp reachable, DNS resolves</string>
+    <string name="pg_step_sources_desc">WebSocket handshake, heartbeat and HTTP fallback per source</string>
+    <string name="pg_step_clock_desc">Device clock against ntp.json</string>
+    <string name="pg_step_location_desc">Location source and freshness</string>
+    <string name="pg_step_permissions_desc">Notifications, overlay and full-screen alerts</string>
+    <string name="pg_step_limits_desc">Battery optimization, standby bucket and Data Saver</string>
+    <string name="pg_step_pipeline_desc">A test report goes through parse → evaluate</string>
+    <string name="pg_step_presentation_desc">Alert window and notification channel (silent)</string>
+
+    <!-- 事件日志 -->
+    <string name="pg_diag_log">Event log</string>
+    <string name="pg_log_ok">OK</string>
+    <string name="pg_log_info">Info</string>
+    <string name="pg_log_warn">Warning</string>
+    <string name="pg_log_error">Error</string>
+    <string name="pg_log_copy">Copy</string>
+    <string name="pg_log_copied">Log copied</string>
+    <string name="pg_log_empty">No log yet. Once monitoring is on, connections, heartbeats, reconnects and alerts are recorded here.</string>
+    <string name="pg_log_no_match">No entries match the filters</string>
+    <string name="pg_log_more">Show %1$d earlier entries</string>
+
+    <!-- 预警 -->
+    <string name="pg_alert_card_title">Earthquake alert</string>
+    <string name="pg_alert_drill">Drill</string>
+    <string name="pg_alert_report">Report %1$d</string>
+    <string name="pg_alert_report_final">Report %1$d · final</string>
+    <string name="pg_alert_s_arrival">S wave in</string>
+    <string name="pg_alert_waves">Seismic waves</string>
+    <string name="pg_alert_arrived">Arrived</string>
+    <string name="pg_alert_seconds">s</string>
+    <string name="pg_alert_p_arrived">P wave arrived</string>
+    <string name="pg_alert_p_in">P wave in %1$d s</string>
+    <string name="pg_alert_take_cover">Take cover</string>
+    <string name="pg_alert_intensity_estimate">Local intensity · est. %1$s</string>
+    <string name="pg_alert_intensity_value">Local intensity %1$d</string>
+    <string name="pg_alert_intensity_distance">Local intensity %1$d · %2$s km from epicenter</string>
+    <string name="pg_alert_from_epicenter">From epicenter</string>
+    <string name="pg_alert_distance_epicenter">%1$s km from epicenter</string>
+    <string name="pg_alert_distance_you">%1$s km from you</string>
+    <string name="pg_alert_depth">depth %1$s km</string>
+    <string name="pg_alert_origin">occurred %1$s</string>
+    <string name="pg_alert_safe">I\'m safe</string>
+    <string name="pg_alert_mute">Mute</string>
+    <string name="pg_alert_muted">Muted</string>
+    <string name="pg_alert_close">Close</string>
+    <string name="pg_alert_details">Details</string>
+    <string name="pg_alert_view_details">View details</string>
+    <string name="pg_alert_countdown_desc">S wave arrives in %1$d seconds</string>
+    <string name="pg_alert_arrived_desc">Seismic waves have arrived, take cover now</string>
+    <string name="pg_alert_map_desc">Alert map: epicenter, your location and the P and S wavefronts</string>
+    <string name="pg_guide_drop">Drop</string>
+    <string name="pg_guide_cover">Cover</string>
+    <string name="pg_guide_hold">Hold on</string>
+    <string name="pg_guide_windows">Away from windows</string>
+    <string name="pg_alert_tv_tip">Stay away from windows and hanging objects, protect your head</string>
+    <string name="pg_alert_tv_keys_keep">Press OK to close · Back keeps the ticker</string>
+    <string name="pg_alert_tv_keys_back">Press OK or Back to close</string>
+    <string name="pg_alert_summary_title">Alert summary</string>
+    <string name="pg_alert_summary_sub">Waves arrived at %1$s · %2$d s of warning</string>
+    <string name="pg_alert_summary_sub_late">Waves arrived at %1$s</string>
+    <string name="pg_alert_summary_hint">Tap I\'m safe once you are safe to end the alert. Keep away from damaged buildings in case of aftershocks.</string>
+    <string name="pg_alert_sum_epicenter">Epicenter</string>
+    <string name="pg_alert_sum_magnitude">Magnitude</string>
+    <string name="pg_alert_sum_depth">Depth</string>
+    <string name="pg_alert_sum_origin">Origin time</string>
+    <string name="pg_alert_sum_distance">Distance</string>
+    <string name="pg_alert_sum_report">Report</string>
+    <string name="pg_alert_sum_lead">Warning time</string>
+    <string name="pg_alert_km">%1$s km</string>
+    <string name="pg_alert_seconds_value">%1$d s</string>
+    <string name="pg_alert_legend_p">P wave</string>
+    <string name="pg_alert_legend_s">S wave</string>
+    <string name="pg_alert_legend_zone">Intensity %1$d+ expected</string>
+    <string-array name="pg_csis_desc">
+        <item>Not felt</item>
+        <item>Not felt</item>
+        <item>Felt by a few people at rest</item>
+        <item>Felt by some people at rest</item>
+        <item>Felt indoors by most people</item>
+        <item>Most people woken, doors and windows rattle</item>
+        <item>Hard to stand, some people run outdoors</item>
+        <item>Most people run outdoors</item>
+        <item>Hard to walk</item>
+        <item>People in motion fall</item>
+        <item>Cyclists fall</item>
+        <item>Many buildings destroyed</item>
+        <item>Total destruction</item>
+    </string-array>
+</resources>

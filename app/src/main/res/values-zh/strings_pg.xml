@@ -1,0 +1,600 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 通用 -->
+    <string name="pg_back">返回</string>
+    <string name="pg_decrease">减少</string>
+    <string name="pg_increase">增加</string>
+    <string name="pg_list_separator">、</string>
+
+    <!-- 时间与时长 -->
+    <string name="pg_today_at">今天 %1$s</string>
+    <string name="pg_yesterday_at">昨天 %1$s</string>
+    <string name="pg_tomorrow_at">明天 %1$s</string>
+    <string name="pg_dur_dh">%1$d 天 %2$d 小时</string>
+    <string name="pg_dur_hm">%1$d 小时 %2$d 分</string>
+    <string name="pg_dur_m">%1$d 分钟</string>
+    <string name="pg_dur_s">%1$d 秒</string>
+    <string name="pg_just_now">刚刚</string>
+    <string name="pg_seconds_ago">%1$d 秒前</string>
+    <string name="pg_minutes_ago">%1$d 分钟前</string>
+    <string name="pg_hours_ago">%1$d 小时前</string>
+
+    <!-- 监测状态 -->
+    <string name="pg_phase_monitoring">后台监测中</string>
+    <string name="pg_phase_connecting">正在连接…</string>
+    <string name="pg_phase_reconnecting">重连中</string>
+    <string name="pg_phase_degraded">备用通道</string>
+    <string name="pg_phase_limited">受限</string>
+    <string name="pg_phase_paused_until">已暂停至 %1$s</string>
+    <string name="pg_phase_paused">已暂停</string>
+    <string name="pg_phase_off">后台监测已关闭</string>
+    <string name="pg_short_monitoring">监测中</string>
+    <string name="pg_short_connecting">连接中</string>
+    <string name="pg_short_paused_until">暂停至 %1$s</string>
+    <string name="pg_short_off">已关闭</string>
+    <string name="pg_sub_monitoring_uptime">%1$d 路数据源 · 已运行 %2$s</string>
+    <string name="pg_sub_monitoring">%1$d 路数据源已连接</string>
+    <string name="pg_sub_connecting">%1$d 路数据源握手中</string>
+    <string name="pg_sub_reconnecting">第 %1$d 次，%2$d 秒后重试</string>
+    <string name="pg_sub_reconnecting_generic">连接中断，正在重试</string>
+    <string name="pg_sub_degraded">HTTP 每 10 秒查询</string>
+    <string name="pg_sub_limited">缺少%1$s权限</string>
+    <string name="pg_sub_limited_generic">部分权限缺失，预警可能无法送达</string>
+    <string name="pg_sub_paused">到点自动恢复监测</string>
+    <string name="pg_sub_off">不会收到任何地震预警</string>
+
+    <!-- 送达条件 -->
+    <string name="pg_req_notifications">通知</string>
+    <string name="pg_req_overlay">悬浮窗</string>
+    <string name="pg_req_full_screen">全屏通知</string>
+    <string name="pg_req_location">精确位置</string>
+    <string name="pg_req_battery">忽略电池优化</string>
+    <string name="pg_req_dnd">勿扰权限</string>
+    <string name="pg_req_auto_start">系统自启动</string>
+    <string name="pg_req_notifications_desc">预警与常驻状态</string>
+    <string name="pg_req_overlay_desc">在其他应用上方显示预警卡片</string>
+    <string name="pg_req_full_screen_desc">锁屏时弹出全屏预警（Android 14+）</string>
+    <string name="pg_req_location_desc">计算到达时间与本地烈度</string>
+    <string name="pg_req_battery_desc">防止系统在后台断开连接</string>
+    <string name="pg_req_dnd_desc">强震时越过勿扰播放警报音</string>
+    <string name="pg_req_auto_start_desc">本机系统可能拦截开机自启</string>
+
+    <!-- 启动来源 -->
+    <string name="pg_origin_user">手动开启</string>
+    <string name="pg_origin_boot">开机自动启动</string>
+    <string name="pg_origin_package_replaced">更新后恢复</string>
+    <string name="pg_origin_watchdog">看门狗拉起</string>
+    <string name="pg_origin_sticky">系统重启服务</string>
+    <string name="pg_origin_pause_ended">暂停结束后恢复</string>
+    <string name="pg_origin_tile">快捷设置磁贴</string>
+    <string name="pg_origin_notification">通知栏开关</string>
+    <string name="pg_origin_watch">手表</string>
+    <string name="pg_origin_unknown">其他来源</string>
+
+    <!-- 数据源 -->
+    <string name="pg_source_cenc">中国地震台网</string>
+    <string name="pg_source_sichuan">四川地震局</string>
+    <string name="pg_source_fujian">福建地震局</string>
+    <string name="pg_source_chongqing">重庆地震局</string>
+    <string name="pg_source_sichuan_short">四川</string>
+    <string name="pg_source_fujian_short">福建</string>
+    <string name="pg_source_chongqing_short">重庆</string>
+    <string name="pg_sources_summary">%1$s · %2$d 路</string>
+
+    <!-- 指令反馈 -->
+    <string name="pg_start_failed">无法启动后台监测，请稍后再试</string>
+    <string name="pg_command_failed">指令未送达后台服务，请重试</string>
+    <string name="pg_export_failed">导出诊断包失败</string>
+    <string name="pg_open_settings_failed">无法打开对应的系统设置</string>
+    <string name="pg_no_browser">没有可以打开链接的应用</string>
+
+    <!-- 暂停 -->
+    <string name="pg_pause_1h">暂停 1 小时</string>
+    <string name="pg_pause_resumes_at">%1$s 自动恢复</string>
+    <string name="pg_pause_morning">暂停到明早 08:00</string>
+    <string name="pg_pause_resumes_in">%1$s后自动恢复</string>
+    <string name="pg_turn_off_fully">完全关闭</string>
+    <string name="pg_turn_off_fully_desc">直到你重新打开开关</string>
+    <string name="pg_pause_or_off_title">暂停或关闭后台监测？</string>
+    <string name="pg_pause_title">暂停后台监测</string>
+    <string name="pg_pause_current">当前已暂停至 %1$s</string>
+    <string name="pg_pause_desc">期间不会收到任何地震预警，打开应用也不会检测。</string>
+    <string name="pg_turn_off_confirm">关闭监测</string>
+    <string name="pg_pause_confirm">暂停监测</string>
+    <string name="pg_resume_now">立即恢复</string>
+
+    <!-- 模拟演练 -->
+    <string name="pg_drill_title">模拟演练</string>
+    <string name="pg_drill_desc">后台服务注入一条模拟报文，走完整的解析、评估与呈现流程；预警界面会标明「演练」。</string>
+    <string name="pg_drill_run">开始演练</string>
+    <string name="pg_drill_lushan">芦山 6.1 级回放</string>
+    <string name="pg_drill_lushan_desc">2022 年 6 月 1 日四川芦山 · 深度 17 km · 按真实震中计算</string>
+    <string name="pg_drill_near">近场强震</string>
+    <string name="pg_drill_near_desc">M6.5 · 约 85 km 外 · 全屏强预警</string>
+    <string name="pg_drill_far">远处中强震</string>
+    <string name="pg_drill_far_desc">M5.0 · 约 300 km 外 · 悬浮卡片提醒</string>
+
+    <!-- 应用内更新 -->
+    <string name="pg_channel_stable">稳定版</string>
+    <string name="pg_channel_preview">预览版</string>
+    <string name="pg_version_line">版本 %1$s（%2$d）· %3$s</string>
+    <string name="pg_update_known_hint">上次检查发现了新版本，获取下载信息后即可安装。</string>
+    <string name="pg_update_fetch">获取更新</string>
+    <string name="pg_update_never_checked">尚未检查更新</string>
+    <string name="pg_update_last_check">上次检查 %1$s · %2$s</string>
+    <string name="pg_update_auto_desc">每天自动检查一次</string>
+    <string name="pg_update_checking_desc">正在查询 GitHub Releases…</string>
+    <string name="pg_update_download_install">下载并安装</string>
+    <string name="pg_update_downloading">正在下载</string>
+    <string name="pg_update_progress">%1$d%% · %2$s / %3$s</string>
+    <string name="pg_update_monitoring_continues">下载期间后台监测照常运行</string>
+    <string name="pg_update_cancel_download">取消下载</string>
+    <string name="pg_update_verifying">正在校验</string>
+    <string name="pg_update_verifying_desc">核对安装包签名与完整性…</string>
+    <string name="pg_update_verified">已下载并通过校验</string>
+    <string name="pg_update_verified_desc">签名与当前安装的版本一致。</string>
+    <string name="pg_update_install_note">安装完成后后台监测立即恢复，不受「开机自动启动」影响。</string>
+    <string name="pg_update_install_now">立即安装</string>
+    <string name="pg_update_permission_title">需要安装权限</string>
+    <string name="pg_update_permission_desc">请允许本应用安装未知应用，返回后继续安装。</string>
+    <string name="pg_update_install_again">重新安装</string>
+    <string name="pg_update_grant">去授权</string>
+    <string name="pg_update_metered_title">使用移动数据下载？</string>
+    <string name="pg_update_metered_desc">当前不是 Wi-Fi 网络，安装包约 %1$s。</string>
+    <string name="pg_update_download_anyway">仍然下载</string>
+    <string name="pg_update_published">发布于 %1$s</string>
+    <string name="pg_update_settings">更新设置</string>
+    <string name="pg_more">更多</string>
+    <string name="pg_about_licenses_sources">开源许可与数据来源</string>
+    <string name="pg_update_auto_check">自动检查更新</string>
+    <string name="pg_update_wifi_only">仅在 Wi-Fi 下下载</string>
+    <string name="pg_update_wifi_only_desc">使用移动数据时先询问</string>
+    <string name="pg_update_channel">更新通道</string>
+    <string name="pg_channel_preview_desc">抢先体验新功能，可能不够稳定</string>
+    <string name="pg_channel_stable_desc">经过验证的正式版本</string>
+    <string name="pg_update_verification">安装包校验</string>
+    <string name="pg_update_verification_desc">安装前核对签名与 SHA-256，校验失败不会安装</string>
+
+    <!-- 关于 -->
+    <string name="pg_about_update">关于与更新</string>
+    <string name="pg_about_eew_value">Wolfx 地震预警接口 · 中国地震台网、四川、福建、重庆</string>
+    <string name="pg_about_catalog">地震目录</string>
+    <string name="pg_about_catalog_value">中国地震台网速报目录</string>
+    <string name="pg_about_map_value">高德地图 · © OpenStreetMap 贡献者</string>
+    <string name="pg_about_algorithm_value">烈度估算与走时表参考 kanameishi</string>
+    <string name="pg_about_app_license">本应用许可</string>
+    <string name="pg_about_source_code">源代码</string>
+    <string name="pg_about_libraries">开源组件</string>
+    <string name="pg_about_libraries_value">Jetpack Compose、Material 3、OkHttp、Retrofit、osmdroid 等</string>
+    <string name="pg_about_changelog">更新日志</string>
+    <string name="pg_about_changelog_value">GitHub Releases</string>
+    <string name="pg_about_thanks_wolfx">提供地震预警数据接口</string>
+    <string name="pg_about_thanks_kanameishi">烈度估算与走时表</string>
+    <string name="pg_about_thanks_osm">地图数据</string>
+    <string name="pg_about_thanks_devs">感谢所有贡献者</string>
+
+    <!-- 设置首页 -->
+    <string name="pg_group_monitor">监测</string>
+    <string name="pg_group_alerts">预警</string>
+    <string name="pg_group_display">显示</string>
+    <string name="pg_group_location">位置</string>
+    <string name="pg_group_tools">工具</string>
+    <string name="pg_group_about">关于</string>
+    <string name="pg_monitor">后台持续监测</string>
+    <string name="pg_sources">数据源</string>
+    <string name="pg_pause">暂停</string>
+    <string name="pg_pause_until_short">至 %1$s</string>
+    <string name="pg_not_paused">未暂停</string>
+    <string name="pg_alert_thresholds">预警阈值</string>
+    <string name="pg_strong_threshold">强震阈值</string>
+    <string name="pg_strong_summary">本地烈度 ≥ %1$d 度时全屏接管</string>
+    <string name="pg_bypass_dnd">强震越过勿扰</string>
+    <string name="pg_bypass_dnd_desc">警报音 · 强震时越过勿扰</string>
+    <string name="pg_bypass_dnd_needs">需要勿扰权限，点按授予</string>
+    <string name="pg_tts">语音播报</string>
+    <string name="pg_tts_desc">朗读倒计时与烈度</string>
+    <string name="pg_back_dismiss">返回键关闭预警</string>
+    <string name="pg_back_dismiss_desc">关闭后只能用屏幕上的按钮关闭预警</string>
+    <string name="pg_theme">主题</string>
+    <string name="pg_theme_system">跟随系统</string>
+    <string name="pg_theme_light">浅色</string>
+    <string name="pg_theme_dark">深色</string>
+    <string name="pg_layout">界面布局</string>
+    <string name="pg_map_amap">高德标准</string>
+    <string name="pg_map_amap_sat">高德卫星</string>
+    <string name="pg_map_amap_desc">国内道路与地名最全</string>
+    <string name="pg_map_amap_sat_desc">卫星影像，叠加道路与地名</string>
+    <string name="pg_map_osm_desc">开放地图，适合境外</string>
+    <string name="pg_location_source">位置来源</string>
+    <string name="pg_diagnostics">诊断</string>
+    <string name="pg_diag_ok">服务正常</string>
+    <string name="pg_drill_summary">芦山 6.1 级回放等 3 个场景</string>
+    <string name="pg_export">导出诊断包</string>
+    <string name="pg_export_desc">日志、指标与自检结果</string>
+    <string name="pg_update_badge">新版本</string>
+    <string name="pg_about_version_new">%1$s · 有新版本 %2$s</string>
+    <string name="pg_about_version_current">当前版本 %1$s</string>
+    <string name="pg_about_licenses_desc">数据来源、开源许可与致谢</string>
+    <string name="pg_boot_last_auto">上次开机后 %1$d 秒已自动启动</string>
+    <string name="pg_mag_any">不限震级</string>
+    <string name="pg_mag_min">震级 ≥ %1$s</string>
+    <string name="pg_int_any">不限烈度</string>
+    <string name="pg_int_min">本地烈度 ≥ %1$d 度</string>
+
+    <!-- 界面布局 -->
+    <string name="pg_layout_auto">自动（推荐）</string>
+    <string name="pg_layout_phone">手机</string>
+    <string name="pg_layout_medium">双栏</string>
+    <string name="pg_layout_tablet">平板</string>
+    <string name="pg_layout_tv">电视</string>
+    <string name="pg_layout_kiosk">看板</string>
+    <string name="pg_layout_auto_desc">按宽度、折叠姿态与设备类型判定</string>
+    <string name="pg_layout_phone_desc">单栏 + 底部导航</string>
+    <string name="pg_layout_tablet_desc">导航栏轨 + 地图 + 侧栏</string>
+    <string name="pg_layout_tv_desc">大字号与焦点导航</string>
+    <string name="pg_layout_kiosk_desc">全屏地图 + 时钟，屏幕常亮</string>
+    <string name="pg_layout_session_summary">%1$s · 仅本次会话</string>
+    <string name="pg_layout_auto_summary">自动 · 当前为%1$s</string>
+    <string name="pg_width_compact">紧凑宽度</string>
+    <string name="pg_width_medium">中等宽度</string>
+    <string name="pg_width_expanded">扩展宽度</string>
+    <string name="pg_layout_size">%1$d × %2$d dp</string>
+    <string name="pg_posture_book">书本姿态</string>
+    <string name="pg_posture_tabletop">桌面姿态</string>
+    <string name="pg_posture_dual">双屏</string>
+    <string name="pg_posture_portrait">竖屏</string>
+    <string name="pg_posture_landscape">横屏</string>
+    <string name="pg_input_remote">遥控器</string>
+    <string name="pg_input_touch">触摸</string>
+    <string name="pg_input_pointer">键盘与鼠标</string>
+    <string name="pg_layout_source_auto">自动判定</string>
+    <string name="pg_layout_source_settings">设置中指定</string>
+    <string name="pg_layout_source_session">仅本次会话</string>
+    <string name="pg_layout_current_auto">当前自动判定：%1$s</string>
+    <string name="pg_layout_effective">生效中：%1$s（%2$s）</string>
+    <string name="pg_group_fold">折叠屏与双屏</string>
+    <string name="pg_span_hinge">跨铰链分栏</string>
+    <string name="pg_span_hinge_desc">展开时列表与详情分列两侧</string>
+    <string name="pg_tabletop_split">桌面模式预警分屏</string>
+    <string name="pg_tabletop_split_desc">半开时上屏地图、下屏操作</string>
+    <string name="pg_single_screen">双屏时只用一块屏</string>
+    <string name="pg_single_screen_desc">关闭时跨两块屏显示</string>
+    <string name="pg_group_session">临时切换</string>
+    <string name="pg_layout_session">仅本次会话</string>
+    <string name="pg_layout_session_idle">仅本次有效，退出应用后恢复；概览页菜单中也可切换</string>
+    <string name="pg_layout_session_active">当前：%1$s · 退出应用后恢复</string>
+    <string name="pg_layout_session_title">临时切换布局</string>
+    <string name="pg_layout_session_desc">仅本次有效，退出应用后恢复为设置中的布局。</string>
+    <string name="pg_layout_session_none">不临时切换</string>
+    <string name="pg_layout_session_none_desc">使用设置中的布局</string>
+    <string name="pg_layout_reset">恢复默认</string>
+    <string name="pg_layout_reset_desc">自动判定，折叠屏选项恢复默认</string>
+    <string name="pg_layout_alert_note">预警界面不受此设置影响，始终按设备真实尺寸显示。</string>
+
+    <!-- 位置 -->
+    <string name="pg_loc_gps">GPS</string>
+    <string name="pg_loc_network">网络定位</string>
+    <string name="pg_loc_manual">手动</string>
+    <string name="pg_loc_ip">IP 定位</string>
+    <string name="pg_loc_none">未定位</string>
+    <string name="pg_loc_summary_manual">手动 · %1$s</string>
+    <string name="pg_loc_summary_manual_unset">手动 · 尚未设置位置</string>
+    <string name="pg_loc_summary_auto_now">自动 · 当前为 %1$s</string>
+    <string name="pg_loc_summary_auto">自动 · GPS，失败时用 IP</string>
+    <string name="pg_loc_mode_auto">自动定位</string>
+    <string name="pg_loc_mode_auto_desc">GPS，失败时用 IP 估算</string>
+    <string name="pg_loc_mode_manual">手动指定</string>
+    <string name="pg_loc_mode_manual_desc">固定位置，不需要定位权限</string>
+    <string name="pg_loc_status">定位状态</string>
+    <string name="pg_loc_current">当前定位</string>
+    <string name="pg_loc_accuracy">±%1$d m</string>
+    <string name="pg_loc_age">更新于 %1$s</string>
+    <string name="pg_loc_ip_warn">只有 IP 定位时误差可达数十公里，到达时间与本地烈度可能不准。建议授予精确位置或手动指定。</string>
+    <string name="pg_loc_manual_title">手动位置</string>
+    <string name="pg_loc_name">地点名称</string>
+    <string name="pg_loc_lat">纬度</string>
+    <string name="pg_loc_lon">经度</string>
+    <string name="pg_loc_invalid_lat">纬度应在 -90 到 90 之间</string>
+    <string name="pg_loc_invalid_lon">经度应在 -180 到 180 之间</string>
+    <string name="pg_loc_save">保存位置</string>
+    <string name="pg_loc_saved">位置已保存</string>
+    <string name="pg_loc_use_current">使用当前定位</string>
+    <string name="pg_loc_no_fix">暂时无法获取当前位置</string>
+    <string name="pg_loc_presets">常用城市</string>
+    <string name="pg_loc_manual_note">手动位置只用于在本机计算到达时间与本地烈度，不会上传。</string>
+    <string-array name="pg_city_names">
+        <item>北京</item>
+        <item>上海</item>
+        <item>广州</item>
+        <item>深圳</item>
+        <item>成都</item>
+        <item>重庆</item>
+        <item>西安</item>
+        <item>昆明</item>
+        <item>兰州</item>
+        <item>拉萨</item>
+        <item>乌鲁木齐</item>
+        <item>福州</item>
+        <item>台北</item>
+        <item>杭州</item>
+    </string-array>
+
+    <!-- 数据源与阈值 -->
+    <string name="pg_sources_min">至少保留一路数据源</string>
+    <string name="pg_sources_note">报文按事件去重，订阅多路不会重复预警。中国地震台网覆盖全国，四川、福建、重庆为省级预警网。</string>
+    <string name="pg_source_unsubscribed">未订阅</string>
+    <string name="pg_link_connected">已连接</string>
+    <string name="pg_link_connected_latency">已连接 · 延迟 %1$s s</string>
+    <string name="pg_link_polling">HTTP 轮询</string>
+    <string name="pg_link_reconnecting">重连中</string>
+    <string name="pg_link_connecting">连接中</string>
+    <string name="pg_link_disconnected">未连接</string>
+    <string name="pg_value_any">不限</string>
+    <string name="pg_value_intensity">%1$d 度</string>
+    <string name="pg_group_remind">提醒</string>
+    <string name="pg_group_strong">强震</string>
+    <string name="pg_group_sound">声音与操作</string>
+    <string name="pg_min_mag_desc">低于此震级的地震不提醒</string>
+    <string name="pg_min_int_title">最低本地烈度</string>
+    <string name="pg_min_int_desc">预估本地烈度低于此值时只记录</string>
+    <string name="pg_strong_title">强预警烈度</string>
+    <string name="pg_strong_desc">达到时全屏接管并播放警报音</string>
+    <string name="pg_csis_scale">中国地震烈度（CSIS）</string>
+    <string name="pg_scale_remind">≥ %1$d 度提醒</string>
+    <string name="pg_scale_strong">≥ %1$d 度全屏</string>
+    <string name="pg_alert_tiers_note">达到提醒阈值：悬浮卡片与提示音；达到强预警烈度：全屏接管、警报音与振动；都未达到时只记录在地震列表。</string>
+
+    <!-- 开启检查 -->
+    <string name="pg_start_check_title">开启后台监测</string>
+    <string name="pg_start_check_desc">以下项目决定预警能否及时送达。</string>
+    <string name="pg_start_check_missing">还差 %1$d 项。现在开启也可以，但服务会处于「受限」状态，锁屏时可能无法弹出全屏预警。</string>
+    <string name="pg_start_check_confirm">开启监测</string>
+    <string name="pg_fix_enable">去开启</string>
+    <string name="pg_fix_settings">去设置</string>
+    <string name="pg_fix_grant">授予</string>
+
+    <!-- 后台监测 -->
+    <string name="pg_monitor_page">后台监测</string>
+    <string name="pg_group_start">启动</string>
+    <string name="pg_direct_boot">解锁前即可监测</string>
+    <string name="pg_direct_boot_desc">开机后还没输入锁屏密码也会预警</string>
+    <string name="pg_autostart_perm">系统自启动权限</string>
+    <string name="pg_autostart_restricted">%1$s · 可能拦截开机自启，点按去允许</string>
+    <string name="pg_autostart_ok">未发现厂商自启动限制</string>
+    <string name="pg_monitor_note">检测由后台服务完成，界面只显示状态。关闭或从最近任务划掉应用不影响检测；监测关闭时，打开应用也不会检测。</string>
+    <string name="pg_monitor_off_note">检测由后台服务完成，与是否打开应用无关。开启后报文发布约 1 秒内即可收到预警，重启手机后也会自动恢复。</string>
+    <string name="pg_group_delivery">送达检查</string>
+    <string name="pg_delivery_pending">%1$d 项待处理</string>
+    <string name="pg_delivery_all_ok">全部就绪</string>
+    <string name="pg_pause_row_paused">至 %1$s · 剩余 %2$s</string>
+    <string name="pg_pause_row_idle">可暂停 1 小时或到明早 08:00</string>
+    <string name="pg_group_recent_starts">最近启动</string>
+    <string name="pg_no_starts">暂无启动记录</string>
+    <string name="pg_no_starts_desc">每次开机、看门狗或手动启动都会记录在这里</string>
+    <string name="pg_open_diagnostics">查看诊断</string>
+    <string name="pg_open_diagnostics_desc">连接、心跳、延迟与端到端自检</string>
+    <string name="pg_meta_heartbeat">心跳 %1$s</string>
+    <string name="pg_meta_latency">延迟 %1$s s</string>
+    <string name="pg_meta_clock">时钟 %1$s s</string>
+    <string name="pg_meta_remaining">剩余 %1$s</string>
+    <string name="pg_meta_resume_any">可随时恢复</string>
+    <string name="pg_meta_polling">HTTP 轮询 · %1$s</string>
+
+    <!-- 开机与锁屏 -->
+    <string name="pg_boot_page">开机自动启动</string>
+    <string name="pg_boot_this_boot">本次开机</string>
+    <string name="pg_boot_this_auto">开机后 %1$d 秒自动启动</string>
+    <string name="pg_boot_this_none">本次开机未自动启动</string>
+    <string name="pg_boot_this_blocked">本次开机未自动启动，可能被系统拦截</string>
+    <string name="pg_boot_this_running">本次开机由「%1$s」启动</string>
+    <string name="pg_lock_preview">重启后的锁屏</string>
+    <string name="pg_lock_preview_caption">刚刚重启 · 尚未解锁</string>
+    <string name="pg_lock_app_monitor">%1$s · 后台监测</string>
+    <string name="pg_lock_off">后台监测已关闭：重启后不启动，也不提示。</string>
+    <string name="pg_lock_paused_title">已暂停 · %1$s 自动恢复</string>
+    <string name="pg_lock_paused_body">重启后已重新登记恢复时间</string>
+    <string name="pg_lock_on_title">监测中 · 开机后 %1$d 秒自动启动</string>
+    <string name="pg_lock_on_title_generic">监测中 · 开机后自动启动</string>
+    <string name="pg_lock_on_body">%1$d 路数据源已连接 · 未解锁也会预警</string>
+    <string name="pg_group_reboot">重启后</string>
+    <string name="pg_current">当前</string>
+    <string name="pg_boot_case_on_on">监测开 · 自启开</string>
+    <string name="pg_boot_case_on_on_desc">收到开机广播即启动服务，进入「连接中」；还没解锁也能监测和预警。</string>
+    <string name="pg_boot_case_on_off">监测开 · 自启关</string>
+    <string name="pg_boot_case_on_off_desc">不启动服务，看门狗也不会拉起；发一条「地震监测未启动」通知，带「立即启动」按钮。</string>
+    <string name="pg_boot_case_paused_on">暂停中 · 自启开</string>
+    <string name="pg_boot_case_paused_on_desc">暂不启动；重新登记恢复闹钟，到期自动恢复；到期时间已过则立即启动。</string>
+    <string name="pg_boot_case_paused_off">暂停中 · 自启关</string>
+    <string name="pg_boot_case_paused_off_desc">同「监测开 · 自启关」：不启动，发通知。</string>
+    <string name="pg_boot_case_off">监测关</string>
+    <string name="pg_boot_case_off_desc">不启动，也不提示。</string>
+    <string name="pg_group_direct_boot">解锁前监测</string>
+    <string name="pg_direct_boot_long">开机广播接收器与后台服务支持直接启动；两个开关、暂停到期时间和最近位置保存在设备保护存储中，还没输入锁屏密码也能开始监测。</string>
+    <string name="pg_group_system_limits">系统限制</string>
+    <string name="pg_watchdog_note">看门狗每 15 分钟检查一次服务，只拉起本次开机内启动过的服务；关闭开机自动启动后，重启不会被看门狗绕过。</string>
+    <string name="pg_update_resume_note">应用内更新安装完成后立即恢复监测；这不是开机，不受「开机自动启动」影响。</string>
+
+    <!-- 诊断 -->
+    <string name="pg_diag_updated">更新于 %1$s</string>
+    <string name="pg_diag_title_connecting">正在连接</string>
+    <string name="pg_diag_title_reconnecting">正在重连</string>
+    <string name="pg_diag_title_degraded">备用通道运行</string>
+    <string name="pg_diag_title_limited">受限运行</string>
+    <string name="pg_diag_title_paused">监测已暂停</string>
+    <string name="pg_diag_title_off">监测未运行</string>
+    <string name="pg_diag_availability">24 小时可用率 %1$s%%</string>
+    <string name="pg_diag_reconnects">重连 %1$d 次</string>
+    <string name="pg_diag_longest">最长中断 %1$s</string>
+    <string name="pg_diag_history">以下为历史记录</string>
+    <string name="pg_diag_paused_until">%1$s 自动恢复 · 以下为历史记录</string>
+    <string name="pg_diag_since">自 %1$s 起</string>
+    <string name="pg_diag_running">已运行 %1$s</string>
+    <string name="pg_diag_origin">由「%1$s」启动</string>
+    <string name="pg_now">现在</string>
+    <string name="pg_diag_pipeline">数据链路</string>
+    <string name="pg_diag_end_to_end">端到端 %1$s s</string>
+    <string name="pg_pipe_source">数据源</string>
+    <string name="pg_pipe_link">连接</string>
+    <string name="pg_pipe_link_value">%1$d / %2$d 路</string>
+    <string name="pg_pipe_parse">解析</string>
+    <string name="pg_pipe_evaluate">评估</string>
+    <string name="pg_pipe_present">呈现</string>
+    <string name="pg_pipe_idle">未运行</string>
+    <string name="pg_pipe_partial">部分可用</string>
+    <string name="pg_pipe_ready">就绪</string>
+    <string name="pg_ms">%1$d ms</string>
+    <string name="pg_seconds_value">%1$s s</string>
+    <string name="pg_diag_sources_connected">%1$d / %2$d 路已连接</string>
+    <string name="pg_src_idle">监测未运行</string>
+    <string name="pg_src_last_report">最近：%1$s · %2$s</string>
+    <string name="pg_src_polling">HTTP 每 10 秒查询 · WebSocket 连续失败 %1$d 次</string>
+    <string name="pg_src_reconnecting">第 %1$d 次重连，%2$d 秒后 · 期间由其余 %3$d 路覆盖</string>
+    <string name="pg_src_connecting">握手中…</string>
+    <string name="pg_diag_metrics">指标</string>
+    <string name="pg_no_data">暂无数据</string>
+    <string name="pg_level_good">正常</string>
+    <string name="pg_level_warn">警告</string>
+    <string name="pg_level_bad">异常</string>
+    <string name="pg_level_unknown">暂无数据</string>
+    <string name="pg_metric_heartbeat">心跳间隔</string>
+    <string name="pg_metric_heartbeat_expect">期望 ≤ 60 s</string>
+    <string name="pg_metric_latency">报文延迟</string>
+    <string name="pg_metric_latency_p95">延迟 p95</string>
+    <string name="pg_unit_s_p50">s p50</string>
+    <string name="pg_metric_latency_detail">p95 %1$s s · 今日 %2$d 条</string>
+    <string name="pg_metric_reports_today">今日 %1$d 条报文</string>
+    <string name="pg_metric_clock">时钟偏差</string>
+    <string name="pg_metric_clock_detail">ntp.json · %1$s</string>
+    <string name="pg_metric_location">定位</string>
+    <string name="pg_metric_system">系统限制</string>
+    <string name="pg_metric_exempt">已豁免</string>
+    <string name="pg_metric_not_exempt">受电池优化</string>
+    <string name="pg_metric_bucket">待机分组 %1$s</string>
+    <string name="pg_metric_data_saver_on">省流模式开启</string>
+    <string name="pg_metric_data_saver_off">省流模式关闭</string>
+    <string name="pg_metric_watchdog">看门狗</string>
+    <string name="pg_metric_watchdog_next">下次 %1$s · 服务存活</string>
+    <string name="pg_metric_watchdog_restarted">24 小时内发现服务被杀并已重启</string>
+    <string name="pg_metric_boot_detail">上次开机 %1$s · 已自动启动</string>
+    <string name="pg_metric_process">检测进程</string>
+    <string name="pg_metric_process_value">后台服务</string>
+    <string name="pg_metric_process_detail">与界面无关 · %1$s</string>
+    <string name="pg_metric_availability">24 h 可用率</string>
+    <string name="pg_metric_reconnects">重连次数</string>
+    <string name="pg_metric_24h">过去 24 小时</string>
+    <string name="pg_unit_times">次</string>
+    <string name="pg_diag_open_full">查看完整诊断</string>
+
+    <!-- 自检 -->
+    <string name="pg_diag_selftest">端到端自检</string>
+    <string name="pg_selftest_never">尚未运行</string>
+    <string name="pg_selftest_step">第 %1$d / %2$d 步</string>
+    <string name="pg_selftest_pass">%1$d 项通过</string>
+    <string name="pg_selftest_warn">%1$d 项警告</string>
+    <string name="pg_selftest_fail">%1$d 项未通过</string>
+    <string name="pg_comma">，</string>
+    <string name="pg_selftest_checking">检查中…</string>
+    <string name="pg_selftest_waiting">等待</string>
+    <string name="pg_selftest_skipped">未执行</string>
+    <string name="pg_selftest_passed">通过</string>
+    <string name="pg_selftest_failed">未通过</string>
+    <string name="pg_selftest_fix">修复</string>
+    <string name="pg_selftest_run">运行自检</string>
+    <string name="pg_selftest_running">自检中…</string>
+    <string name="pg_step_network">网络可达</string>
+    <string name="pg_step_sources">数据源连接</string>
+    <string name="pg_step_clock">时钟偏差</string>
+    <string name="pg_step_location">定位</string>
+    <string name="pg_step_permissions">通知与预警权限</string>
+    <string name="pg_step_limits">系统限制</string>
+    <string name="pg_step_pipeline">解析与评估</string>
+    <string name="pg_step_presentation">预警呈现通道</string>
+    <string name="pg_step_network_desc">api.wolfx.jp 可达与 DNS 解析</string>
+    <string name="pg_step_sources_desc">各路 WebSocket 握手、心跳与 HTTP 备用接口</string>
+    <string name="pg_step_clock_desc">本机时钟与 ntp.json 的偏差</string>
+    <string name="pg_step_location_desc">定位来源与新鲜度</string>
+    <string name="pg_step_permissions_desc">通知、悬浮窗与全屏通知</string>
+    <string name="pg_step_limits_desc">电池优化、待机分组与省流模式</string>
+    <string name="pg_step_pipeline_desc">注入测试报文走完解析 → 评估</string>
+    <string name="pg_step_presentation_desc">预警窗口与通知通道（静默）</string>
+
+    <!-- 事件日志 -->
+    <string name="pg_diag_log">事件日志</string>
+    <string name="pg_log_ok">正常</string>
+    <string name="pg_log_info">信息</string>
+    <string name="pg_log_warn">警告</string>
+    <string name="pg_log_error">错误</string>
+    <string name="pg_log_copy">复制</string>
+    <string name="pg_log_copied">日志已复制</string>
+    <string name="pg_log_empty">暂无日志。开启后台监测后，连接、心跳、重连与预警都会记录在这里。</string>
+    <string name="pg_log_no_match">没有符合筛选条件的日志</string>
+    <string name="pg_log_more">显示更早的 %1$d 条</string>
+
+    <!-- 预警 -->
+    <string name="pg_alert_card_title">地震预警</string>
+    <string name="pg_alert_drill">演练</string>
+    <string name="pg_alert_report">第 %1$d 报</string>
+    <string name="pg_alert_report_final">第 %1$d 报 · 终报</string>
+    <string name="pg_alert_s_arrival">S 波抵达</string>
+    <string name="pg_alert_waves">地震波</string>
+    <string name="pg_alert_arrived">已到达</string>
+    <string name="pg_alert_seconds">秒</string>
+    <string name="pg_alert_p_arrived">P 波已到达</string>
+    <string name="pg_alert_p_in">P 波 %1$d 秒后</string>
+    <string name="pg_alert_take_cover">注意避险</string>
+    <string name="pg_alert_intensity_estimate">本地烈度 · 估计 %1$s</string>
+    <string name="pg_alert_intensity_value">本地烈度 %1$d</string>
+    <string name="pg_alert_intensity_distance">本地烈度 %1$d · 距震中 %2$s km</string>
+    <string name="pg_alert_from_epicenter">距震中</string>
+    <string name="pg_alert_distance_epicenter">距震中 %1$s km</string>
+    <string name="pg_alert_distance_you">距你 %1$s km</string>
+    <string name="pg_alert_depth">深 %1$s km</string>
+    <string name="pg_alert_origin">%1$s 发震</string>
+    <string name="pg_alert_safe">我已安全</string>
+    <string name="pg_alert_mute">静音</string>
+    <string name="pg_alert_muted">已静音</string>
+    <string name="pg_alert_close">关闭</string>
+    <string name="pg_alert_details">详情</string>
+    <string name="pg_alert_view_details">查看详情</string>
+    <string name="pg_alert_countdown_desc">S 波 %1$d 秒后到达</string>
+    <string name="pg_alert_arrived_desc">地震波已到达，请就近避险</string>
+    <string name="pg_alert_map_desc">预警地图：震中、你的位置与 P 波、S 波波前</string>
+    <string name="pg_guide_drop">伏地</string>
+    <string name="pg_guide_cover">遮挡</string>
+    <string name="pg_guide_hold">手抓牢</string>
+    <string name="pg_guide_windows">远离窗户</string>
+    <string name="pg_alert_tv_tip">请远离窗户和悬挂物，保护头部</string>
+    <string name="pg_alert_tv_keys_keep">按 OK 关闭 · 返回键保留字幕</string>
+    <string name="pg_alert_tv_keys_back">按 OK 或返回键关闭</string>
+    <string name="pg_alert_summary_title">预警摘要</string>
+    <string name="pg_alert_summary_sub">地震波 %1$s 到达 · 预警提前 %2$d 秒</string>
+    <string name="pg_alert_summary_sub_late">地震波 %1$s 到达</string>
+    <string name="pg_alert_summary_hint">确认安全后点「我已安全」结束预警。如有余震，请继续远离危险建筑。</string>
+    <string name="pg_alert_sum_epicenter">震中</string>
+    <string name="pg_alert_sum_magnitude">震级</string>
+    <string name="pg_alert_sum_depth">深度</string>
+    <string name="pg_alert_sum_origin">发震时刻</string>
+    <string name="pg_alert_sum_distance">距震中</string>
+    <string name="pg_alert_sum_report">报文</string>
+    <string name="pg_alert_sum_lead">预警提前</string>
+    <string name="pg_alert_km">%1$s km</string>
+    <string name="pg_alert_seconds_value">%1$d 秒</string>
+    <string name="pg_alert_legend_p">P 波</string>
+    <string name="pg_alert_legend_s">S 波</string>
+    <string name="pg_alert_legend_zone">预计 %1$d 度以上</string>
+    <string-array name="pg_csis_desc">
+        <item>无感</item>
+        <item>无感</item>
+        <item>个别静止的人有感</item>
+        <item>少数静止的人有感</item>
+        <item>室内多数人有感</item>
+        <item>多数人惊醒，门窗作响</item>
+        <item>站立不稳，少数人惊逃户外</item>
+        <item>大多数人惊逃户外</item>
+        <item>行走困难</item>
+        <item>行动的人摔倒</item>
+        <item>骑车的人会摔倒</item>
+        <item>房屋大量毁坏</item>
+        <item>毁灭</item>
+    </string-array>
+</resources>
