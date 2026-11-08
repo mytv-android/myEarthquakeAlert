@@ -529,4 +529,72 @@
     <string name="pg_log_empty">暂无日志。开启后台监测后，连接、心跳、重连与预警都会记录在这里。</string>
     <string name="pg_log_no_match">没有符合筛选条件的日志</string>
     <string name="pg_log_more">显示更早的 %1$d 条</string>
+
+    <!-- 预警 -->
+    <string name="pg_alert_card_title">地震预警</string>
+    <string name="pg_alert_drill">演练</string>
+    <string name="pg_alert_report">第 %1$d 报</string>
+    <string name="pg_alert_report_final">第 %1$d 报 · 终报</string>
+    <string name="pg_alert_s_arrival">S 波抵达</string>
+    <string name="pg_alert_waves">地震波</string>
+    <string name="pg_alert_arrived">已到达</string>
+    <string name="pg_alert_seconds">秒</string>
+    <string name="pg_alert_p_arrived">P 波已到达</string>
+    <string name="pg_alert_p_in">P 波 %1$d 秒后</string>
+    <string name="pg_alert_take_cover">注意避险</string>
+    <string name="pg_alert_intensity_estimate">本地烈度 · 估计 %1$s</string>
+    <string name="pg_alert_intensity_value">本地烈度 %1$d</string>
+    <string name="pg_alert_intensity_distance">本地烈度 %1$d · 距震中 %2$s km</string>
+    <string name="pg_alert_from_epicenter">距震中</string>
+    <string name="pg_alert_distance_epicenter">距震中 %1$s km</string>
+    <string name="pg_alert_distance_you">距你 %1$s km</string>
+    <string name="pg_alert_depth">深 %1$s km</string>
+    <string name="pg_alert_origin">%1$s 发震</string>
+    <string name="pg_alert_safe">我已安全</string>
+    <string name="pg_alert_mute">静音</string>
+    <string name="pg_alert_muted">已静音</string>
+    <string name="pg_alert_close">关闭</string>
+    <string name="pg_alert_details">详情</string>
+    <string name="pg_alert_view_details">查看详情</string>
+    <string name="pg_alert_countdown_desc">S 波 %1$d 秒后到达</string>
+    <string name="pg_alert_arrived_desc">地震波已到达，请就近避险</string>
+    <string name="pg_alert_map_desc">预警地图：震中、你的位置与 P 波、S 波波前</string>
+    <string name="pg_guide_drop">伏地</string>
+    <string name="pg_guide_cover">遮挡</string>
+    <string name="pg_guide_hold">手抓牢</string>
+    <string name="pg_guide_windows">远离窗户</string>
+    <string name="pg_alert_tv_tip">请远离窗户和悬挂物，保护头部</string>
+    <string name="pg_alert_tv_keys_keep">按 OK 关闭 · 返回键保留字幕</string>
+    <string name="pg_alert_tv_keys_back">按 OK 或返回键关闭</string>
+    <string name="pg_alert_summary_title">预警摘要</string>
+    <string name="pg_alert_summary_sub">地震波 %1$s 到达 · 预警提前 %2$d 秒</string>
+    <string name="pg_alert_summary_sub_late">地震波 %1$s 到达</string>
+    <string name="pg_alert_summary_hint">确认安全后点「我已安全」结束预警。如有余震，请继续远离危险建筑。</string>
+    <string name="pg_alert_sum_epicenter">震中</string>
+    <string name="pg_alert_sum_magnitude">震级</string>
+    <string name="pg_alert_sum_depth">深度</string>
+    <string name="pg_alert_sum_origin">发震时刻</string>
+    <string name="pg_alert_sum_distance">距震中</string>
+    <string name="pg_alert_sum_report">报文</string>
+    <string name="pg_alert_sum_lead">预警提前</string>
+    <string name="pg_alert_km">%1$s km</string>
+    <string name="pg_alert_seconds_value">%1$d 秒</string>
+    <string name="pg_alert_legend_p">P 波</string>
+    <string name="pg_alert_legend_s">S 波</string>
+    <string name="pg_alert_legend_zone">预计 %1$d 度以上</string>
+    <string-array name="pg_csis_desc">
+        <item>无感</item>
+        <item>无感</item>
+        <item>个别静止的人有感</item>
+        <item>少数静止的人有感</item>
+        <item>室内多数人有感</item>
+        <item>多数人惊醒，门窗作响</item>
+        <item>站立不稳，少数人惊逃户外</item>
+        <item>大多数人惊逃户外</item>
+        <item>行走困难</item>
+        <item>行动的人摔倒</item>
+        <item>骑车的人会摔倒</item>
+        <item>房屋大量毁坏</item>
+        <item>毁灭</item>
+    </string-array>
 </resources>

@@ -529,4 +529,72 @@
     <string name="pg_log_empty">No log yet. Once monitoring is on, connections, heartbeats, reconnects and alerts are recorded here.</string>
     <string name="pg_log_no_match">No entries match the filters</string>
     <string name="pg_log_more">Show %1$d earlier entries</string>
+
+    <!-- 预警 -->
+    <string name="pg_alert_card_title">Earthquake alert</string>
+    <string name="pg_alert_drill">Drill</string>
+    <string name="pg_alert_report">Report %1$d</string>
+    <string name="pg_alert_report_final">Report %1$d · final</string>
+    <string name="pg_alert_s_arrival">S wave in</string>
+    <string name="pg_alert_waves">Seismic waves</string>
+    <string name="pg_alert_arrived">Arrived</string>
+    <string name="pg_alert_seconds">s</string>
+    <string name="pg_alert_p_arrived">P wave arrived</string>
+    <string name="pg_alert_p_in">P wave in %1$d s</string>
+    <string name="pg_alert_take_cover">Take cover</string>
+    <string name="pg_alert_intensity_estimate">Local intensity · est. %1$s</string>
+    <string name="pg_alert_intensity_value">Local intensity %1$d</string>
+    <string name="pg_alert_intensity_distance">Local intensity %1$d · %2$s km from epicenter</string>
+    <string name="pg_alert_from_epicenter">From epicenter</string>
+    <string name="pg_alert_distance_epicenter">%1$s km from epicenter</string>
+    <string name="pg_alert_distance_you">%1$s km from you</string>
+    <string name="pg_alert_depth">depth %1$s km</string>
+    <string name="pg_alert_origin">occurred %1$s</string>
+    <string name="pg_alert_safe">I\'m safe</string>
+    <string name="pg_alert_mute">Mute</string>
+    <string name="pg_alert_muted">Muted</string>
+    <string name="pg_alert_close">Close</string>
+    <string name="pg_alert_details">Details</string>
+    <string name="pg_alert_view_details">View details</string>
+    <string name="pg_alert_countdown_desc">S wave arrives in %1$d seconds</string>
+    <string name="pg_alert_arrived_desc">Seismic waves have arrived, take cover now</string>
+    <string name="pg_alert_map_desc">Alert map: epicenter, your location and the P and S wavefronts</string>
+    <string name="pg_guide_drop">Drop</string>
+    <string name="pg_guide_cover">Cover</string>
+    <string name="pg_guide_hold">Hold on</string>
+    <string name="pg_guide_windows">Away from windows</string>
+    <string name="pg_alert_tv_tip">Stay away from windows and hanging objects, protect your head</string>
+    <string name="pg_alert_tv_keys_keep">Press OK to close · Back keeps the ticker</string>
+    <string name="pg_alert_tv_keys_back">Press OK or Back to close</string>
+    <string name="pg_alert_summary_title">Alert summary</string>
+    <string name="pg_alert_summary_sub">Waves arrived at %1$s · %2$d s of warning</string>
+    <string name="pg_alert_summary_sub_late">Waves arrived at %1$s</string>
+    <string name="pg_alert_summary_hint">Tap I\'m safe once you are safe to end the alert. Keep away from damaged buildings in case of aftershocks.</string>
+    <string name="pg_alert_sum_epicenter">Epicenter</string>
+    <string name="pg_alert_sum_magnitude">Magnitude</string>
+    <string name="pg_alert_sum_depth">Depth</string>
+    <string name="pg_alert_sum_origin">Origin time</string>
+    <string name="pg_alert_sum_distance">Distance</string>
+    <string name="pg_alert_sum_report">Report</string>
+    <string name="pg_alert_sum_lead">Warning time</string>
+    <string name="pg_alert_km">%1$s km</string>
+    <string name="pg_alert_seconds_value">%1$d s</string>
+    <string name="pg_alert_legend_p">P wave</string>
+    <string name="pg_alert_legend_s">S wave</string>
+    <string name="pg_alert_legend_zone">Intensity %1$d+ expected</string>
+    <string-array name="pg_csis_desc">
+        <item>Not felt</item>
+        <item>Not felt</item>
+        <item>Felt by a few people at rest</item>
+        <item>Felt by some people at rest</item>
+        <item>Felt indoors by most people</item>
+        <item>Most people woken, doors and windows rattle</item>
+        <item>Hard to stand, some people run outdoors</item>
+        <item>Most people run outdoors</item>
+        <item>Hard to walk</item>
+        <item>People in motion fall</item>
+        <item>Cyclists fall</item>
+        <item>Many buildings destroyed</item>
+        <item>Total destruction</item>
+    </string-array>
 </resources>
