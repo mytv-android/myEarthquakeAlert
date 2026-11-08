@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 链路日志 -->
+    <string name="svc_log_connected">%1$s 已连接 · %2$s · 握手 %3$d ms</string>
+    <string name="svc_log_disconnected">%1$s 断开：%2$s</string>
+    <string name="svc_log_reconnect">%1$s 第 %2$d 次重连，%3$d 秒后重试</string>
+    <string name="svc_log_fallback_on">%1$s 连续 %2$d 次失败，改用 HTTP 每 %3$d 秒轮询</string>
+    <string name="svc_log_fallback_off">%1$s WebSocket 已恢复，停止轮询</string>
+    <string name="svc_reason_heartbeat_timeout">90 秒没有收到心跳</string>
+    <string name="svc_reason_handshake_timeout">握手超时</string>
+    <string name="svc_reason_network_lost">网络断开</string>
+    <string name="svc_reason_network_changed">网络切换</string>
+    <string name="svc_reason_watchdog">看门狗：心跳停滞</string>
+    <string name="svc_log_network_lost">默认网络断开</string>
+    <string name="svc_log_network_changed">默认网络切换，重新连接</string>
+    <string name="svc_log_network_back">网络已恢复，立即重连</string>
+    <string name="svc_log_location">位置：%1$s</string>
+    <string name="svc_log_sources">订阅数据源：%1$s</string>
+    <string name="svc_log_report">%1$s 第 %2$d 报 · %3$s M%4$.1f · 延迟 %5$s</string>
+    <string name="svc_log_report_final">%1$s 第 %2$d 报（终报）· %3$s M%4$.1f · 延迟 %5$s</string>
+    <string name="svc_log_no_location">位置未知，无法评估 %1$s M%2$.1f 的本地烈度</string>
+
+    <!-- 启动与停止 -->
+    <string name="svc_log_start">%1$s · %2$s</string>
+    <string name="svc_log_start_boot">%1$s · %2$s（开机后 %3$d 秒）</string>
+    <string name="svc_log_start_denied">%1$s · 系统不允许在后台启动前台服务，已发通知请用户恢复</string>
+    <string name="svc_log_resume">%1$s · %2$s，恢复监测</string>
+    <string name="svc_log_pause">暂停至 %1$s</string>
+    <string name="svc_stop_user">手动关闭</string>
+    <string name="svc_stop_settings">在设置中关闭</string>
+    <string name="svc_origin_user">手动开启</string>
+    <string name="svc_origin_boot">开机自动启动</string>
+    <string name="svc_origin_package_replaced">应用更新后恢复</string>
+    <string name="svc_origin_watchdog">看门狗恢复</string>
+    <string name="svc_origin_sticky_restart">系统重启服务</string>
+    <string name="svc_origin_pause_ended">暂停到期</string>
+    <string name="svc_origin_tile">快捷设置磁贴</string>
+    <string name="svc_origin_notification">通知操作</string>
+    <string name="svc_origin_watch">手表</string>
+    <string name="svc_log_boot_start">开机广播：启动后台监测</string>
+    <string name="svc_log_boot_paused">开机广播：监测暂停中，重新登记恢复闹钟</string>
+    <string name="svc_log_boot_notice">开机广播：开机自动启动已关闭，未启动监测</string>
+    <string name="svc_log_boot_update">应用更新完成，恢复监测</string>
+    <string name="svc_log_watchdog_stall">%1$d 秒没有收到任何帧，强制重连</string>
+    <string name="svc_log_watchdog_restart">服务已被系统结束，看门狗已重新启动</string>
+    <string name="svc_log_watchdog_denied">服务已被系统结束，系统不允许后台重启，已发通知</string>
+
+    <!-- 状态（与概览、磁贴、通知一致） -->
+    <string name="svc_phase_off">后台监测已关闭</string>
+    <string name="svc_phase_connecting">正在连接…</string>
+    <string name="svc_phase_monitoring">后台监测中</string>
+    <string name="svc_phase_reconnecting">重连中</string>
+    <string name="svc_phase_degraded">备用通道</string>
+    <string name="svc_phase_limited">受限</string>
+    <string name="svc_phase_paused">已暂停至 %1$s</string>
+
+    <!-- 常驻通知 -->
+    <string name="svc_notif_connecting">正在连接 %1$s</string>
+    <string name="svc_notif_monitoring">已连接 %1$s</string>
+    <string name="svc_notif_boot">%1$s · 开机后 %2$d 秒自动启动</string>
+    <string name="svc_notif_reconnecting">连接中断，第 %1$d 次重连</string>
+    <string name="svc_notif_degraded">WebSocket 不可用，%1$s 改用 HTTP 每 10 秒轮询</string>
+    <string name="svc_notif_limited">缺少%1$s，预警可能无法送达</string>
+    <string name="svc_notif_paused">到点自动恢复</string>
+    <string name="svc_action_pause_hour">暂停 1 小时</string>
+    <string name="svc_action_resume">恢复</string>
+    <string name="svc_action_diagnostics">诊断</string>
+    <string name="svc_action_settings">设置</string>
+    <string name="svc_list_separator">、</string>
+    <string name="svc_req_notifications">通知权限</string>
+    <string name="svc_req_overlay">悬浮窗权限</string>
+    <string name="svc_req_full_screen">全屏通知权限</string>
+    <string name="svc_req_location">定位权限</string>
+    <string name="svc_req_battery">电池优化豁免</string>
+    <string name="svc_req_dnd">勿扰权限</string>
+    <string name="svc_req_auto_start">自启动</string>
+
+    <!-- 其他通知 -->
+    <string name="svc_stopped_title">监测已停止</string>
+    <string name="svc_stopped_text">系统没有允许地震监测在后台恢复，点按即可恢复。</string>
+    <string name="svc_pause_ended_title">地震监测已恢复</string>
+    <string name="svc_pause_ended_text">暂停已到期，后台监测重新开始。</string>
+    <string name="svc_channel_alarm">强烈预警</string>
+    <string name="svc_channel_alarm_desc">本地烈度达到强烈阈值时的全屏预警与演练。警报声由应用在闹钟音量上播放。</string>
+    <string name="svc_channel_live">预警倒计时</string>
+    <string name="svc_channel_info">预警记录与提示</string>
+
+    <!-- 磁贴 -->
+    <string name="svc_tile_label">地震监测</string>
+    <string name="svc_tile_off">已关闭</string>
+
+    <!-- 预警呈现 -->
+    <string name="svc_surface_overlay">浮动卡片</string>
+    <string name="svc_surface_activity">全屏预警</string>
+    <string name="svc_surface_full_screen">全屏通知</string>
+    <string name="svc_surface_heads_up">横幅通知</string>
+    <string name="svc_surface_locked">锁屏通知（尚未解锁）</string>
+    <string name="svc_surface_record">仅记录</string>
+    <string name="svc_log_alert">%1$s %2$s M%3$.1f · 本地烈度 %4$.1f · %5$d km · %6$s</string>
+    <string name="svc_log_alert_kept">%1$s M%2$.1f 较弱，保留当前预警</string>
+    <string name="svc_log_alert_late">%1$s M%2$.1f 送达时地震波已过（%3$s），仅记录</string>
+    <string name="svc_log_alert_dnd">勿扰模式开启且未允许越过勿扰：静默显示</string>
+    <string name="svc_log_alert_muted">预警已静音</string>
+    <string name="svc_alert_countdown">S 波 %1$d 秒后到达</string>
+    <string name="svc_alert_arrived">地震波已到达</string>
+    <string name="svc_alert_body">本地烈度 %1$s · %2$s M%3$.1f · 距你 %4$d km</string>
+    <string name="svc_alert_short">%1$d 秒</string>
+    <string name="svc_alert_short_arrived">已到达</string>
+    <string name="svc_alert_sub_report">第 %1$d 报</string>
+    <string name="svc_alert_sub_final">第 %1$d 报（终报）</string>
+    <string name="svc_alert_drill_prefix">演练 · %1$s</string>
+    <string name="svc_alert_summary_title">%1$s M%2$.1f 预警结束</string>
+    <string name="svc_alert_summary_title_drill">演练结束：%1$s M%2$.1f</string>
+    <string name="svc_alert_summary_text">%1$s · 本地烈度 %2$s · 距你 %3$d km</string>
+    <string name="svc_action_safe">我已安全</string>
+    <string name="svc_action_mute">静音</string>
+    <string name="svc_tts_announce">地震预警。%1$d 秒后地震波到达，本地烈度 %2$d 度，请立即避险。</string>
+    <string name="svc_tts_announce_drill">演练。地震预警，%1$d 秒后地震波到达，本地烈度 %2$d 度。</string>
+    <string name="svc_tts_arrived">地震波已到达，请注意避险。</string>
+    <string name="svc_tts_arrived_drill">演练：地震波已到达。</string>
+
+    <!-- 演练 -->
+    <string name="svc_drill_hypocenter_lushan">四川雅安市芦山县</string>
+    <string name="svc_drill_hypocenter_near">模拟近场地震</string>
+    <string name="svc_drill_hypocenter_far">模拟远场地震</string>
+    <string name="svc_log_drill">演练 %1$s：%2$s</string>
+
+    <!-- 诊断包 -->
+    <string name="svc_export_title">导出诊断包</string>
+    <string name="svc_export_failed">诊断包导出失败</string>
+
+    <!-- 自检 -->
+    <string name="svc_st_started">开始端到端自检</string>
+    <string name="svc_st_finished">自检完成：%1$d 通过 · %2$d 警告 · %3$d 失败</string>
+    <string name="svc_st_timeout">超过 %1$d 秒仍未完成</string>
+    <string name="svc_st_failed">失败</string>
+    <string name="svc_st_network_none">没有可用的网络</string>
+    <string name="svc_st_transport_ethernet">以太网</string>
+    <string name="svc_st_transport_cellular">移动数据</string>
+    <string name="svc_st_transport_other">其他网络</string>
+    <string name="svc_st_network_unreachable">已连接 %1$s，但无法访问 api.wolfx.jp</string>
+    <string name="svc_st_network_data_saver">%1$s · 往返 %2$d ms · 流量节省模式限制后台数据</string>
+    <string name="svc_st_network_unvalidated">%1$s · 往返 %2$d ms · 系统尚未验证该网络</string>
+    <string name="svc_st_network_ok">%1$s · api.wolfx.jp 往返 %2$d ms</string>
+    <string name="svc_link_connected">已连接</string>
+    <string name="svc_link_polling">HTTP 轮询</string>
+    <string name="svc_link_reconnecting">重连中</string>
+    <string name="svc_link_connecting">连接中</string>
+    <string name="svc_link_disconnected">未连接</string>
+    <string name="svc_st_sources_none">没有已连接的数据源</string>
+    <string name="svc_st_clock_unreachable">无法访问 ntp.json，未能校时</string>
+    <string name="svc_st_clock_ok">偏差 %1$s 秒 · 往返 %2$d ms</string>
+    <string name="svc_st_clock_warn">偏差 %1$s 秒，倒计时可能不准</string>
+    <string name="svc_st_clock_fail">偏差 %1$s 秒，请校准系统时间</string>
+    <string name="svc_st_location_manual">手动位置：%1$s</string>
+    <string name="svc_st_location_device">%1$s 定位 · %2$s · %3$d 分钟前</string>
+    <string name="svc_st_location_ip">仅有 IP 粗略定位（%1$s），建议授予定位权限或手动设置位置</string>
+    <string name="svc_st_location_none">无法确定位置，本地烈度无法计算</string>
+    <string name="svc_st_perm_notifications">通知权限未开启，预警无法送达</string>
+    <string name="svc_st_perm_overlay">悬浮窗权限未开启，无法弹出预警卡片</string>
+    <string name="svc_st_perm_full_screen">全屏通知未允许，锁屏时只能显示横幅</string>
+    <string name="svc_st_perm_ok">通知、悬浮窗、全屏通知均已允许</string>
+    <string name="svc_st_limits_restricted">应用处于「受限」待机分组，后台会被严格限制</string>
+    <string name="svc_st_limits_battery">电池优化未关闭（待机分组 %1$s），系统可能结束后台服务</string>
+    <string name="svc_st_limits_rare">应用处于「很少使用」待机分组，后台任务会被推迟</string>
+    <string name="svc_st_limits_auto_start">厂商系统可能拦截开机自启（待机分组 %1$s）</string>
+    <string name="svc_st_limits_ok">电池优化已关闭 · 待机分组 %1$s</string>
+    <string name="svc_st_pipeline_ok">解析 %1$s ms · 评估 %2$s ms · 本地烈度 %3$s · %4$s</string>
+    <string name="svc_st_pipeline_fail">测试报文未通过：%1$s</string>
+    <string name="svc_st_probe_title">自检：通知通道测试</string>
+    <string name="svc_st_present_blocked">通知已被关闭，预警无法显示</string>
+    <string name="svc_st_present_channel">预警通知渠道已被关闭</string>
+    <string name="svc_st_present_volume">闹钟音量为 0，强烈预警将没有声音</string>
+    <string name="svc_st_present_no_overlay">浮动卡片不可用，将改用通知提醒</string>
+    <string name="svc_st_present_no_fsi">全屏通知不可用，锁屏时将改用横幅</string>
+    <string name="svc_st_present_ok">通知、浮动卡片与全屏通道均可用</string>
+</resources>

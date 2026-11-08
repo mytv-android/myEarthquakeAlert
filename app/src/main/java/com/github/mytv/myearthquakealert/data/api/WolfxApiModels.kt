@@ -94,11 +94,20 @@ data class GeoIpResponse(
     val longitude: Double? = null,
 )
 
+/** One zone of ntp.json, e.g. `{"str":"2026-11-08 21:41:02","int":20261108214102}`. */
 @Serializable
-data class NtpResponse(
-    val JST: String = "",
-    val CST: String = "",
+data class NtpClock(
     val str: String = "",
     val int: Long = 0,
+)
+
+/**
+ * `ntp.json`: `{"JST":{…},"CST":{…},"timestamp":1794145262773}`; [timestamp] is the
+ * server's epoch millis and is what ClockSync uses.
+ */
+@Serializable
+data class NtpResponse(
+    val JST: NtpClock? = null,
+    val CST: NtpClock? = null,
     val timestamp: Long = 0,
 )

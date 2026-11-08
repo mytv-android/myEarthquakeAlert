@@ -30,7 +30,31 @@ data class AlertData(
     val tier: AlertTier = AlertTier.REMIND,
     /** Epoch millis when the alert was first presented; countdowns run from here. */
     val presentedAt: Long = System.currentTimeMillis(),
-)
+    /**
+     * Origin time of the quake on the local clock (epoch millis comparable with
+     * System.currentTimeMillis(); the service converts the report's OriginTime with the
+     * ClockSync offset, so a wrong device clock does not skew the countdown).
+     * [pWaveSeconds] and [sWaveSeconds] are travel times counted from here. Defaults to
+     * [presentedAt] (1.0 behaviour); the service sets it from the report, so the countdown
+     * also accounts for the seconds between the origin and the report's arrival.
+     */
+    val originAt: Long = presentedAt,
+) {
+    /** Epoch millis when the S wave is expected at the user. */
+    val sArrivalAt: Long get() = originAt + (sWaveSeconds * 1000).toLong()
+
+    /** Epoch millis when the P wave is expected at the user. */
+    val pArrivalAt: Long get() = originAt + (pWaveSeconds * 1000).toLong()
+
+    /** Seconds since the origin time at local time [now]. */
+    fun elapsedSeconds(now: Long = System.currentTimeMillis()): Double = (now - originAt) / 1000.0
+
+    /** Seconds until the S wave arrives, 0 once it has. */
+    fun sRemainingSeconds(now: Long = System.currentTimeMillis()): Double = ((sArrivalAt - now) / 1000.0).coerceAtLeast(0.0)
+
+    /** Seconds until the P wave arrives, 0 once it has. */
+    fun pRemainingSeconds(now: Long = System.currentTimeMillis()): Double = ((pArrivalAt - now) / 1000.0).coerceAtLeast(0.0)
+}
 
 object ActiveAlertHolder {
     private val _activeAlert = MutableStateFlow<AlertData?>(null)
@@ -46,6 +70,11 @@ object ActiveAlertHolder {
 
     fun mute() {
         _muted.value = true
+    }
+
+    /** Clears 静音 when a new alert starts (service only; the UI uses [dismissAlert]). */
+    internal fun resetMute() {
+        _muted.value = false
     }
 
     fun dismissAlert() {

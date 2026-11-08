@@ -1,11 +1,7 @@
 package com.github.mytv.myearthquakealert.service
 
-import android.annotation.SuppressLint
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Build
@@ -14,26 +10,26 @@ import android.os.IBinder
 import android.os.Looper
 import android.util.Log
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.WindowManager
 import androidx.activity.OnBackPressedDispatcher
+import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
-import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
-import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-import com.github.mytv.myearthquakealert.MainActivity
 import com.github.mytv.myearthquakealert.MyEarthQuakeAlertApp
-import com.github.mytv.myearthquakealert.R
+import com.github.mytv.myearthquakealert.data.repository.UserSettings
 import com.github.mytv.myearthquakealert.ui.alert.AlertOverlay
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,9 +37,20 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
+/**
+ * The floating alert card (REMIND tier while the device is in use, and on TV) drawn over
+ * other apps with the overlay permission. It shows whatever [ActiveAlertHolder] holds and
+ * goes away when the holder is cleared (我已安全, Back when allowed, the presenter) or
+ * [AUTO_DISMISS_AFTER_ARRIVAL_MS] after the S wave.
+ *
+ * Not a foreground service of its own: the monitoring service is in the foreground
+ * whenever an alert is presented (monitoring on, or the drill's alert notification), which
+ * lets it start this one. On TV the card does not take focus, so the remote keeps
+ * controlling the program underneath (字幕条 style); on phones it takes focus so Back and
+ * the D-pad reach it.
+ */
 class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
     private val lifecycleRegistry = LifecycleRegistry(this)
@@ -56,124 +63,89 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
     private var windowManager: WindowManager? = null
     private var overlayView: ComposeView? = null
     private var autoDismissJob: Job? = null
-    private val serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    private val serviceScope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
 
     override fun onCreate() {
         super.onCreate()
         savedStateRegistryController.performRestore(null)
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
-        createNotificationChannel()
         // The process may have started before the first unlock; the map needs its config.
         (application as MyEarthQuakeAlertApp).ensureMapConfigured()
+        serviceScope.launch {
+            ActiveAlertHolder.activeAlert.collect { alert ->
+                // StateFlow conflation: act on the current value, not a stale emission.
+                if (alert == null && ActiveAlertHolder.activeAlert.value == null) removeAndStop()
+            }
+        }
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
-    @SuppressLint("ClickableViewAccessibility")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         try {
             when (action) {
                 ACTION_SHOW -> showAlert()
                 ACTION_DISMISS -> dismissAlert()
+                ACTION_HIDE -> removeAndStop()
+                else -> if (overlayView == null) stopSelf()
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error in onStartCommand action=$action", e)
-            // Ensure foreground state to avoid crash
-            if (action == ACTION_SHOW) {
-                try {
-                    startForeground(OVERLAY_NOTIFICATION_ID, buildNotification())
-                } catch (_: Exception) {}
-            }
+            removeAndStop()
         }
         return START_NOT_STICKY
     }
 
-    private fun createNotificationChannel() {
-        val channel = NotificationChannel(
-            OVERLAY_CHANNEL_ID,
-            getString(R.string.alert_title),
-            NotificationManager.IMPORTANCE_LOW
-        )
-        val manager = getSystemService(NotificationManager::class.java)
-        manager.createNotificationChannel(channel)
-    }
-
-    private fun buildNotification(): Notification {
-        return NotificationCompat.Builder(this, OVERLAY_CHANNEL_ID)
-            .setContentTitle(getString(R.string.app_name))
-            .setContentText(getString(R.string.alert_title))
-            .setSmallIcon(R.drawable.ic_notification)
-            .setContentIntent(
-                PendingIntent.getActivity(
-                    this, 0,
-                    Intent(this, MainActivity::class.java),
-                    PendingIntent.FLAG_IMMUTABLE
-                )
-            )
-            .build()
-    }
-
     private fun showAlert() {
-        // If already showing, just update the auto-dismiss timer
-        if (overlayView != null) {
-            val alertData = ActiveAlertHolder.activeAlert.value ?: return
-            autoDismissJob?.cancel()
-            autoDismissJob = serviceScope.launch {
-                delay(((alertData.sWaveSeconds + 10) * 1000).toLong())
-                dismissAlert()
-            }
+        val alert = ActiveAlertHolder.activeAlert.value
+        if (alert == null) {
+            removeAndStop()
             return
         }
+        scheduleAutoDismiss(alert)
+        if (overlayView != null) return // the composition follows the holder
 
-        // Start as foreground service first, before any other work
-        startForeground(OVERLAY_NOTIFICATION_ID, buildNotification())
-
-        // Ensure lifecycle is at least CREATED before moving to RESUMED
         if (lifecycleRegistry.currentState == Lifecycle.State.DESTROYED) {
             lifecycleRegistry.currentState = Lifecycle.State.CREATED
         }
         lifecycleRegistry.currentState = Lifecycle.State.RESUMED
 
-        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        val wm = getSystemService(WINDOW_SERVICE) as WindowManager
+        windowManager = wm
         val app = application as MyEarthQuakeAlertApp
+        val tv = DeviceState.isTv(this)
 
         val composeView = ComposeView(this).also {
             it.setViewTreeLifecycleOwner(this)
             it.setViewTreeSavedStateRegistryOwner(this)
         }
 
-        // Raw Back key handling: this window has no Activity above it, so the
-        // framework's back dispatch never reaches a dispatcher here. Intercept the
-        // key at the view level: consume it always, dismiss only when allowed.
-        composeView.isFocusable = true
-        composeView.isFocusableInTouchMode = true
-        composeView.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == android.view.KeyEvent.KEYCODE_BACK && event.action == android.view.KeyEvent.ACTION_UP) {
-                Log.i(TAG, "Back key received by overlay")
-                serviceScope.launch {
-                    val allow = app.settingsRepository.settings.first().allowDismissWithBack
-                    Log.i(TAG, "Back key: allowDismissWithBack=$allow")
-                    if (allow) postDismiss()
+        // Raw Back key handling: this window has no Activity above it, so the framework's
+        // back dispatch never reaches a dispatcher here. Consume Back always, dismiss only
+        // when allowed.
+        if (!tv) {
+            composeView.isFocusable = true
+            composeView.isFocusableInTouchMode = true
+            composeView.setOnKeyListener { _, keyCode, event ->
+                if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                    if (currentSettings.allowDismissWithBack) postDismiss()
+                    true
+                } else {
+                    false
                 }
-                true
-            } else {
-                false
             }
         }
 
         val backPressedDispatcher = OnBackPressedDispatcher()
-
         val metrics = resources.displayMetrics
         val landscape = metrics.widthPixels > metrics.heightPixels
 
         composeView.setContent {
-            val settings by app.settingsRepository.settings.collectAsState(
-                initial = com.github.mytv.myearthquakealert.data.repository.UserSettings()
-            )
+            val settings by app.settingsRepository.settings.collectAsState(initial = currentSettings)
+            SideEffect { currentSettings = settings }
             CompositionLocalProvider(
-                LocalOnBackPressedDispatcherOwner provides object :
-                    androidx.activity.OnBackPressedDispatcherOwner {
+                LocalOnBackPressedDispatcherOwner provides object : OnBackPressedDispatcherOwner {
                     override val lifecycle get() = lifecycleRegistry
                     override val onBackPressedDispatcher get() = backPressedDispatcher
                 }
@@ -199,65 +171,86 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
             WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
         }
 
-        // Compact floating card: the window wraps the content, dims the backdrop
-        // slightly, and stays focusable so Back / D-pad reach the overlay.
-        // Width is pinned here (measure-driven layout guesses are unreliable for
-        // wrap windows); the card decides wide/narrow from the screen shape.
+        // Compact floating card: the window wraps the content. Width is pinned here
+        // (measure-driven layout guesses are unreliable for wrap windows); the card decides
+        // wide/narrow from the screen shape. TV: bottom of the screen, no dim, no focus.
         val windowWidthPx = if (landscape) {
-            (metrics.widthPixels * 0.66f).toInt()
-                .coerceAtMost((720 * metrics.density).toInt())
+            (metrics.widthPixels * 0.66f).toInt().coerceAtMost((720 * metrics.density).toInt())
         } else {
             (metrics.widthPixels - 48 * metrics.density).toInt()
+        }
+        val flags = if (tv) {
+            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+        } else {
+            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or WindowManager.LayoutParams.FLAG_DIM_BEHIND
         }
         val params = WindowManager.LayoutParams(
             windowWidthPx,
             WindowManager.LayoutParams.WRAP_CONTENT,
             windowType,
-            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
-                    WindowManager.LayoutParams.FLAG_DIM_BEHIND,
+            flags,
             PixelFormat.TRANSLUCENT,
         ).apply {
-            gravity = Gravity.CENTER
-            dimAmount = 0.35f
+            if (tv) {
+                gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+                y = (32 * metrics.density).toInt()
+            } else {
+                gravity = Gravity.CENTER
+                dimAmount = 0.35f
+            }
         }
 
         try {
-            windowManager?.addView(composeView, params)
-            composeView.post {
-                composeView.requestFocus()
-            }
+            wm.addView(composeView, params)
+            if (!tv) composeView.post { composeView.requestFocus() }
         } catch (e: Exception) {
             Log.w(TAG, "Failed to add overlay view", e)
             overlayView = null
             lifecycleRegistry.currentState = Lifecycle.State.CREATED
-            stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
             return
         }
-
         overlayView = composeView
+    }
 
-        val alertData = ActiveAlertHolder.activeAlert.value ?: return
+    @Volatile private var currentSettings = UserSettings()
+
+    private fun scheduleAutoDismiss(alert: AlertData) {
+        autoDismissJob?.cancel()
+        val eventId = alert.event.eventId
         autoDismissJob = serviceScope.launch {
-            delay(((alertData.sWaveSeconds + 10) * 1000).toLong())
-            dismissAlert()
+            delay((alert.sArrivalAt + AUTO_DISMISS_AFTER_ARRIVAL_MS - System.currentTimeMillis()).coerceAtLeast(0L))
+            val current = ActiveAlertHolder.activeAlert.value
+            if (current == null || current.event.eventId == eventId) {
+                ActiveAlertHolder.dismissAlert()
+                removeAndStop()
+            } else {
+                scheduleAutoDismiss(current)
+            }
         }
     }
 
     /**
-     * Defer teardown until after the current input event completes — removing the
-     * focused window mid-dispatch lets the same key fall through to whatever is
-     * underneath (e.g. Back finishing the activity behind the overlay).
+     * Defer teardown until after the current input event completes — removing the focused
+     * window mid-dispatch lets the same key fall through to whatever is underneath (e.g.
+     * Back finishing the activity behind the overlay).
      */
     private fun postDismiss() {
         Handler(Looper.getMainLooper()).post { dismissAlert() }
     }
 
+    /** 我已安全 / Back: ends the alert everywhere. */
     private fun dismissAlert() {
-        Log.i(TAG, "dismissAlert")
-        autoDismissJob?.cancel()
         ActiveAlertHolder.dismissAlert()
+        removeAndStop()
+    }
 
+    /** Removes the card only (the alert may continue elsewhere, e.g. escalated to full screen). */
+    private fun removeAndStop() {
+        autoDismissJob?.cancel()
+        autoDismissJob = null
         overlayView?.let {
             try {
                 windowManager?.removeView(it)
@@ -265,9 +258,10 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
             }
         }
         overlayView = null
-
-        lifecycleRegistry.currentState = Lifecycle.State.CREATED
-        stopForeground(STOP_FOREGROUND_REMOVE)
+        showing = false
+        if (lifecycleRegistry.currentState != Lifecycle.State.DESTROYED) {
+            lifecycleRegistry.currentState = Lifecycle.State.CREATED
+        }
         stopSelf()
     }
 
@@ -287,21 +281,42 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
 
     companion object {
         private const val TAG = "AlertOverlayService"
-        private const val OVERLAY_CHANNEL_ID = "alert_overlay"
-        private const val OVERLAY_NOTIFICATION_ID = 2
         const val ACTION_SHOW = "com.github.mytv.myearthquakealert.SHOW_ALERT"
         const val ACTION_DISMISS = "com.github.mytv.myearthquakealert.DISMISS_ALERT"
+        /** Removes the card without ending the alert. */
+        const val ACTION_HIDE = "com.github.mytv.myearthquakealert.HIDE_ALERT"
+        private const val AUTO_DISMISS_AFTER_ARRIVAL_MS = 120_000L
 
-        fun show(context: android.content.Context) {
-            val intent = Intent(context, AlertOverlayService::class.java)
-            intent.action = ACTION_SHOW
-            ContextCompat.startForegroundService(context, intent)
+        @Volatile private var showing = false
+
+        /**
+         * Shows the card for the alert in [ActiveAlertHolder]. Returns false when the service
+         * could not be started (no foreground service holding the process in the foreground).
+         */
+        fun show(context: Context): Boolean = try {
+            context.startService(Intent(context, AlertOverlayService::class.java).setAction(ACTION_SHOW))
+            showing = true
+            true
+        } catch (e: IllegalStateException) {
+            Log.w(TAG, "Cannot show the overlay from the background", e)
+            false
         }
 
-        fun dismiss(context: android.content.Context) {
-            val intent = Intent(context, AlertOverlayService::class.java)
-            intent.action = ACTION_DISMISS
-            ContextCompat.startForegroundService(context, intent)
+        /** Ends the alert and removes the card. */
+        fun dismiss(context: Context) {
+            ActiveAlertHolder.dismissAlert()
+            hide(context)
+        }
+
+        /** Removes the card, keeping the alert (e.g. it escalated to the full-screen alert). */
+        fun hide(context: Context) {
+            if (!showing) return
+            showing = false
+            try {
+                context.startService(Intent(context, AlertOverlayService::class.java).setAction(ACTION_HIDE))
+            } catch (e: IllegalStateException) {
+                Log.w(TAG, "Cannot hide the overlay", e)
+            }
         }
     }
 }
