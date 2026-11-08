@@ -1,5 +1,7 @@
 # myEarthQuakeAlert
 
+<p align="center"><img src="docs/images/banner.png" alt="地震速报" width="100%"/></p>
+
 ## 简介 (Introduction)
 
 myEarthQuakeAlert 是一个基于 Jetpack Compose 开发的 Android 地震预警应用，支持手机、平板和 Android TV。
