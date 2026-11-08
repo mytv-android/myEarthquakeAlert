@@ -13,9 +13,15 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.github.mytv.myearthquakealert.MyEarthQuakeAlertApp
+import com.github.mytv.myearthquakealert.data.model.ThemeMode
+import kotlinx.coroutines.flow.map
 
 // Hand-tuned slate-blue palette. Deliberately not dynamic: the app's identity
 // (calm slate + alert red) should not depend on the device wallpaper.
@@ -89,20 +95,48 @@ private val EeqDarkColorScheme = darkColorScheme(
     inversePrimary = Color(0xFF2A6394),
 )
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+/**
+ * Shape scale (design §9 形状): ordinary containers stay rounded rectangles; the M3E shape
+ * library (MaterialShapes) is reserved for status and emphasis. Cards and the status card
+ * use extraLarge (28 dp), segmented-list ends 20 dp, chips and inner items 8 dp.
+ */
 private val EeqShapes = Shapes(
     extraSmall = RoundedCornerShape(6.dp),
-    small = RoundedCornerShape(12.dp),
+    small = RoundedCornerShape(8.dp),
     medium = RoundedCornerShape(16.dp),
     large = RoundedCornerShape(20.dp),
     extraLarge = RoundedCornerShape(28.dp),
 )
 
+/**
+ * True when the app should render dark, following 设置 › 显示 › 主题 ([ThemeMode]).
+ * Outside the app process (previews) it falls back to the system setting.
+ */
+@Composable
+fun rememberAppDarkTheme(): Boolean {
+    val system = isSystemInDarkTheme()
+    val app = LocalContext.current.applicationContext as? MyEarthQuakeAlertApp ?: return system
+    val mode by remember(app) { app.settingsRepository.settings.map { it.themeMode } }
+        .collectAsState(initial = ThemeMode.SYSTEM)
+    return isDarkFor(mode, system)
+}
+
+fun isDarkFor(mode: ThemeMode, systemDark: Boolean): Boolean = when (mode) {
+    ThemeMode.SYSTEM -> systemDark
+    ThemeMode.LIGHT -> false
+    ThemeMode.DARK -> true
+}
+
+/**
+ * The app theme: fixed slate-blue schemes (never wallpaper colours), MotionScheme.expressive()
+ * and [MaterialTheme.status] colours. [tv] switches to the 10-foot type scale.
+ */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun MyEarthQuakeAlertTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = rememberAppDarkTheme(),
     dynamicColor: Boolean = false,
+    tv: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val colorScheme = when {
@@ -118,7 +152,7 @@ fun MyEarthQuakeAlertTheme(
     CompositionLocalProvider(LocalStatusColors provides if (darkTheme) DarkStatusColors else LightStatusColors) {
         MaterialExpressiveTheme(
             colorScheme = colorScheme,
-            typography = EeqTypography,
+            typography = if (tv) EeqTvTypography else EeqTypography,
             shapes = EeqShapes,
             motionScheme = EeqMotionScheme,
             content = content,
