@@ -1,6 +1,7 @@
 package com.github.mytv.myearthquakealert.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 
 // ── CSIS intensity scale (2.0) ──────────────────────────────────────────────
 // Low intensities are light cool tones that stay visible on dark maps; from 4
@@ -58,3 +59,24 @@ val BroadcastInkSoft = Color(0xFF5C6570)
 val BroadcastBlue = Color(0xFF0F5FA6)
 /** NHK-style caution yellow — tags, highlight zones. */
 val CautionYellow = Color(0xFFFFE100)
+
+private val CsisScale = listOf(Csis0, Csis1, Csis2, Csis3, Csis4, Csis5, Csis6, Csis7, Csis8, Csis9, Csis10, Csis11, Csis12)
+
+/** CSIS colour of a whole intensity degree (0–12). */
+fun csisColor(intensity: Int): Color = CsisScale[intensity.coerceIn(0, 12)]
+
+/** Readable text colour on top of [background] (dark ink on light CSIS tones, white otherwise). */
+fun contentColorOn(background: Color): Color =
+    if (background.luminance() > 0.33f) Color(0xFF1A1C1E) else Color.White
+
+/** Roman numerals used for intensity degrees (design: "Ⅴ 度"). */
+private val Roman = listOf("0", "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "Ⅵ", "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ", "Ⅺ", "Ⅻ")
+
+fun romanIntensity(intensity: Int): String = Roman[intensity.coerceIn(0, 12)]
+
+// ── Map marks (fixed, theme-independent) ─────────────────────────────────────
+/** User position dot ("你的位置"). */
+val UserDotBlue = Color(0xFF1E88E5)
+/** Neutral land/sea background behind the offline outline. */
+val OfflineMapLight = Color(0xFFE6EAF0)
+val OfflineMapDark = Color(0xFF1B2A38)
