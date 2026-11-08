@@ -570,6 +570,7 @@ internal fun AlertMap(
                 showDistanceLine = true,
                 fitPaddingDp = fitPaddingDp,
                 showAttribution = showAttribution,
+                darkTiles = true,
             )
         }
         if (legend) {
