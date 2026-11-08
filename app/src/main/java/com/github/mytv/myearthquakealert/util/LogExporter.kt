@@ -49,6 +49,22 @@ object LogExporter {
         }
     }
 
+    /**
+     * The newest [limit] crash logs, oldest first: device-protected storage, plus the
+     * credential-encrypted folder older versions wrote to (when the user is unlocked).
+     */
+    fun crashLogFiles(context: Context, limit: Int = 10): List<File> {
+        val dirs = buildList {
+            add(if (::crashLogDir.isInitialized) crashLogDir else File(context.deviceProtectedContext().filesDir, CRASH_DIR))
+            if (context.isUserUnlocked()) add(File(context.filesDir, CRASH_DIR))
+        }
+        return dirs.distinct()
+            .flatMap { it.listFiles()?.toList().orEmpty() }
+            .filter { it.isFile }
+            .sortedBy { it.name }
+            .takeLast(limit)
+    }
+
     fun export(context: Context) {
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
         val fileName = "earthquake_alert_log_$timestamp.txt"
@@ -68,13 +84,8 @@ object LogExporter {
             out.write(header.toByteArray())
 
             // Crash logs from disk
-            // Older versions wrote crash logs to credential-encrypted storage.
-            val legacyDir = File(context.filesDir, CRASH_DIR)
-            val crashFiles = listOf(crashLogDir, legacyDir).distinct()
-                .flatMap { it.listFiles()?.toList().orEmpty() }
-                .sortedBy { it.name }
-                .takeLast(5)
-            if (!crashFiles.isNullOrEmpty()) {
+            val crashFiles = crashLogFiles(context, limit = 5)
+            if (crashFiles.isNotEmpty()) {
                 out.write("=== Recent Crashes ===\n\n".toByteArray())
                 for (f in crashFiles) {
                     out.write("--- ${f.name} ---\n".toByteArray())

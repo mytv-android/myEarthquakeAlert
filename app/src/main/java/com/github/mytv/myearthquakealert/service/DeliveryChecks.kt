@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.github.mytv.myearthquakealert.util.AutoStartSettings
 
@@ -87,7 +88,7 @@ object DeliveryChecks {
     }
 
     private fun notificationsAllowed(context: Context): Boolean =
-        context.getSystemService(NotificationManager::class.java).areNotificationsEnabled() &&
+        NotificationManagerCompat.from(context).areNotificationsEnabled() &&
             (Build.VERSION.SDK_INT < 33 ||
                 ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED)
 

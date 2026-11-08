@@ -31,9 +31,18 @@ enum class EewSource(
         httpUrl = "https://api.wolfx.jp/cq_eew.json",
     );
 
+    /**
+     * Wolfx feed key, e.g. `cenc_eew`: the `type` field of WebSocket frames and the
+     * file name of the HTTP fallback endpoint (whose body carries no `type`).
+     */
+    val typeKey: String get() = wsUrl.substringAfterLast('/')
+
     companion object {
         /** Display label for an [EewEvent.source] value (stored as enum name). */
         fun labelOf(name: String): String =
             entries.firstOrNull { it.name == name }?.label ?: name
+
+        /** The source whose feed key is [type], or null for non-report frames (heartbeat, pong…). */
+        fun fromTypeKey(type: String?): EewSource? = entries.firstOrNull { it.typeKey == type }
     }
 }

@@ -20,4 +20,12 @@ object LogTags {
     const val CLOCK = "CLOCK"
     const val SELF_TEST = "SELFTEST"
     const val ERROR = "ERROR"
+    /** Default network lost / changed / back. */
+    const val NETWORK = "NETWORK"
+    /** Location source or position changed. */
+    const val LOCATION = "LOCATION"
+    /** A drill started. */
+    const val DRILL = "DRILL"
+    /** Configuration changes that affect monitoring (e.g. subscribed sources). */
+    const val SYSTEM = "SYSTEM"
 }

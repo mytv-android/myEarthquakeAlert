@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Link log -->
+    <string name="svc_log_connected">%1$s connected · %2$s · handshake %3$d ms</string>
+    <string name="svc_log_disconnected">%1$s disconnected: %2$s</string>
+    <string name="svc_log_reconnect">%1$s reconnect #%2$d in %3$d s</string>
+    <string name="svc_log_fallback_on">%1$s failed %2$d times in a row, polling over HTTP every %3$d s</string>
+    <string name="svc_log_fallback_off">%1$s WebSocket is back, polling stopped</string>
+    <string name="svc_reason_heartbeat_timeout">no heartbeat for 90 s</string>
+    <string name="svc_reason_handshake_timeout">handshake timed out</string>
+    <string name="svc_reason_network_lost">network lost</string>
+    <string name="svc_reason_network_changed">network changed</string>
+    <string name="svc_reason_watchdog">Watchdog: heartbeat stalled</string>
+    <string name="svc_log_network_lost">Default network lost</string>
+    <string name="svc_log_network_changed">Default network changed, reconnecting</string>
+    <string name="svc_log_network_back">Network is back, reconnecting now</string>
+    <string name="svc_log_location">Location: %1$s</string>
+    <string name="svc_log_sources">Subscribed sources: %1$s</string>
+    <string name="svc_log_report">%1$s report #%2$d · %3$s M%4$.1f · latency %5$s</string>
+    <string name="svc_log_report_final">%1$s report #%2$d (final) · %3$s M%4$.1f · latency %5$s</string>
+    <string name="svc_log_no_location">Location unknown: cannot estimate the local intensity of %1$s M%2$.1f</string>
+
+    <!-- Start and stop -->
+    <string name="svc_log_start">%1$s · %2$s</string>
+    <string name="svc_log_start_boot">%1$s · %2$s (%3$d s after boot)</string>
+    <string name="svc_log_start_denied">%1$s · the system refused a background foreground-service start; asked the user to resume</string>
+    <string name="svc_log_resume">%1$s · %2$s, monitoring resumed</string>
+    <string name="svc_log_pause">Paused until %1$s</string>
+    <string name="svc_stop_user">Turned off</string>
+    <string name="svc_stop_settings">Turned off in settings</string>
+    <string name="svc_origin_user">Turned on</string>
+    <string name="svc_origin_boot">Start on boot</string>
+    <string name="svc_origin_package_replaced">Restored after update</string>
+    <string name="svc_origin_watchdog">Restored by watchdog</string>
+    <string name="svc_origin_sticky_restart">Restarted by the system</string>
+    <string name="svc_origin_pause_ended">Pause ended</string>
+    <string name="svc_origin_tile">Quick settings tile</string>
+    <string name="svc_origin_notification">Notification</string>
+    <string name="svc_origin_watch">Watch</string>
+    <string name="svc_log_boot_start">Boot broadcast: starting monitoring</string>
+    <string name="svc_log_boot_paused">Boot broadcast: monitoring is paused, resume alarm re-armed</string>
+    <string name="svc_log_boot_notice">Boot broadcast: start on boot is off, monitoring not started</string>
+    <string name="svc_log_boot_update">Update installed, monitoring restored</string>
+    <string name="svc_log_watchdog_stall">No frame for %1$d s, forcing a reconnect</string>
+    <string name="svc_log_watchdog_restart">The system ended the service; the watchdog restarted it</string>
+    <string name="svc_log_watchdog_denied">The system ended the service and refused a background restart; notified the user</string>
+
+    <!-- Phases (same words as the overview, tile and notification) -->
+    <string name="svc_phase_off">Monitoring is off</string>
+    <string name="svc_phase_connecting">Connecting…</string>
+    <string name="svc_phase_monitoring">Monitoring</string>
+    <string name="svc_phase_reconnecting">Reconnecting</string>
+    <string name="svc_phase_degraded">Backup channel</string>
+    <string name="svc_phase_limited">Limited</string>
+    <string name="svc_phase_paused">Paused until %1$s</string>
+
+    <!-- Ongoing notification -->
+    <string name="svc_notif_connecting">Connecting to %1$s</string>
+    <string name="svc_notif_monitoring">Connected to %1$s</string>
+    <string name="svc_notif_boot">%1$s · started %2$d s after boot</string>
+    <string name="svc_notif_reconnecting">Connection lost, reconnect #%1$d</string>
+    <string name="svc_notif_degraded">WebSocket unavailable, %1$s polled over HTTP every 10 s</string>
+    <string name="svc_notif_limited">Missing: %1$s. Alerts may not be delivered</string>
+    <string name="svc_notif_paused">Resumes automatically</string>
+    <string name="svc_action_pause_hour">Pause 1 hour</string>
+    <string name="svc_action_resume">Resume</string>
+    <string name="svc_action_diagnostics">Diagnostics</string>
+    <string name="svc_action_settings">Settings</string>
+    <string name="svc_list_separator">", "</string>
+    <string name="svc_req_notifications">notifications</string>
+    <string name="svc_req_overlay">display over other apps</string>
+    <string name="svc_req_full_screen">full-screen notifications</string>
+    <string name="svc_req_location">location</string>
+    <string name="svc_req_battery">battery optimization exemption</string>
+    <string name="svc_req_dnd">Do Not Disturb access</string>
+    <string name="svc_req_auto_start">auto-start</string>
+
+    <!-- Other notifications -->
+    <string name="svc_stopped_title">Monitoring stopped</string>
+    <string name="svc_stopped_text">The system did not let earthquake monitoring resume in the background. Tap to resume.</string>
+    <string name="svc_pause_ended_title">Earthquake monitoring resumed</string>
+    <string name="svc_pause_ended_text">The pause has ended and monitoring is running again.</string>
+    <string name="svc_channel_alarm">Strong alerts</string>
+    <string name="svc_channel_alarm_desc">Full-screen alerts when the local intensity reaches the strong threshold, and drills. The app plays the alarm at alarm volume.</string>
+    <string name="svc_channel_live">Alert countdown</string>
+    <string name="svc_channel_info">Alert records and notices</string>
+
+    <!-- Tile -->
+    <string name="svc_tile_label">Quake monitor</string>
+    <string name="svc_tile_off">Off</string>
+
+    <!-- Alert presentation -->
+    <string name="svc_surface_overlay">floating card</string>
+    <string name="svc_surface_activity">full-screen alert</string>
+    <string name="svc_surface_full_screen">full-screen notification</string>
+    <string name="svc_surface_heads_up">heads-up notification</string>
+    <string name="svc_surface_locked">lock-screen notification (not unlocked yet)</string>
+    <string name="svc_surface_record">record only</string>
+    <string name="svc_log_alert">%1$s %2$s M%3$.1f · local intensity %4$.1f · %5$d km · %6$s</string>
+    <string name="svc_log_alert_kept">%1$s M%2$.1f is weaker, keeping the current alert</string>
+    <string name="svc_log_alert_late">%1$s M%2$.1f arrived after the waves had passed (%3$s), recorded only</string>
+    <string name="svc_log_alert_dnd">Do Not Disturb is on and may not be bypassed: shown silently</string>
+    <string name="svc_log_alert_muted">Alert muted</string>
+    <string name="svc_alert_countdown">S wave in %1$d s</string>
+    <string name="svc_alert_arrived">Seismic waves have arrived</string>
+    <string name="svc_alert_body">Local intensity %1$s · %2$s M%3$.1f · %4$d km from you</string>
+    <string name="svc_alert_short">%1$d s</string>
+    <string name="svc_alert_short_arrived">Arrived</string>
+    <string name="svc_alert_sub_report">Report %1$d</string>
+    <string name="svc_alert_sub_final">Report %1$d (final)</string>
+    <string name="svc_alert_drill_prefix">Drill · %1$s</string>
+    <string name="svc_alert_summary_title">%1$s M%2$.1f alert ended</string>
+    <string name="svc_alert_summary_title_drill">Drill ended: %1$s M%2$.1f</string>
+    <string name="svc_alert_summary_text">%1$s · local intensity %2$s · %3$d km from you</string>
+    <string name="svc_action_safe">I am safe</string>
+    <string name="svc_action_mute">Mute</string>
+    <string name="svc_tts_announce">Earthquake alert. Seismic waves arrive in %1$d seconds, local intensity %2$d. Take cover now.</string>
+    <string name="svc_tts_announce_drill">Drill. Earthquake alert, seismic waves arrive in %1$d seconds, local intensity %2$d.</string>
+    <string name="svc_tts_arrived">Seismic waves have arrived. Take cover.</string>
+    <string name="svc_tts_arrived_drill">Drill: seismic waves have arrived.</string>
+
+    <!-- Drills -->
+    <string name="svc_drill_hypocenter_lushan">Lushan, Ya\'an, Sichuan</string>
+    <string name="svc_drill_hypocenter_near">Simulated nearby quake</string>
+    <string name="svc_drill_hypocenter_far">Simulated distant quake</string>
+    <string name="svc_log_drill">Drill %1$s: %2$s</string>
+
+    <!-- Diagnostics bundle -->
+    <string name="svc_export_title">Export diagnostics</string>
+    <string name="svc_export_failed">Could not export the diagnostics bundle</string>
+
+    <!-- Self test -->
+    <string name="svc_st_started">End-to-end self test started</string>
+    <string name="svc_st_finished">Self test finished: %1$d passed · %2$d warnings · %3$d failed</string>
+    <string name="svc_st_timeout">Not finished after %1$d s</string>
+    <string name="svc_st_failed">failed</string>
+    <string name="svc_st_network_none">No network available</string>
+    <string name="svc_st_transport_ethernet">Ethernet</string>
+    <string name="svc_st_transport_cellular">Mobile data</string>
+    <string name="svc_st_transport_other">Other network</string>
+    <string name="svc_st_network_unreachable">On %1$s, but api.wolfx.jp is unreachable</string>
+    <string name="svc_st_network_data_saver">%1$s · round trip %2$d ms · Data Saver restricts background data</string>
+    <string name="svc_st_network_unvalidated">%1$s · round trip %2$d ms · the system has not validated this network</string>
+    <string name="svc_st_network_ok">%1$s · api.wolfx.jp round trip %2$d ms</string>
+    <string name="svc_link_connected">connected</string>
+    <string name="svc_link_polling">HTTP polling</string>
+    <string name="svc_link_reconnecting">reconnecting</string>
+    <string name="svc_link_connecting">connecting</string>
+    <string name="svc_link_disconnected">not connected</string>
+    <string name="svc_st_sources_none">No source is connected</string>
+    <string name="svc_st_clock_unreachable">ntp.json unreachable, clock not checked</string>
+    <string name="svc_st_clock_ok">Offset %1$s s · round trip %2$d ms</string>
+    <string name="svc_st_clock_warn">Offset %1$s s, countdowns may be off</string>
+    <string name="svc_st_clock_fail">Offset %1$s s, set the system time</string>
+    <string name="svc_st_location_manual">Manual location: %1$s</string>
+    <string name="svc_st_location_device">%1$s fix · %2$s · %3$d min ago</string>
+    <string name="svc_st_location_ip">Only a coarse IP location (%1$s); grant location access or set it manually</string>
+    <string name="svc_st_location_none">Location unknown, the local intensity cannot be estimated</string>
+    <string name="svc_st_perm_notifications">Notifications are off, alerts cannot be delivered</string>
+    <string name="svc_st_perm_overlay">Display over other apps is off, the alert card cannot appear</string>
+    <string name="svc_st_perm_full_screen">Full-screen notifications are not allowed, only a banner on the lock screen</string>
+    <string name="svc_st_perm_ok">Notifications, overlay and full-screen notifications are allowed</string>
+    <string name="svc_st_limits_restricted">The app is in the restricted standby bucket; background work is heavily limited</string>
+    <string name="svc_st_limits_battery">Battery optimization is on (standby bucket %1$s); the system may end the service</string>
+    <string name="svc_st_limits_rare">The app is in the rare standby bucket; background work is deferred</string>
+    <string name="svc_st_limits_auto_start">The vendor system may block start on boot (standby bucket %1$s)</string>
+    <string name="svc_st_limits_ok">Battery optimization off · standby bucket %1$s</string>
+    <string name="svc_st_pipeline_ok">Parse %1$s ms · evaluate %2$s ms · local intensity %3$s · %4$s</string>
+    <string name="svc_st_pipeline_fail">Test report rejected: %1$s</string>
+    <string name="svc_st_probe_title">Self test: notification channel check</string>
+    <string name="svc_st_present_blocked">Notifications are blocked, alerts cannot be shown</string>
+    <string name="svc_st_present_channel">The alert notification channel is turned off</string>
+    <string name="svc_st_present_volume">Alarm volume is 0, strong alerts will be silent</string>
+    <string name="svc_st_present_no_overlay">The floating card is unavailable, notifications will be used</string>
+    <string name="svc_st_present_no_fsi">Full-screen notifications are unavailable, a banner will be used on the lock screen</string>
+    <string name="svc_st_present_ok">Notification, floating card and full-screen channels are available</string>
+</resources>
