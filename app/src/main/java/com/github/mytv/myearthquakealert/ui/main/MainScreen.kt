@@ -30,13 +30,10 @@ import androidx.core.content.ContextCompat
 import com.github.mytv.myearthquakealert.MyEarthQuakeAlertApp
 import com.github.mytv.myearthquakealert.R
 import com.github.mytv.myearthquakealert.data.model.EarthquakeInfo
-import com.github.mytv.myearthquakealert.data.model.EewEvent
 import com.github.mytv.myearthquakealert.data.repository.UserSettings
 import com.github.mytv.myearthquakealert.data.source.EewSource
 import com.github.mytv.myearthquakealert.domain.SeismicCalculator
-import com.github.mytv.myearthquakealert.service.ActiveAlertHolder
-import com.github.mytv.myearthquakealert.service.AlertData
-import com.github.mytv.myearthquakealert.service.AlertOverlayService
+import com.github.mytv.myearthquakealert.service.BootStartRecord
 import com.github.mytv.myearthquakealert.service.EewMonitorService
 import com.github.mytv.myearthquakealert.ui.adaptive.LayoutMode
 import com.github.mytv.myearthquakealert.ui.adaptive.currentLayoutMode
@@ -47,6 +44,7 @@ import com.github.mytv.myearthquakealert.ui.map.MapPoint
 import com.github.mytv.myearthquakealert.ui.map.QuakeMarker
 import com.github.mytv.myearthquakealert.ui.theme.EeqSpacing
 import com.github.mytv.myearthquakealert.ui.theme.csisColor
+import com.github.mytv.myearthquakealert.util.AutoStartSettings
 import com.github.mytv.myearthquakealert.util.LogExporter
 import com.github.mytv.myearthquakealert.util.canDrawOverlays
 import com.github.mytv.myearthquakealert.util.openOverlaySettings
@@ -198,57 +196,9 @@ fun MainScreen(
             )
             return
         }
-        scope.launch {
-            try {
-                val location = app.locationProvider.getLocation()
-
-                // A realistic scenario: M6.5 at 10 km depth, ~85 km away.
-                val depthKm = 10.0
-                val magnitude = 6.5
-                val targetDistanceKm = 85.0
-                val epicenter = SeismicCalculator.offsetPoint(
-                    location.latitude, location.longitude, 60.0, targetDistanceKm,
-                )
-                val distance = SeismicCalculator.haversineDistance(
-                    location.latitude, location.longitude,
-                    epicenter.latitude, epicenter.longitude,
-                )
-                val arrival = SeismicCalculator.calcWaveArrival(depthKm, distance)
-                val localCsis = SeismicCalculator.calcLocalIntensity(magnitude, depthKm, distance)
-
-                val simEvent = EewEvent(
-                    id = "sim-1",
-                    eventId = "SIMULATION",
-                    source = settings.selectedSource.name,
-                    reportTime = "",
-                    reportNum = 1,
-                    originTime = "",
-                    hypocenter = "模拟震源",
-                    latitude = epicenter.latitude,
-                    longitude = epicenter.longitude,
-                    magnitude = magnitude,
-                    depth = depthKm,
-                    maxIntensity = 5.0,
-                )
-
-                ActiveAlertHolder.showAlert(
-                    AlertData(
-                        event = simEvent,
-                        userLatitude = location.latitude,
-                        userLongitude = location.longitude,
-                        pWaveSeconds = arrival.pWaveSeconds,
-                        sWaveSeconds = arrival.sWaveSeconds,
-                        localCsis = localCsis,
-                        distanceKm = distance,
-                        isSimulation = true,
-                    )
-                )
-                AlertOverlayService.show(context)
-            } catch (e: SecurityException) {
-                Toast.makeText(context, context.getString(R.string.location_permission_required), Toast.LENGTH_LONG).show()
-            } catch (e: Exception) {
-                Toast.makeText(context, e.message ?: context.getString(R.string.simulation_test), Toast.LENGTH_LONG).show()
-            }
+        // The drill runs in the monitoring service, through the same path as a real report.
+        if (!EewMonitorService.drill(context)) {
+            Toast.makeText(context, context.getString(R.string.drill_failed), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -260,11 +210,17 @@ fun MainScreen(
     }
 
     // ── Shared panes ──────────────────────────────────────────────────────
+    // Recorded by BootReceiver; only changes across reboots.
+    val bootDelaySeconds = remember { BootStartRecord.delaySecondsThisBoot(context) }
+
     val serviceSection: @Composable () -> Unit = {
         ServiceSection(
             settings = settings,
             canDrawOverlays = context.canDrawOverlays(),
+            bootDelaySeconds = bootDelaySeconds,
             onToggle = { setServiceEnabled(it) },
+            onBootStartToggle = { scope.launch { app.settingsRepository.updateBootStart(it) } },
+            onOpenAutoStartSettings = { AutoStartSettings.open(context) },
             onGrantOverlay = { requestOverlayPermission() },
         )
     }
@@ -463,7 +419,10 @@ fun MainScreen(
 private fun ServiceSection(
     settings: UserSettings,
     canDrawOverlays: Boolean,
+    bootDelaySeconds: Long?,
     onToggle: (Boolean) -> Unit,
+    onBootStartToggle: (Boolean) -> Unit,
+    onOpenAutoStartSettings: () -> Unit,
     onGrantOverlay: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -500,6 +459,14 @@ private fun ServiceSection(
         ServiceToggleCard(
             enabled = settings.serviceEnabled,
             onToggle = onToggle,
+        )
+        BootStartCard(
+            monitoringEnabled = settings.serviceEnabled,
+            bootStart = settings.bootStart,
+            bootDelaySeconds = bootDelaySeconds,
+            showAutoStartHint = AutoStartSettings.isRestricted(),
+            onToggle = onBootStartToggle,
+            onOpenAutoStartSettings = onOpenAutoStartSettings,
         )
     }
 }

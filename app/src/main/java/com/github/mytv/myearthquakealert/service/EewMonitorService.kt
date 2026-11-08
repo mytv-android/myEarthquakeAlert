@@ -8,27 +8,49 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
 import com.github.mytv.myearthquakealert.MainActivity
 import com.github.mytv.myearthquakealert.MyEarthQuakeAlertApp
 import com.github.mytv.myearthquakealert.R
+import com.github.mytv.myearthquakealert.data.model.EewEvent
+import com.github.mytv.myearthquakealert.data.model.UserLocation
+import com.github.mytv.myearthquakealert.data.repository.SettingsStore
 import com.github.mytv.myearthquakealert.data.source.EewSource
 import com.github.mytv.myearthquakealert.data.websocket.EewWebSocketClient
 import com.github.mytv.myearthquakealert.domain.AlertEvaluator
+import com.github.mytv.myearthquakealert.domain.DrillScenario
 import com.github.mytv.myearthquakealert.domain.SeismicCalculator
-import com.github.mytv.myearthquakealert.util.LocationProvider
+import com.github.mytv.myearthquakealert.util.isUserUnlocked
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
 
+/**
+ * All earthquake detection runs here, never in an Activity: connecting to the data
+ * source, reconnecting, evaluating each report against the user's location and
+ * thresholds, and presenting the alert. The UI only reads state and sends commands
+ * (start, stop, drill).
+ *
+ * The service is directBootAware: after a reboot the boot receiver can start it before
+ * the first unlock. Settings live in device-protected storage, and alerts raised in that
+ * window are posted as a notification because the overlay cannot be drawn yet.
+ */
 class EewMonitorService : Service() {
 
     private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var monitorJob: Job? = null
     private var alertJob: Job? = null
     private var reconnectJob: Job? = null
+
+    @Volatile
     private var isMonitoring = false
+
+    private val app: MyEarthQuakeAlertApp get() = applicationContext as MyEarthQuakeAlertApp
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -43,24 +65,18 @@ class EewMonitorService : Service() {
             when (action) {
                 ACTION_START -> startMonitoring()
                 ACTION_STOP -> stopMonitoring()
+                ACTION_DRILL -> runDrill(startId)
+                // START_STICKY restart after the process was killed: the intent is not redelivered.
+                null -> resumeAfterRestart(startId)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error in onStartCommand action=$action", e)
-            if (action == ACTION_START) {
-                // Ensure foreground notification even on error to avoid ANR
-                try {
-                    startForeground(
-                        NOTIFICATION_ID,
-                        createNotification(getString(R.string.service_monitoring)),
-                        ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
-                    )
-                } catch (_: Exception) {}
-            }
         }
         return START_STICKY
     }
 
     override fun onDestroy() {
+        if (isMonitoring) app.eewRepository.disconnectWebSocket()
         isMonitoring = false
         monitorJob?.cancel()
         alertJob?.cancel()
@@ -69,17 +85,36 @@ class EewMonitorService : Service() {
         super.onDestroy()
     }
 
+    private fun resumeAfterRestart(startId: Int) {
+        if (!SettingsStore.isReadable(this)) {
+            stopSelf(startId)
+            return
+        }
+        serviceScope.launch {
+            val enabled = try {
+                app.settingsRepository.settings.first().serviceEnabled
+            } catch (e: Exception) {
+                Log.e(TAG, "Cannot read settings after restart", e)
+                false
+            }
+            withContext(Dispatchers.Main) {
+                when {
+                    enabled -> startMonitoring()
+                    !isMonitoring -> stopSelf(startId)
+                }
+            }
+        }
+    }
+
     private fun startMonitoring() {
         if (isMonitoring) return
+        if (!enterForeground()) {
+            stopSelf()
+            return
+        }
         isMonitoring = true
+        AppNotifications.cancelBootNotice(this)
 
-        startForeground(
-            NOTIFICATION_ID,
-            createNotification(getString(R.string.service_monitoring)),
-            ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
-        )
-
-        val app = applicationContext as MyEarthQuakeAlertApp
         val repository = app.eewRepository
         val settingsRepo = app.settingsRepository
 
@@ -120,8 +155,6 @@ class EewMonitorService : Service() {
 
         alertJob?.cancel()
         alertJob = serviceScope.launch {
-            val locationProvider = app.locationProvider
-
             repository.eewMessages.collect { event ->
                 try {
                     // Guard against malformed reports with a null-island epicenter.
@@ -131,39 +164,14 @@ class EewMonitorService : Service() {
                     }
 
                     val settings = settingsRepo.settings.first()
-                    val location = locationProvider.getLocation()
-
-                    val distance = SeismicCalculator.haversineDistance(
-                        location.latitude, location.longitude,
-                        event.latitude, event.longitude
-                    )
-                    val depth = event.depth ?: 10.0
-                    val arrival = SeismicCalculator.calcWaveArrival(depth, distance)
-                    val localCsis = SeismicCalculator.calcLocalIntensity(
-                        event.magnitude, depth, distance
-                    )
-
+                    val alert = buildAlert(event, app.locationProvider.getLocation(), isDrill = false)
                     val shouldAlert = AlertEvaluator.shouldAlert(
-                        localCsis = localCsis,
+                        localCsis = alert.localCsis,
                         magnitude = event.magnitude,
                         minIntensity = settings.actionMinIntensity,
                         minMagnitude = settings.actionMinMagnitude,
                     )
-
-                    if (shouldAlert) {
-                        ActiveAlertHolder.showAlert(
-                            AlertData(
-                                event = event,
-                                userLatitude = location.latitude,
-                                userLongitude = location.longitude,
-                                pWaveSeconds = arrival.pWaveSeconds,
-                                sWaveSeconds = arrival.sWaveSeconds,
-                                localCsis = localCsis,
-                                distanceKm = distance,
-                            )
-                        )
-                        AlertOverlayService.show(this@EewMonitorService)
-                    }
+                    if (shouldAlert) present(alert)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error processing EEW message", e)
                 }
@@ -173,7 +181,6 @@ class EewMonitorService : Service() {
 
     private fun stopMonitoring() {
         isMonitoring = false
-        val app = applicationContext as MyEarthQuakeAlertApp
         app.eewRepository.disconnectWebSocket()
         serviceScope.launch { app.settingsRepository.updateServiceEnabled(false) }
         monitorJob?.cancel()
@@ -183,7 +190,85 @@ class EewMonitorService : Service() {
         stopSelf()
     }
 
+    /**
+     * Runs the alert drill through the same evaluate → present path as a real report.
+     * Thresholds are skipped so the drill always shows. When monitoring is off the
+     * service was started only for the drill and stops itself afterwards.
+     */
+    private fun runDrill(startId: Int) {
+        serviceScope.launch {
+            try {
+                val settings = app.settingsRepository.settings.first()
+                val location = app.locationProvider.getLocation()
+                val event = DrillScenario.create(
+                    userLatitude = location.latitude,
+                    userLongitude = location.longitude,
+                    source = settings.selectedSource.name,
+                    hypocenter = getString(R.string.drill_hypocenter),
+                )
+                present(buildAlert(event, location, isDrill = true))
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e(TAG, "Drill failed", e)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(applicationContext, R.string.drill_failed, Toast.LENGTH_LONG).show()
+                }
+            } finally {
+                if (!isMonitoring) stopSelf(startId)
+            }
+        }
+    }
+
+    private fun buildAlert(event: EewEvent, location: UserLocation, isDrill: Boolean): AlertData {
+        val distance = SeismicCalculator.haversineDistance(
+            location.latitude, location.longitude,
+            event.latitude, event.longitude,
+        )
+        val depth = event.depth ?: 10.0
+        val arrival = SeismicCalculator.calcWaveArrival(depth, distance)
+        return AlertData(
+            event = event,
+            userLatitude = location.latitude,
+            userLongitude = location.longitude,
+            pWaveSeconds = arrival.pWaveSeconds,
+            sWaveSeconds = arrival.sWaveSeconds,
+            localCsis = SeismicCalculator.calcLocalIntensity(event.magnitude, depth, distance),
+            distanceKm = distance,
+            isSimulation = isDrill,
+        )
+    }
+
+    private fun present(alert: AlertData) {
+        if (isUserUnlocked()) {
+            ActiveAlertHolder.showAlert(alert)
+            AlertOverlayService.show(this)
+        } else {
+            // Before the first unlock the overlay window and its map are unavailable.
+            AppNotifications.showLockedAlert(this, alert)
+        }
+    }
+
+    private fun enterForeground(): Boolean = try {
+        ServiceCompat.startForeground(
+            this,
+            NOTIFICATION_ID,
+            createNotification(getString(R.string.service_monitoring)),
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+            } else {
+                0
+            },
+        )
+        true
+    } catch (e: Exception) {
+        // e.g. ForegroundServiceStartNotAllowedException on a background restart.
+        Log.e(TAG, "Cannot enter foreground", e)
+        false
+    }
+
     private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         val channel = NotificationChannel(
             CHANNEL_ID,
             getString(R.string.notification_channel_name),
@@ -213,19 +298,31 @@ class EewMonitorService : Service() {
         const val NOTIFICATION_ID = 1
         const val ACTION_START = "com.github.mytv.myearthquakealert.START_MONITOR"
         const val ACTION_STOP = "com.github.mytv.myearthquakealert.STOP_MONITOR"
+        const val ACTION_DRILL = "com.github.mytv.myearthquakealert.RUN_DRILL"
 
+        fun startIntent(context: Context): Intent =
+            Intent(context, EewMonitorService::class.java).setAction(ACTION_START)
+
+        /** Starts monitoring. Idempotent: a running service ignores repeated starts. */
         fun start(context: Context) {
-            val intent = Intent(context, EewMonitorService::class.java)
-            intent.action = ACTION_START
-            context.startForegroundService(intent)
+            ContextCompat.startForegroundService(context, startIntent(context))
         }
 
+        /**
+         * Stops monitoring. Uses stopService rather than a STOP intent, so a service that
+         * is not running is never started just to stop (which would owe a foreground start).
+         */
         fun stop(context: Context) {
-            val intent = Intent(context, EewMonitorService::class.java)
-            intent.action = ACTION_STOP
-            // Use startForegroundService to satisfy Android 12+ requirements
-            // since the service is already in foreground state
-            context.startForegroundService(intent)
+            context.stopService(Intent(context, EewMonitorService::class.java))
+        }
+
+        /** Runs the alert drill in the service. Call while the app is in the foreground. */
+        fun drill(context: Context): Boolean = try {
+            context.startService(Intent(context, EewMonitorService::class.java).setAction(ACTION_DRILL))
+            true
+        } catch (e: IllegalStateException) {
+            Log.w(TAG, "Cannot start drill from the background", e)
+            false
         }
     }
 }

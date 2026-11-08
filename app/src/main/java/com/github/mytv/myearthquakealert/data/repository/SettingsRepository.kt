@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.map
 data class UserSettings(
     val selectedSource: EewSource = EewSource.CENC,
     val serviceEnabled: Boolean = false,
+    /** Restart monitoring after a reboot. Independent of [serviceEnabled]; only applies while it is on. */
+    val bootStart: Boolean = true,
     val actionMinMagnitude: Double = 0.0,
     val actionMinIntensity: Int = 0,
     val intenseThreshold: Int = 5,
@@ -27,6 +29,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     private object Keys {
         val SELECTED_SOURCE = stringPreferencesKey("selected_source")
         val SERVICE_ENABLED = booleanPreferencesKey("service_enabled")
+        val BOOT_START = booleanPreferencesKey("boot_start")
         val ACTION_MIN_MAGNITUDE = doublePreferencesKey("action_min_magnitude")
         val ACTION_MIN_INTENSITY = intPreferencesKey("action_min_intensity")
         val INTENSE_THRESHOLD = intPreferencesKey("intense_threshold")
@@ -42,6 +45,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
                 EewSource.CENC
             },
             serviceEnabled = prefs[Keys.SERVICE_ENABLED] ?: false,
+            bootStart = prefs[Keys.BOOT_START] ?: true,
             actionMinMagnitude = prefs[Keys.ACTION_MIN_MAGNITUDE] ?: 0.0,
             actionMinIntensity = prefs[Keys.ACTION_MIN_INTENSITY] ?: 0,
             intenseThreshold = prefs[Keys.INTENSE_THRESHOLD] ?: 5,
@@ -56,6 +60,10 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
     suspend fun updateServiceEnabled(enabled: Boolean) {
         dataStore.edit { it[Keys.SERVICE_ENABLED] = enabled }
+    }
+
+    suspend fun updateBootStart(enabled: Boolean) {
+        dataStore.edit { it[Keys.BOOT_START] = enabled }
     }
 
     suspend fun updateActionMinMagnitude(magnitude: Double) {

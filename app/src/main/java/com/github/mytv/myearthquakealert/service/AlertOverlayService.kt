@@ -22,6 +22,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -62,6 +63,8 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         savedStateRegistryController.performRestore(null)
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         createNotificationChannel()
+        // The process may have started before the first unlock; the map needs its config.
+        (application as MyEarthQuakeAlertApp).ensureMapConfigured()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -292,13 +295,13 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         fun show(context: android.content.Context) {
             val intent = Intent(context, AlertOverlayService::class.java)
             intent.action = ACTION_SHOW
-            context.startForegroundService(intent)
+            ContextCompat.startForegroundService(context, intent)
         }
 
         fun dismiss(context: android.content.Context) {
             val intent = Intent(context, AlertOverlayService::class.java)
             intent.action = ACTION_DISMISS
-            context.startForegroundService(intent)
+            ContextCompat.startForegroundService(context, intent)
         }
     }
 }

@@ -20,7 +20,8 @@ object LogExporter {
     private var defaultHandler: Thread.UncaughtExceptionHandler? = null
 
     fun init(context: Context) {
-        crashLogDir = File(context.filesDir, CRASH_DIR).apply { mkdirs() }
+        // Device-protected storage, so crashes before the first unlock after boot are kept too.
+        crashLogDir = File(context.deviceProtectedContext().filesDir, CRASH_DIR).apply { mkdirs() }
         defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             saveCrashToFile(throwable)
@@ -67,7 +68,12 @@ object LogExporter {
             out.write(header.toByteArray())
 
             // Crash logs from disk
-            val crashFiles = crashLogDir.listFiles()?.sortedBy { it.name }?.takeLast(5)
+            // Older versions wrote crash logs to credential-encrypted storage.
+            val legacyDir = File(context.filesDir, CRASH_DIR)
+            val crashFiles = listOf(crashLogDir, legacyDir).distinct()
+                .flatMap { it.listFiles()?.toList().orEmpty() }
+                .sortedBy { it.name }
+                .takeLast(5)
             if (!crashFiles.isNullOrEmpty()) {
                 out.write("=== Recent Crashes ===\n\n".toByteArray())
                 for (f in crashFiles) {

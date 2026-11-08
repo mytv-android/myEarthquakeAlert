@@ -25,20 +25,24 @@ fun UpdateDialog(
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(EeqSpacing.sm)) {
                 Text(
-                    text = stringResource(R.string.update_version, updateInfo.version),
+                    text = stringResource(
+                        R.string.update_version,
+                        "${updateInfo.versionName} (${updateInfo.versionCode})"
+                    ),
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 Text(
                     text = stringResource(
                         R.string.update_size,
-                        ApkInstaller.formatFileSize(updateInfo.apkSize)
+                        ApkInstaller.formatFileSize(updateInfo.size)
                     ),
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                if (updateInfo.releaseNotes.isNotBlank()) {
+                val notes = updateInfo.notes.filter { it.isNotBlank() }
+                if (notes.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(EeqSpacing.sm))
                     Text(
-                        text = updateInfo.releaseNotes,
+                        text = notes.joinToString("\n") { "• $it" },
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }

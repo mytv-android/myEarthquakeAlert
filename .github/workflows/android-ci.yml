@@ -1,71 +1,122 @@
-name: Android CI
+name: Build
 
 on:
   push:
-    branches: [main, master]
-    tags: ["v*"]
+    branches: [master, dev]
   pull_request:
-    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: "21"
-          distribution: "temurin"
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Build debug APK
-        run: ./gradlew assembleDebug
-
-      - name: Upload debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: debug-apk
-          path: app/build/outputs/apk/debug/*.apk
-          compression-level: 0
-
-      - name: Run unit tests
-        run: ./gradlew testDebugUnitTest
-
-      - name: Decode keystore for release build
-        if: startsWith(github.ref, 'refs/tags/v')
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - name: Install Android SDK packages
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > app/release.jks
+          SDKMANAGER="${ANDROID_HOME:-/usr/local/lib/android/sdk}/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$SDKMANAGER" ]; then
+            SDKMANAGER=$(find "${ANDROID_HOME:-/usr/local/lib/android/sdk}/cmdline-tools" -name sdkmanager -type f | head -1)
+          fi
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" "platforms;android-37.0" "build-tools;37.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+      - run: chmod +x ./gradlew && ./gradlew test
 
-      - name: Build release APK
-        if: startsWith(github.ref, 'refs/tags/v')
+  release:
+    needs: test
+    if: github.event_name != 'pull_request' && github.repository == 'mytv-android/myEarthquakeAlert'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21, cache: gradle }
+      - name: Install Android SDK packages
+        run: |
+          SDKMANAGER="${ANDROID_HOME:-/usr/local/lib/android/sdk}/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$SDKMANAGER" ]; then
+            SDKMANAGER=$(find "${ANDROID_HOME:-/usr/local/lib/android/sdk}/cmdline-tools" -name sdkmanager -type f | head -1)
+          fi
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" "platforms;android-37.0" "build-tools;37.0.0"
+      - name: Add signing files
         env:
-          KEYSTORE_FILE: release.jks
+          SIGNING_PROPERTIES: ${{ secrets.SIGNING_PROPERTIES }}
+          SIGN_KEY: ${{ secrets.SIGN_KEY }}
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_ALIAS_PASSWORD: ${{ secrets.KEY_ALIAS_PASSWORD }}
-        run: ./gradlew assembleRelease
-
-      - name: Upload release APK
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: actions/upload-artifact@v4
+        run: |
+          if [ -n "$SIGN_KEY" ]; then
+            echo "$SIGN_KEY" | base64 -d > keystore.jks
+          elif [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > keystore.jks
+          fi
+          if [ -n "$SIGNING_PROPERTIES" ]; then
+            echo "$SIGNING_PROPERTIES" | base64 -d > signing.properties
+          elif [ -n "$KEYSTORE_PASSWORD" ]; then
+            {
+              echo "storeFile=keystore.jks"
+              echo "storePassword=$KEYSTORE_PASSWORD"
+              echo "keyAlias=$KEY_ALIAS"
+              echo "keyPassword=$KEY_ALIAS_PASSWORD"
+            } > signing.properties
+          fi
+          if [ ! -s keystore.jks ]; then
+            echo "::error::缺少签名密钥，请配置 SIGN_KEY 或 KEYSTORE_BASE64 secrets"
+            exit 1
+          fi
+      - name: Build release
+        env:
+          VERSION_CODE: ${{ github.run_number }}
+        run: chmod +x ./gradlew && ./gradlew assembleRelease --no-daemon --max-workers=1 -Porg.gradle.jvmargs=-Xmx3g
+      - name: Prepare release assets
+        id: apk
+        run: |
+          metadata=$(find app/build/outputs/apk/release -name output-metadata.json | head -1)
+          version=$(jq -r '.elements[0].versionName' "$metadata")
+          code=$(jq -r '.elements[0].versionCode' "$metadata")
+          # versionName 固定为 1.0，标签带上 versionCode（运行号），每次构建的发布互不覆盖
+          tag="v${version}.${code}"
+          mkdir -p dist
+          find app/build/outputs/apk/release -name '*.apk' -exec cp {} dist/ \;
+          apk=$(find dist -name '*.apk' | head -1)
+          apk_name=$(basename "$apk")
+          sha=$(sha256sum "$apk" | awk '{print $1}')
+          size=$(stat -c%s "$apk")
+          published=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          channel=$([ "$GITHUB_REF_NAME" = "master" ] && echo "stable" || echo "dev")
+          note=$(git log -1 --pretty=%s)
+          url="https://github.com/${GITHUB_REPOSITORY}/releases/download/${tag}/${apk_name}"
+          jq -n \
+            --arg schema "myearthquakealert.update" \
+            --arg channel "$channel" \
+            --argjson versionCode "$code" \
+            --arg versionName "$version" \
+            --arg tag "$tag" \
+            --arg publishedAt "$published" \
+            --arg url "$url" \
+            --argjson size "$size" \
+            --arg sha "$sha" \
+            --arg note "$note" \
+            '{schema:$schema,channel:$channel,versionCode:$versionCode,versionName:$versionName,tag:$tag,publishedAt:$publishedAt,minSdk:23,apk:{url:$url,size:$size,sha256:$sha},notes:[$note]}' > dist/update.json
+          echo "$sha  $apk_name" > dist/update.apk.sha256
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+      - uses: softprops/action-gh-release@v2
         with:
-          name: release-apk
-          path: app/build/outputs/apk/release/*.apk
-          compression-level: 0
-
-      - name: Create GitHub Release
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v2
-        with:
-          files: app/build/outputs/apk/release/*.apk
-          generate_release_notes: true
+          tag_name: ${{ steps.apk.outputs.tag }}
+          name: myEarthQuakeAlert ${{ steps.apk.outputs.version }} (${{ steps.apk.outputs.code }})
+          body: Android 6.0+ 通用安装包。versionCode ${{ steps.apk.outputs.code }}。应用内更新会读取 update.json 并校验 SHA-256 与签名。
+          files: |
+            dist/*.apk
+            dist/update.json
+            dist/update.apk.sha256
+          prerelease: ${{ github.ref_name != 'master' }}
+          make_latest: ${{ github.ref_name == 'master' && 'true' || 'false' }}

@@ -17,10 +17,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.github.mytv.myearthquakealert.BuildConfig
 import com.github.mytv.myearthquakealert.R
+import com.github.mytv.myearthquakealert.data.repository.UpdateRepository
 import com.github.mytv.myearthquakealert.ui.adaptive.currentLayoutMode
 import com.github.mytv.myearthquakealert.ui.adaptive.LayoutMode
 import com.github.mytv.myearthquakealert.ui.theme.EeqSpacing
-import com.github.mytv.myearthquakealert.util.ApkInstaller
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,7 +59,7 @@ fun AboutScreen(
                         onCheckUpdate = { viewModel.checkForUpdate() },
                         onViewChangelog = {
                             val intent = Intent(Intent.ACTION_VIEW).apply {
-                                data = Uri.parse("https://github.com/mytv-android/myEarthquakeAlert/releases")
+                                data = Uri.parse(UpdateRepository.RELEASES_URL)
                             }
                             context.startActivity(intent)
                         },
@@ -112,7 +112,7 @@ fun AboutScreen(
                                 onCheckUpdate = { viewModel.checkForUpdate() },
                                 onViewChangelog = {
                                     val intent = Intent(Intent.ACTION_VIEW).apply {
-                                        data = Uri.parse("https://github.com/mytv-android/myEarthquakeAlert/releases")
+                                        data = Uri.parse(UpdateRepository.RELEASES_URL)
                                     }
                                     context.startActivity(intent)
                                 },
@@ -164,9 +164,8 @@ fun AboutScreen(
                 )
             }
             is AboutViewModel.UpdateState.Downloaded -> {
-                LaunchedEffect(Unit) {
-                    ApkInstaller.installApk(context, state.apkFile)
-                    viewModel.resetState()
+                LaunchedEffect(state.apkFile) {
+                    viewModel.installUpdate(state.apkFile)
                 }
             }
             is AboutViewModel.UpdateState.Error -> {

@@ -45,7 +45,7 @@ fun DownloadProgressDialog(
                     Text(
                         text = stringResource(
                             R.string.update_download_speed,
-                            ApkInstaller.formatSpeed(speed)
+                            ApkInstaller.formatFileSize(speed)
                         ),
                         style = MaterialTheme.typography.bodySmall,
                     )

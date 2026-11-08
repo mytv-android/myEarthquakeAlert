@@ -52,10 +52,10 @@
     <string name="update_checking">Checking for updates…</string>
     <string name="update_up_to_date">Already up to date</string>
     <string name="update_downloading">Downloading update…</string>
-    <string name="update_download_progress">%d%% (%s / %s)</string>
+    <string name="update_download_progress">%1$d%% (%2$s / %3$s)</string>
     <string name="update_download_speed">%s/s</string>
     <string name="update_install">Install</string>
-    <string name="update_error">Update check failed</string>
+    <string name="update_error">Update failed</string>
     <string name="update_error_network">Network connection failed</string>
     <string name="update_error_rate_limit">Too many requests, please try again later</string>
     <string name="update_retry">Retry</string>
@@ -69,8 +69,8 @@
     <string name="section_tools">Tools</string>
 
     <!-- Service Status -->
-    <string name="service_active">Monitoring active</string>
-    <string name="service_inactive">Monitoring paused</string>
+    <string name="service_active">Running in the background. Closing the app does not stop alerts.</string>
+    <string name="service_inactive">Off. No earthquake alerts will be received.</string>
 
     <!-- Subtitles -->
     <string name="simulation_subtitle">Test alert with simulated data</string>
@@ -114,4 +114,24 @@
     <string name="history_load_failed">Failed to load. Check your network.</string>
     <string name="intense_threshold">Intense threshold (CSIS)</string>
     <string name="monitor_status_title">Monitoring status</string>
+
+    <!-- Start on boot / background detection -->
+    <string name="drill_hypocenter">Simulated epicenter</string>
+    <string name="drill_failed">Could not run the drill. Try again.</string>
+    <string name="boot_start">Start on boot</string>
+    <string name="boot_start_unavailable">Unavailable while background monitoring is off</string>
+    <string name="boot_start_off">After a restart, monitoring must be started manually</string>
+    <string name="boot_start_done">Started automatically %1$d s after this boot</string>
+    <string name="boot_start_on_direct">Resumes after a restart, even before you unlock</string>
+    <string name="boot_start_on">Resumes after a restart without opening the app</string>
+    <string name="autostart_hint">This system may block start on boot. Allow auto-start for this app.</string>
+    <string name="autostart_open">Allow</string>
+    <string name="boot_notice_title">Earthquake monitoring is not running</string>
+    <string name="boot_notice_text">Start on boot is off, so monitoring did not resume after the restart.</string>
+    <string name="boot_notice_start">Start now</string>
+    <string name="notification_channel_status">Monitoring status</string>
+    <string name="notification_channel_alert">Earthquake alerts</string>
+    <string name="locked_alert_title">Earthquake early warning · %1$s M%2$.1f</string>
+    <string name="locked_alert_text">Expected intensity %1$d · S wave in about %2$d s</string>
+    <string name="locked_alert_text_arrived">Expected intensity %1$d · seismic waves have arrived</string>
 </resources>

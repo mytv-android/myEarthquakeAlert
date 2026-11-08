@@ -52,10 +52,10 @@
     <string name="update_checking">正在检查更新…</string>
     <string name="update_up_to_date">已是最新版本</string>
     <string name="update_downloading">正在下载更新…</string>
-    <string name="update_download_progress">%d%% (%s / %s)</string>
+    <string name="update_download_progress">%1$d%% (%2$s / %3$s)</string>
     <string name="update_download_speed">%s/s</string>
     <string name="update_install">安装</string>
-    <string name="update_error">检查更新失败</string>
+    <string name="update_error">更新失败</string>
     <string name="update_error_network">网络连接失败，请检查网络设置</string>
     <string name="update_error_rate_limit">请求过于频繁，请稍后再试</string>
     <string name="update_retry">重试</string>
@@ -69,8 +69,8 @@
     <string name="section_tools">工具</string>
 
     <!-- Service Status -->
-    <string name="service_active">监测中</string>
-    <string name="service_inactive">已暂停</string>
+    <string name="service_active">后台监测中，关闭应用不影响预警</string>
+    <string name="service_inactive">已关闭，不会收到任何地震预警</string>
 
     <!-- Subtitles -->
     <string name="simulation_subtitle">使用模拟数据测试预警覆盖层</string>
@@ -114,4 +114,24 @@
     <string name="history_load_failed">加载失败，请检查网络连接</string>
     <string name="intense_threshold">强震阈值 (CSIS)</string>
     <string name="monitor_status_title">监测状态</string>
+
+    <!-- Start on boot / background detection -->
+    <string name="drill_hypocenter">模拟震源</string>
+    <string name="drill_failed">演练启动失败，请重试</string>
+    <string name="boot_start">开机自动启动</string>
+    <string name="boot_start_unavailable">后台监测关闭时不可用</string>
+    <string name="boot_start_off">重启后需手动开启监测</string>
+    <string name="boot_start_done">本次开机后 %1$d 秒已自动启动</string>
+    <string name="boot_start_on_direct">重启后自动恢复，解锁前即可监测</string>
+    <string name="boot_start_on">重启后自动恢复，无需打开应用</string>
+    <string name="autostart_hint">本机系统可能拦截开机自启，请允许本应用自启动</string>
+    <string name="autostart_open">去允许</string>
+    <string name="boot_notice_title">地震监测未启动</string>
+    <string name="boot_notice_text">开机自动启动已关闭，重启后需要手动开启。</string>
+    <string name="boot_notice_start">立即启动</string>
+    <string name="notification_channel_status">监测状态</string>
+    <string name="notification_channel_alert">地震预警</string>
+    <string name="locked_alert_title">紧急地震速报 · %1$s M%2$.1f</string>
+    <string name="locked_alert_text">预计烈度 %1$d，S 波约 %2$d 秒后到达</string>
+    <string name="locked_alert_text_arrived">预计烈度 %1$d，地震波已到达</string>
 </resources>
