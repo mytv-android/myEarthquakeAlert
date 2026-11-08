@@ -31,6 +31,8 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.github.mytv.myearthquakealert.MyEarthQuakeAlertApp
 import com.github.mytv.myearthquakealert.data.repository.UserSettings
 import com.github.mytv.myearthquakealert.ui.alert.AlertOverlay
+import com.github.mytv.myearthquakealert.ui.alert.AlertPresentation
+import com.github.mytv.myearthquakealert.ui.alert.alertPresentation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -124,7 +126,12 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         // Raw Back key handling: this window has no Activity above it, so the framework's
         // back dispatch never reaches a dispatcher here. Consume Back always, dismiss only
         // when allowed.
-        if (!tv) {
+        val metrics = resources.displayMetrics
+        val landscape = metrics.widthPixels > metrics.heightPixels
+        val presentation = alertPresentation(alert.tier, landscape, tv)
+        // The TV ticker takes focus so OK / Back act on it; the programme keeps playing below.
+        val focusable = !tv || presentation != AlertPresentation.CARD
+        if (focusable) {
             composeView.isFocusable = true
             composeView.isFocusableInTouchMode = true
             composeView.setOnKeyListener { _, keyCode, event ->
@@ -138,8 +145,6 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
         }
 
         val backPressedDispatcher = OnBackPressedDispatcher()
-        val metrics = resources.displayMetrics
-        val landscape = metrics.widthPixels > metrics.heightPixels
 
         composeView.setContent {
             val settings by app.settingsRepository.settings.collectAsState(initial = currentSettings)
@@ -159,6 +164,7 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
                         intenseThreshold = settings.intenseThreshold,
                         mapStyle = settings.mapStyle,
                         wideLayout = landscape,
+                        presentation = presentation,
                     )
                 }
             }
@@ -171,40 +177,44 @@ class AlertOverlayService : Service(), LifecycleOwner, SavedStateRegistryOwner {
             WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
         }
 
-        // Compact floating card: the window wraps the content. Width is pinned here
-        // (measure-driven layout guesses are unreliable for wrap windows); the card decides
-        // wide/narrow from the screen shape. TV: bottom of the screen, no dim, no focus.
-        val windowWidthPx = if (landscape) {
-            (metrics.widthPixels * 0.66f).toInt().coerceAtMost((720 * metrics.density).toInt())
-        } else {
-            (metrics.widthPixels - 48 * metrics.density).toInt()
+        // CARD: the window wraps the content with a pinned width (measure-driven layout
+        // guesses are unreliable for wrap windows). FULL_SCREEN and TV_TICKER fill the
+        // screen; the ticker draws only its subtitle bar and corner map, without dim.
+        val fill = presentation != AlertPresentation.CARD
+        val windowWidthPx = when {
+            fill -> WindowManager.LayoutParams.MATCH_PARENT
+            landscape -> (metrics.widthPixels * 0.66f).toInt().coerceAtMost((720 * metrics.density).toInt())
+            else -> (metrics.widthPixels - 48 * metrics.density).toInt()
         }
-        val flags = if (tv) {
-            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-        } else {
-            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or WindowManager.LayoutParams.FLAG_DIM_BEHIND
+        var flags = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+        flags = flags or when {
+            !focusable -> WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+            presentation == AlertPresentation.TV_TICKER -> WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+            else -> WindowManager.LayoutParams.FLAG_DIM_BEHIND
         }
         val params = WindowManager.LayoutParams(
             windowWidthPx,
-            WindowManager.LayoutParams.WRAP_CONTENT,
+            if (fill) WindowManager.LayoutParams.MATCH_PARENT else WindowManager.LayoutParams.WRAP_CONTENT,
             windowType,
             flags,
             PixelFormat.TRANSLUCENT,
         ).apply {
-            if (tv) {
-                gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-                y = (32 * metrics.density).toInt()
-            } else {
-                gravity = Gravity.CENTER
-                dimAmount = 0.35f
+            when {
+                fill -> gravity = Gravity.FILL
+                tv -> {
+                    gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+                    y = (32 * metrics.density).toInt()
+                }
+                else -> {
+                    gravity = Gravity.CENTER
+                    dimAmount = 0.35f
+                }
             }
         }
 
         try {
             wm.addView(composeView, params)
-            if (!tv) composeView.post { composeView.requestFocus() }
+            if (focusable) composeView.post { composeView.requestFocus() }
         } catch (e: Exception) {
             Log.w(TAG, "Failed to add overlay view", e)
             overlayView = null
