@@ -229,7 +229,7 @@ fun MainScreen(
         SettingsPane(
             settings = settings,
             onSourceSelected = { source: EewSource ->
-                scope.launch { app.settingsRepository.updateSelectedSource(source) }
+                scope.launch { app.settingsRepository.updateEnabledSources(setOf(source)) }
             },
             onMinMagnitudeChange = { scope.launch { app.settingsRepository.updateActionMinMagnitude(it) } },
             onMinIntensityChange = { scope.launch { app.settingsRepository.updateActionMinIntensity(it) } },
@@ -486,7 +486,7 @@ private fun SettingsPane(
 ) {
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(EeqSpacing.sm)) {
         SourceSelector(
-            selected = settings.selectedSource,
+            selected = settings.primarySource,
             onSelected = onSourceSelected,
         )
         Spacer(modifier = Modifier.height(EeqSpacing.xs))

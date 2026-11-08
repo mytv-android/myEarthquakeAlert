@@ -2,20 +2,22 @@ package com.github.mytv.myearthquakealert.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// ── CSIS intensity scale ────────────────────────────────────────────────────
-val Csis0 = Color(0xFFCCCCCC)
-val Csis1 = Color(0xFF6A7828)
-val Csis2 = Color(0xFF4A7A2E)
-val Csis3 = Color(0xFF2E8B57)
-val Csis4 = Color(0xFFE8C800)
-val Csis5 = Color(0xFFF5A623)
-val Csis6 = Color(0xFFF57C00)
-val Csis7 = Color(0xFFE64A19)
-val Csis8 = Color(0xFFD32F2F)
-val Csis9 = Color(0xFFB71C1C)
-val Csis10 = Color(0xFF880E4F)
-val Csis11 = Color(0xFF4A148C)
-val Csis12 = Color(0xFF8B0000)
+// ── CSIS intensity scale (2.0) ──────────────────────────────────────────────
+// Low intensities are light cool tones that stay visible on dark maps; from 4
+// (felt by most people) the scale turns warm and deepens step by step.
+val Csis0 = Color(0xFFC9D1D9)
+val Csis1 = Color(0xFFA9C7DD)
+val Csis2 = Color(0xFF7FB3D5)
+val Csis3 = Color(0xFF4FA88E)
+val Csis4 = Color(0xFFE8C300)
+val Csis5 = Color(0xFFF7A21B)
+val Csis6 = Color(0xFFF07B13)
+val Csis7 = Color(0xFFE3501F)
+val Csis8 = Color(0xFFCC2A2A)
+val Csis9 = Color(0xFFA31631)
+val Csis10 = Color(0xFF7A1250)
+val Csis11 = Color(0xFF521473)
+val Csis12 = Color(0xFF2E0B48)
 
 fun csisColor(intensity: Double): Color {
     return when {
@@ -35,7 +37,7 @@ fun csisColor(intensity: Double): Color {
     }
 }
 
-// ── Status colors ───────────────────────────────────────────────────────────
+// ── Status colors (1.0 chip; 2.0 surfaces use StatusColors) ─────────────────
 val ConnectionGreen = Color(0xFF4CAF50)
 val ConnectingYellow = Color(0xFFFFC107)
 val DisconnectedRed = Color(0xFFF44336)

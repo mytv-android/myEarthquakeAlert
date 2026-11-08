@@ -123,7 +123,7 @@ class EewMonitorService : Service() {
             var currentSource: EewSource? = null
 
             settingsRepo.settings.collect { settings ->
-                val newSource = settings.selectedSource
+                val newSource = settings.primarySource
                 if (newSource != currentSource) {
                     repository.disconnectWebSocket()
                     repository.connectWebSocket(newSource)
@@ -145,7 +145,7 @@ class EewMonitorService : Service() {
                     Log.w(TAG, "WebSocket disconnected, reconnecting in ${delaySeconds}s (attempt $reconnectAttempts)")
                     delay(delaySeconds * 1000)
                     if (isMonitoring) {
-                        repository.connectWebSocket(settings.selectedSource)
+                        repository.connectWebSocket(settings.primarySource)
                     }
                 } else if (state == EewWebSocketClient.ConnectionState.CONNECTED) {
                     reconnectAttempts = 0
@@ -203,7 +203,7 @@ class EewMonitorService : Service() {
                 val event = DrillScenario.create(
                     userLatitude = location.latitude,
                     userLongitude = location.longitude,
-                    source = settings.selectedSource.name,
+                    source = settings.primarySource.name,
                     hypocenter = getString(R.string.drill_hypocenter),
                 )
                 present(buildAlert(event, location, isDrill = true))
@@ -299,6 +299,15 @@ class EewMonitorService : Service() {
         const val ACTION_START = "com.github.mytv.myearthquakealert.START_MONITOR"
         const val ACTION_STOP = "com.github.mytv.myearthquakealert.STOP_MONITOR"
         const val ACTION_DRILL = "com.github.mytv.myearthquakealert.RUN_DRILL"
+        const val ACTION_PAUSE = "com.github.mytv.myearthquakealert.PAUSE_MONITOR"
+        const val ACTION_RESUME = "com.github.mytv.myearthquakealert.RESUME_MONITOR"
+        const val ACTION_SELF_TEST = "com.github.mytv.myearthquakealert.SELF_TEST"
+        /** Long, epoch millis: end of the pause for [ACTION_PAUSE]. */
+        const val EXTRA_PAUSE_UNTIL = "pause_until"
+        /** String, [com.github.mytv.myearthquakealert.domain.DrillScenario] id for [ACTION_DRILL]. */
+        const val EXTRA_SCENARIO = "scenario"
+        /** String, [StartOrigin] name for [ACTION_START]. */
+        const val EXTRA_ORIGIN = "origin"
 
         fun startIntent(context: Context): Intent =
             Intent(context, EewMonitorService::class.java).setAction(ACTION_START)

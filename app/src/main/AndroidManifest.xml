@@ -42,6 +42,17 @@
                 android:value="tcl_launcher_card.png" />
         </activity>
 
+        <!-- Full-screen alert: lock screen and STRONG tier, launched via full-screen intent. -->
+        <activity
+            android:name=".ui.alert.AlertActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:showWhenLocked="true"
+            android:taskAffinity="${applicationId}.alert"
+            android:theme="@style/Theme.MyEarthQuakeAlert"
+            android:turnScreenOn="true" />
+
         <!-- directBootAware: started by BootReceiver before the first unlock after a reboot. -->
         <service
             android:name=".service.EewMonitorService"
