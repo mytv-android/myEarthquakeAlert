@@ -9,6 +9,24 @@ import com.github.mytv.myearthquakealert.data.model.EewEvent
  */
 object DrillScenario {
 
+    /**
+     * The drills offered in 设置 › 模拟演练 (design: 芦山 6.1 级回放等 3 个场景).
+     * Fixed-epicenter scenarios use real parameters; relative ones are placed from the
+     * user's location. Names come from string resources keyed by [id].
+     */
+    enum class Scenario(val id: String) {
+        /** 2022-06-01 四川芦山 M6.1, 30.37°N 102.94°E, depth 17 km — replayed at its real epicenter. */
+        LUSHAN("lushan"),
+        /** Near-field strong quake: M6.5, depth 10 km, ~85 km away — always a STRONG-tier alert. */
+        NEAR("near"),
+        /** Distant moderate quake: M5.0, depth 10 km, ~300 km away — a REMIND-tier alert. */
+        FAR("far");
+
+        companion object {
+            fun fromId(id: String?): Scenario = entries.firstOrNull { it.id == id } ?: LUSHAN
+        }
+    }
+
     const val EVENT_ID = "SIMULATION"
     private const val MAGNITUDE = 6.5
     private const val DEPTH_KM = 10.0

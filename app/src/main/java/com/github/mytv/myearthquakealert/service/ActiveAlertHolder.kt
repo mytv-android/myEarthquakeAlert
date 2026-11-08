@@ -40,7 +40,16 @@ object ActiveAlertHolder {
         _activeAlert.value = data
     }
 
+    private val _muted = MutableStateFlow(false)
+    /** "静音" on the alert: the service stops the alarm sound, vibration and speech. */
+    val muted: StateFlow<Boolean> = _muted.asStateFlow()
+
+    fun mute() {
+        _muted.value = true
+    }
+
     fun dismissAlert() {
         _activeAlert.value = null
+        _muted.value = false
     }
 }

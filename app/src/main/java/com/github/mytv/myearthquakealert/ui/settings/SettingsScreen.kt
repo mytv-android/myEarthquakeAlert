@@ -12,8 +12,13 @@ import androidx.compose.ui.Modifier
  * Stub until the settings pages land.
  *
  * @param openPage optional sub-page to open directly, e.g. "update" from an update prompt.
+ * @param onOpenDiagnostics switches to the 诊断 destination (工具 › 诊断 row).
  */
 @Composable
-fun SettingsScreen(modifier: Modifier = Modifier, openPage: String? = null) {
+fun SettingsScreen(
+    modifier: Modifier = Modifier,
+    openPage: String? = null,
+    onOpenDiagnostics: () -> Unit = {},
+) {
     Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("设置") }
 }

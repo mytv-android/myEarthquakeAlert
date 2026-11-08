@@ -325,12 +325,27 @@ class EewMonitorService : Service() {
             context.stopService(Intent(context, EewMonitorService::class.java))
         }
 
-        /** Runs the alert drill in the service. Call while the app is in the foreground. */
-        fun drill(context: Context): Boolean = try {
-            context.startService(Intent(context, EewMonitorService::class.java).setAction(ACTION_DRILL))
+        /** Runs an alert drill in the service. Call while the app is in the foreground. */
+        fun drill(context: Context, scenario: DrillScenario.Scenario = DrillScenario.Scenario.LUSHAN): Boolean =
+            send(context, Intent(context, EewMonitorService::class.java).setAction(ACTION_DRILL).putExtra(EXTRA_SCENARIO, scenario.id))
+
+        /** Pauses monitoring until [untilEpochMillis]; an alarm resumes it automatically. */
+        fun pause(context: Context, untilEpochMillis: Long): Boolean =
+            send(context, Intent(context, EewMonitorService::class.java).setAction(ACTION_PAUSE).putExtra(EXTRA_PAUSE_UNTIL, untilEpochMillis))
+
+        /** Ends a pause early. */
+        fun resume(context: Context): Boolean =
+            send(context, Intent(context, EewMonitorService::class.java).setAction(ACTION_RESUME))
+
+        /** Runs the 8-step end-to-end self test; progress is published in Diagnostics.selfTest. */
+        fun selfTest(context: Context): Boolean =
+            send(context, Intent(context, EewMonitorService::class.java).setAction(ACTION_SELF_TEST))
+
+        private fun send(context: Context, intent: Intent): Boolean = try {
+            context.startService(intent)
             true
         } catch (e: IllegalStateException) {
-            Log.w(TAG, "Cannot start drill from the background", e)
+            Log.w(TAG, "Cannot send ${intent.action} from the background", e)
             false
         }
     }
