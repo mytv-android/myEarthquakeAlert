@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Material icon (Apache License 2.0). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M17,5v8.61l2,2V3c0,-1.1 -0.9,-2 -2,-2H7c-0.83,0 -1.54,0.5 -1.84,1.22L6.83,4.4V5H17zM1.39,3.51l1.41,-1.41 18.38,18.38 -1.41,1.41 -1.7,-1.7C17.69,20.67 17.38,21 17,21H7c-1.1,0 -2,-0.9 -2,-2V7.12L1.39,3.51zM7,19h10v-0.88l-10,-10V19z" />
+</vector>

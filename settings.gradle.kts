@@ -24,4 +24,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "myEarthQuakeAlert"
 include(":app")
+include(":wear")
  
