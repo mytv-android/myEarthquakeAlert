@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
+import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Point
@@ -166,11 +167,18 @@ internal class DistanceLabelOverlay(
 }
 
 /**
- * Bundled vector basemap (Natural Earth 1:50m coastline, rivers and lakes; public domain)
- * shown when no tile can be loaded (design §7 兜底). Loaded once per process.
+ * Bundled vector basemap shown when no tile can be loaded (design §7 兜底: 内置的矢量海岸线和
+ * 省界轮廓). Natural Earth (public domain): 1:50m coastline, rivers and lakes, and the China
+ * provincial boundaries from the 1:10m admin-1 lines, Douglas–Peucker simplified to 0.02°.
+ * Every line is a flat `[lon, lat, lon, lat, …]` array. Loaded once per process.
  */
 object BasemapOutline {
-    class Data(val coast: List<FloatArray>, val rivers: List<FloatArray>, val lakes: List<FloatArray>)
+    class Data(
+        val coast: List<FloatArray>,
+        val rivers: List<FloatArray>,
+        val lakes: List<FloatArray>,
+        val provinces: List<FloatArray> = emptyList(),
+    )
 
     @Volatile
     private var cached: Data? = null
@@ -181,7 +189,7 @@ object BasemapOutline {
             cached ?: try {
                 val text = context.resources.openRawResource(R.raw.ui_basemap_outline).bufferedReader().use { it.readText() }
                 val json = JSONObject(text)
-                Data(json.lines("coast"), json.lines("rivers"), json.lines("lakes")).also { cached = it }
+                Data(json.lines("coast"), json.lines("rivers"), json.lines("lakes"), json.lines("provinces")).also { cached = it }
             } catch (e: Exception) {
                 Log.w("BasemapOutline", "Cannot read the bundled outline", e)
                 null
@@ -197,7 +205,10 @@ object BasemapOutline {
     private fun JSONArray.toFloats(): FloatArray = FloatArray(length()) { getDouble(it).toFloat() }
 }
 
-/** Draws [BasemapOutline] plus capital-city dots and names over a neutral background. */
+/**
+ * Draws [BasemapOutline] plus capital-city dots and names over a neutral background:
+ * lakes, rivers, then the provincial boundaries as a thinner dashed line under the coast.
+ */
 internal class OutlineOverlay(
     private val data: BasemapOutline.Data,
     private val cities: List<ChinaCity>,
@@ -213,6 +224,11 @@ internal class OutlineOverlay(
     private val river = Paint(coast).apply {
         strokeWidth = 0.8f * density
         color = if (dark) 0xFF3F6E95.toInt() else 0xFF8DB4D8.toInt()
+    }
+    private val province = Paint(coast).apply {
+        strokeWidth = 0.7f * density
+        color = if (dark) 0xFF6F8296.toInt() else 0xFF8C99A6.toInt()
+        pathEffect = DashPathEffect(floatArrayOf(4f * density, 2.5f * density), 0f)
     }
     private val lakeFill = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
@@ -234,6 +250,10 @@ internal class OutlineOverlay(
         for (line in data.rivers) {
             buildPath(projection, line, close = false)
             canvas.drawPath(path, river)
+        }
+        for (line in data.provinces) {
+            buildPath(projection, line, close = false)
+            canvas.drawPath(path, province)
         }
         for (line in data.coast) {
             buildPath(projection, line, close = false)

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 2.0 home-screen widget and offline map strings. Every name is also in the other locale. -->
+<resources>
+    <!-- Widget -->
+    <string name="wg_name">Monitoring status</string>
+    <string name="wg_description">Monitoring status and the latest earthquake warnings</string>
+    <string name="wg_recent">Recent warnings</string>
+    <string name="wg_no_records">No warnings in the last 7 days</string>
+    <string name="wg_magnitude">M%1$s</string>
+    <string name="wg_quake_meta">%1$s · %2$s km away</string>
+    <string name="wg_ago_now">Just now</string>
+    <string name="wg_ago_minutes">%1$d min ago</string>
+    <string name="wg_ago_hours">%1$d h ago</string>
+    <string name="wg_ago_days">%1$d d ago</string>
+    <string name="wg_pause_hour">Pause 1 h</string>
+    <string name="wg_resume">Resume</string>
+    <string name="wg_turn_on">Turn on</string>
+    <string name="wg_status_cd">Earthquake monitoring: %1$s</string>
+    <string name="wg_quake_cd">Magnitude %1$s, %2$s, %3$s</string>
+    <string name="wg_error">Cannot show the status. Tap to open the app.</string>
+    <string name="wg_preview_title">Monitoring in the background</string>
+    <string name="wg_preview_subtitle">4 sources connected</string>
+    <string name="wg_preview_magnitude">M6.1</string>
+    <string name="wg_preview_place">Lushan, Ya\'an, Sichuan</string>
+    <string name="wg_preview_meta">3 min ago · 86 km away</string>
+
+    <!-- Offline map (设置 › 显示) -->
+    <string name="wg_offline_title">Offline map</string>
+    <string name="wg_offline_cached">%1$d tiles · %2$s · %3$s</string>
+    <string name="wg_offline_partial">%1$d of %2$d tiles · %3$s · %4$s</string>
+    <string name="wg_offline_downloading">Downloading %1$d/%2$d</string>
+    <string name="wg_offline_preparing">Preparing download…</string>
+    <string name="wg_offline_waiting_wifi">Waiting for Wi-Fi</string>
+    <string name="wg_offline_waiting_data_saver">Data Saver is on · waiting for Wi-Fi</string>
+    <string name="wg_offline_waiting">Waiting for network, battery or storage</string>
+    <string name="wg_offline_none">Not cached · tiles within 300 km of you, about 8 MB</string>
+    <string name="wg_offline_failed">Last download failed · %1$s</string>
+    <string name="wg_offline_unsupported">OpenStreetMap does not allow bulk downloads; areas you browse are still cached</string>
+    <string name="wg_offline_update">Update now</string>
+    <string name="wg_offline_cancel">Cancel</string>
+    <string name="wg_offline_wifi_only">Wi-Fi only</string>
+    <string name="wg_offline_wifi_only_desc">Download offline map tiles on unmetered networks only</string>
+    <string name="wg_offline_clear">Clear cache</string>
+    <string name="wg_offline_clear_desc">Map tiles stored on this device: %1$s</string>
+    <string name="wg_offline_clear_empty">No map tiles stored</string>
+    <string name="wg_offline_clear_title">Clear the map cache?</string>
+    <string name="wg_offline_clear_text">Offline map tiles and tiles kept from browsing are deleted. Maps load from the network again.</string>
+    <string name="wg_offline_clear_confirm">Clear</string>
+    <string name="wg_offline_cleared">Map cache cleared</string>
+</resources>

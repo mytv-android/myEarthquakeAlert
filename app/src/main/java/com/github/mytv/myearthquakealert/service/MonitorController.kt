@@ -31,6 +31,7 @@ import com.github.mytv.myearthquakealert.diagnostics.SlotStatus
 import com.github.mytv.myearthquakealert.domain.DrillScenario
 import com.github.mytv.myearthquakealert.domain.ReportTime
 import com.github.mytv.myearthquakealert.domain.SeismicCalculator
+import com.github.mytv.myearthquakealert.map.offline.OfflineMaps
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -517,6 +518,7 @@ internal class MonitorController(
         }
         val previous = location
         location = resolved
+        if (resolved.isKnown) OfflineMaps.onLocation(context, resolved.latitude, resolved.longitude)
         val moved = previous == null || previous.source != resolved.source ||
             SeismicCalculator.haversineDistance(previous.latitude, previous.longitude, resolved.latitude, resolved.longitude) > 1.0
         if (moved) {
