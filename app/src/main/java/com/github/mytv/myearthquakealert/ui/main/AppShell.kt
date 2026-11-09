@@ -36,6 +36,7 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -81,8 +82,11 @@ import com.github.mytv.myearthquakealert.ui.settings.SettingsScreen
 import com.github.mytv.myearthquakealert.ui.tv.TvHome
 import com.github.mytv.myearthquakealert.ui.tv.TvShell
 
-/** A start destination delivered by an intent; [id] changes for every intent. */
-data class DestinationRequest(val id: Long, val destination: Destination)
+/**
+ * A start destination delivered by an intent; [id] changes for every intent. [page] is an
+ * optional settings sub-page (Destination.EXTRA_PAGE), e.g. "update" from 发现新版本.
+ */
+data class DestinationRequest(val id: Long, val destination: Destination, val page: String? = null)
 
 /**
  * The app shell (design §2): the four destinations, hosted by the navigation component of
@@ -98,6 +102,9 @@ fun AppShell(
 ) {
     var current by rememberSaveable { mutableStateOf(request?.destination ?: Destination.OVERVIEW) }
     var settingsPage by rememberSaveable { mutableStateOf<String?>(null) }
+    // A requested settings sub-page, handed to SettingsScreen after one composition without
+    // one, so the same page can be requested again (a second 发现新版本 tap).
+    var pendingPage by remember { mutableStateOf(request?.page) }
     var quakesRequest by remember { mutableStateOf<QuakesRequest?>(null) }
     var requestSeq by rememberSaveable { mutableLongStateOf(0L) }
     var chooser by rememberSaveable { mutableStateOf(false) }
@@ -110,7 +117,14 @@ fun AppShell(
         if (r.id == handledRequest) return@LaunchedEffect
         handledRequest = r.id
         settingsPage = null
+        pendingPage = r.page
         current = r.destination
+    }
+    if (pendingPage != null && settingsPage == null) {
+        SideEffect {
+            settingsPage = pendingPage
+            pendingPage = null
+        }
     }
 
     val navigator = remember {
@@ -130,7 +144,8 @@ fun AppShell(
                 current = Destination.QUAKES
             },
             openSettingsPage = { page ->
-                settingsPage = page
+                settingsPage = null
+                pendingPage = page
                 current = Destination.SETTINGS
             },
             chooseLayout = { chooser = true },

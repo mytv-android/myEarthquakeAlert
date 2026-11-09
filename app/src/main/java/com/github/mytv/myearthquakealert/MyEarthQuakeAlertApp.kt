@@ -21,6 +21,7 @@ import com.github.mytv.myearthquakealert.diagnostics.HealthRecorder
 import com.github.mytv.myearthquakealert.service.AppNotifications
 import com.github.mytv.myearthquakealert.service.EewHistory
 import com.github.mytv.myearthquakealert.service.WatchdogWorker
+import com.github.mytv.myearthquakealert.update.UpdateCheckWorker
 import com.github.mytv.myearthquakealert.util.LocationProvider
 import com.github.mytv.myearthquakealert.util.LogExporter
 import com.github.mytv.myearthquakealert.util.isUserUnlocked
@@ -97,6 +98,8 @@ class MyEarthQuakeAlertApp : Application() {
                     if (enabled) WatchdogWorker.ensure(this@MyEarthQuakeAlertApp) else WatchdogWorker.cancel(this@MyEarthQuakeAlertApp)
                 }
         }
+        // The daily update check follows 自动检查更新.
+        UpdateCheckWorker.follow(this)
     }
 
     /** Configures osmdroid once the user is unlocked. Safe to call repeatedly. */
@@ -147,6 +150,6 @@ class MyEarthQuakeAlertApp : Application() {
     private val okHttpClient: OkHttpClient by lazy { OkHttpClient() }
 
     val updateRepository: UpdateRepository by lazy {
-        UpdateRepository(this, okHttpClient)
+        UpdateRepository(okHttpClient)
     }
 }

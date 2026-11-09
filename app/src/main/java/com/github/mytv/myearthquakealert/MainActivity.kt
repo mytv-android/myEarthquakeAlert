@@ -17,6 +17,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -27,6 +28,7 @@ import com.github.mytv.myearthquakealert.service.DeliveryChecks
 import com.github.mytv.myearthquakealert.service.EewMonitorService
 import com.github.mytv.myearthquakealert.service.MonitorPhase
 import com.github.mytv.myearthquakealert.service.MonitorStatus
+import com.github.mytv.myearthquakealert.ui.about.UpdateProgressOverlay
 import com.github.mytv.myearthquakealert.ui.adaptive.LayoutKind
 import com.github.mytv.myearthquakealert.ui.adaptive.LocalResolvedLayout
 import com.github.mytv.myearthquakealert.ui.adaptive.rememberResolvedLayout
@@ -37,6 +39,7 @@ import com.github.mytv.myearthquakealert.ui.navigation.Destination
 import com.github.mytv.myearthquakealert.ui.quakes.QuakesViewModel
 import com.github.mytv.myearthquakealert.ui.theme.MyEarthQuakeAlertTheme
 import com.github.mytv.myearthquakealert.ui.theme.isDarkFor
+import com.github.mytv.myearthquakealert.update.UpdateController
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -51,6 +54,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         // A recreated activity keeps its own navigation state; only a fresh launch applies the extra.
         if (savedInstanceState == null) deliver(intent)
+        // 应用内更新: the start-time check (自动检查更新, at most hourly).
+        if (savedInstanceState == null) UpdateController.get(this).checkOnStart()
 
         val app = application as MyEarthQuakeAlertApp
         setContent {
@@ -82,6 +87,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
                         AppShell(layout = layout, settings = settings, vm = vm, request = request)
+                        if (layout.kind == LayoutKind.TV) UpdateProgressOverlay(Modifier.align(Alignment.BottomEnd))
                     }
                 }
             }
@@ -104,7 +110,8 @@ class MainActivity : ComponentActivity() {
     private fun deliver(intent: Intent?) {
         val destination = Destination.fromRoute(intent?.getStringExtra(Destination.EXTRA)) ?: return
         // Unique across process restarts, so a saved "already handled" id never matches a new intent.
-        destinationRequest.value = DestinationRequest(SystemClock.elapsedRealtimeNanos(), destination)
+        val page = intent?.getStringExtra(Destination.EXTRA_PAGE)?.takeIf { destination == Destination.SETTINGS }
+        destinationRequest.value = DestinationRequest(SystemClock.elapsedRealtimeNanos(), destination, page)
     }
 
     /**

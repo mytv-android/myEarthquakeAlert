@@ -2,13 +2,13 @@ package com.github.mytv.myearthquakealert.ui.about
 
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.LibraryBooks
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.Handshake
-import androidx.compose.material.icons.filled.LibraryBooks
 import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material3.Icon
@@ -51,7 +51,7 @@ fun LazyListScope.aboutItems(channel: UpdateChannel, onOpenUrl: (String) -> Unit
             heading = stringResource(R.string.data_sources),
             rows = listOf(
                 LinkRow(Icons.Filled.Public, stringResource(R.string.data_source_eew), stringResource(R.string.pg_about_eew_value), "https://wolfx.jp/apidoc"),
-                LinkRow(Icons.Filled.LibraryBooks, stringResource(R.string.pg_about_catalog), stringResource(R.string.pg_about_catalog_value), "https://news.ceic.ac.cn/"),
+                LinkRow(Icons.AutoMirrored.Filled.LibraryBooks, stringResource(R.string.pg_about_catalog), stringResource(R.string.pg_about_catalog_value), "https://news.ceic.ac.cn/"),
                 LinkRow(Icons.Filled.Map, stringResource(R.string.data_source_map), stringResource(R.string.pg_about_map_value), "https://www.openstreetmap.org/copyright"),
                 LinkRow(Icons.Filled.Science, stringResource(R.string.data_source_algorithm), stringResource(R.string.pg_about_algorithm_value), "https://github.com/Lipomoea/kanameishi"),
             ),
@@ -64,7 +64,7 @@ fun LazyListScope.aboutItems(channel: UpdateChannel, onOpenUrl: (String) -> Unit
             rows = listOf(
                 LinkRow(Icons.Filled.Gavel, stringResource(R.string.pg_about_app_license), "Apache License 2.0", LICENSE_URL),
                 LinkRow(Icons.Filled.Code, stringResource(R.string.pg_about_source_code), "github.com/mytv-android/myEarthquakeAlert", SOURCE_URL),
-                LinkRow(Icons.Filled.LibraryBooks, stringResource(R.string.pg_about_libraries), stringResource(R.string.pg_about_libraries_value), null),
+                LinkRow(Icons.AutoMirrored.Filled.LibraryBooks, stringResource(R.string.pg_about_libraries), stringResource(R.string.pg_about_libraries_value), null),
                 LinkRow(Icons.Filled.Handshake, stringResource(R.string.pg_about_changelog), stringResource(R.string.pg_about_changelog_value), UpdateRepository.RELEASES_URL),
             ),
             onOpenUrl = onOpenUrl,
@@ -97,7 +97,7 @@ private fun LinkGroup(heading: String, rows: List<LinkRow>, onOpenUrl: (String) 
             modifier = if (row.url != null) Modifier.focusHighlight(shape) else Modifier,
             onClick = row.url?.let { url -> { onOpenUrl(url) } },
             trailing = if (row.url != null) {
-                { Icon(Icons.Filled.OpenInNew, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp)) }
+                { Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp)) }
             } else {
                 null
             },
