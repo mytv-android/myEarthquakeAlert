@@ -133,3 +133,9 @@ internal object UpdateUi {
             .stateIn(scope, SharingStarted.WhileSubscribed(5_000), resolveUpdateState(initial, installed, partLength, exists))
     }
 }
+
+/**
+ * Release versions share versionName (1.0) and differ by versionCode (the CI run number),
+ * so every user-facing version reads "1.0.123", matching the Release tag v1.0.123.
+ */
+fun displayVersion(versionName: String, versionCode: Long): String = "$versionName.$versionCode"

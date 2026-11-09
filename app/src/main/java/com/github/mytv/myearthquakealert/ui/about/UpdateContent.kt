@@ -254,7 +254,7 @@ private fun IdleCard(viewModel: AboutViewModel, state: UpdateState, channel: Upd
     val knownUpdate = known
     if (knownUpdate != null && state == UpdateState.Idle) {
         UpdateCard(icon = Icons.Filled.NewReleases, heading = stringResource(R.string.update_available), modifier = modifier) {
-            VersionText(knownUpdate.versionName)
+            VersionText(displayVersion(knownUpdate.versionName, knownUpdate.versionCode))
             CardText(stringResource(R.string.pg_update_known_hint))
             CardButtons {
                 Button(onClick = viewModel::checkForUpdate, modifier = Modifier.focusRequester(actions.primaryFocus).focusHighlight(PillShape)) {
@@ -439,7 +439,7 @@ private fun ErrorCard(s: UpdateState.Error, actions: CardActions, modifier: Modi
                 Spacer(Modifier.width(8.dp))
                 Text(stringResource(heading), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
             }
-            s.retryInfo?.let { Text(it.versionName, style = MaterialTheme.typography.bodySmall) }
+            s.retryInfo?.let { Text(displayVersion(it.versionName, it.versionCode), style = MaterialTheme.typography.bodySmall) }
             Text(failureText(s.failure, s.detail), style = MaterialTheme.typography.bodyMedium)
             if (!s.failure.hasArgument && !s.detail.isNullOrBlank()) {
                 Text(s.detail, style = MaterialTheme.typography.bodySmall, color = c.onErrorContainer.copy(alpha = 0.8f))
@@ -471,7 +471,7 @@ internal fun failureText(failure: UpdateFailure, detail: String?): String =
 @Composable
 private fun VersionLine(info: UpdateInfo) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        VersionText(info.versionName)
+        VersionText(displayVersion(info.versionName, info.versionCode))
         if (info.prerelease) {
             Spacer(Modifier.width(10.dp))
             Pill(stringResource(R.string.pg_channel_preview), MaterialTheme.colorScheme.tertiary, MaterialTheme.colorScheme.onTertiary)

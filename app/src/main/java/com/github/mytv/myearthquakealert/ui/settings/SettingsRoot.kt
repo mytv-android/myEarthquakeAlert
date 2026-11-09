@@ -43,6 +43,7 @@ import com.github.mytv.myearthquakealert.R
 import com.github.mytv.myearthquakealert.service.BootStartRecord
 import com.github.mytv.myearthquakealert.service.DeliveryRequirement
 import com.github.mytv.myearthquakealert.ui.about.AboutViewModel
+import com.github.mytv.myearthquakealert.ui.about.displayVersion
 import com.github.mytv.myearthquakealert.ui.adaptive.SessionLayout
 import com.github.mytv.myearthquakealert.ui.components.SegmentedGroup
 import com.github.mytv.myearthquakealert.ui.components.Subhead
@@ -309,7 +310,9 @@ private fun ToolsGroup(env: SettingsEnv, onOpenDiagnostics: () -> Unit, onShowDi
 private fun AboutGroup(env: SettingsEnv, selected: SettingsPage?, onOpen: (SettingsPage) -> Unit) {
     val state by env.updateViewModel.updateState.collectAsStateWithLifecycle()
     val known by env.updateViewModel.knownUpdate.collectAsStateWithLifecycle()
-    val newVersion = (state as? AboutViewModel.UpdateState.Available)?.updateInfo?.versionName ?: known?.versionName
+    val newVersion = (state as? AboutViewModel.UpdateState.Available)?.updateInfo?.let { displayVersion(it.versionName, it.versionCode) }
+        ?: known?.let { displayVersion(it.versionName, it.versionCode) }
+    val currentVersion = displayVersion(BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE.toLong())
     Column {
         Subhead(stringResource(R.string.pg_group_about))
         SegmentedGroup(2) { index, shape ->
@@ -319,9 +322,9 @@ private fun AboutGroup(env: SettingsEnv, selected: SettingsPage?, onOpen: (Setti
                     shape = shape,
                     icon = Icons.Filled.SystemUpdate,
                     subtitle = if (newVersion != null) {
-                        stringResource(R.string.pg_about_version_new, BuildConfig.VERSION_NAME, newVersion)
+                        stringResource(R.string.pg_about_version_new, currentVersion, newVersion)
                     } else {
-                        stringResource(R.string.pg_about_version_current, BuildConfig.VERSION_NAME)
+                        stringResource(R.string.pg_about_version_current, currentVersion)
                     },
                     onClick = { onOpen(SettingsPage.UPDATE) },
                     selected = selected == SettingsPage.UPDATE,

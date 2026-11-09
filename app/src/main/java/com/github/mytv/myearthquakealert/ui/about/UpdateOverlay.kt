@@ -80,7 +80,7 @@ fun UpdateProgressOverlay(modifier: Modifier = Modifier) {
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        stringResource(R.string.upd_tv_overlay_title, info?.versionName.orEmpty()),
+                        stringResource(R.string.upd_tv_overlay_title, info?.let { displayVersion(it.versionName, it.versionCode) }.orEmpty()),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
                     )
