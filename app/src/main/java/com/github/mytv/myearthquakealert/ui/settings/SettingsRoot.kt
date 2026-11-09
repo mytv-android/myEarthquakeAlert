@@ -1,7 +1,9 @@
 package com.github.mytv.myearthquakealert.ui.settings
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CrisisAlert
 import androidx.compose.material.icons.filled.Dashboard
@@ -11,7 +13,6 @@ import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.IosShare
 import androidx.compose.material.icons.filled.KeyboardReturn
-import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.MonitorHeart
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Pause
@@ -35,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.mytv.myearthquakealert.BuildConfig
 import com.github.mytv.myearthquakealert.R
@@ -225,7 +227,7 @@ private fun DisplayGroup(env: SettingsEnv, selected: SettingsPage?, onOpen: (Set
     val session by SessionLayout.override.collectAsStateWithLifecycle()
     Column {
         Subhead(stringResource(R.string.pg_group_display))
-        SegmentedGroup(3) { index, shape ->
+        SegmentedGroup(2) { index, shape ->
             when (index) {
                 0 -> NavRow(
                     title = stringResource(R.string.pg_theme),
@@ -235,7 +237,7 @@ private fun DisplayGroup(env: SettingsEnv, selected: SettingsPage?, onOpen: (Set
                     onClick = { onShowDialog(SettingsDialog.THEME) },
                     trailing = null,
                 )
-                1 -> NavRow(
+                else -> NavRow(
                     title = stringResource(R.string.pg_layout),
                     shape = shape,
                     icon = Icons.Filled.Dashboard,
@@ -243,16 +245,11 @@ private fun DisplayGroup(env: SettingsEnv, selected: SettingsPage?, onOpen: (Set
                     onClick = { onOpen(SettingsPage.LAYOUT) },
                     selected = selected == SettingsPage.LAYOUT,
                 )
-                else -> NavRow(
-                    title = stringResource(R.string.map_tile_style),
-                    shape = shape,
-                    icon = Icons.Filled.Map,
-                    subtitle = mapStyleLabel(settings.mapStyle),
-                    onClick = { onShowDialog(SettingsDialog.MAP_STYLE) },
-                    trailing = null,
-                )
             }
         }
+        // 地图样式 and 离线地图 as their own block of the group.
+        Spacer(Modifier.height(12.dp))
+        MapRows(env, onShowDialog)
     }
 }
 

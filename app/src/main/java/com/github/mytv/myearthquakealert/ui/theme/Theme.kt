@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.map
 
 // Hand-tuned slate-blue palette. Deliberately not dynamic: the app's identity
 // (calm slate + alert red) should not depend on the device wallpaper.
-private val EeqLightColorScheme = lightColorScheme(
+internal val EeqLightColorScheme = lightColorScheme(
     primary = Color(0xFF2A6394),
     onPrimary = Color(0xFFFFFFFF),
     primaryContainer = Color(0xFFD2E4F7),
@@ -60,7 +60,7 @@ private val EeqLightColorScheme = lightColorScheme(
     inversePrimary = Color(0xFF9BCBF9),
 )
 
-private val EeqDarkColorScheme = darkColorScheme(
+internal val EeqDarkColorScheme = darkColorScheme(
     primary = Color(0xFF9BCBF9),
     onPrimary = Color(0xFF003354),
     primaryContainer = Color(0xFF174A73),

@@ -18,12 +18,14 @@ import com.github.mytv.myearthquakealert.data.repository.SettingsStore
 import com.github.mytv.myearthquakealert.data.repository.UpdateRepository
 import com.github.mytv.myearthquakealert.diagnostics.ClockSync
 import com.github.mytv.myearthquakealert.diagnostics.HealthRecorder
+import com.github.mytv.myearthquakealert.map.offline.OfflineMaps
 import com.github.mytv.myearthquakealert.service.AppNotifications
 import com.github.mytv.myearthquakealert.service.EewHistory
 import com.github.mytv.myearthquakealert.service.WatchdogWorker
 import com.github.mytv.myearthquakealert.util.LocationProvider
 import com.github.mytv.myearthquakealert.util.LogExporter
 import com.github.mytv.myearthquakealert.util.isUserUnlocked
+import com.github.mytv.myearthquakealert.widget.WidgetUpdater
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -88,6 +90,8 @@ class MyEarthQuakeAlertApp : Application() {
 
     private fun onUserUnlocked() {
         ensureMapConfigured()
+        WidgetUpdater.start(this)
+        OfflineMaps.start(this)
         // The watchdog follows the monitoring switch.
         appScope.launch {
             settingsRepository.settings
