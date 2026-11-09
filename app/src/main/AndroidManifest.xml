@@ -110,6 +110,40 @@
             </intent-filter>
         </receiver>
 
+        <!-- Wear OS: commands from the watch app (pause / resume / start monitoring). Only
+             Google Play services binds it; without Play services it is never used. -->
+        <service
+            android:name=".wear.WearCommandService"
+            android:exported="true"
+            android:label="@string/wr_command_service_label">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data
+                    android:host="*"
+                    android:pathPrefix="/eew/cmd"
+                    android:scheme="wear" />
+            </intent-filter>
+        </service>
+
+        <!-- Wear OS: deep link opened on the phone by the watch (RemoteActivityHelper only
+             delivers VIEW + BROWSABLE intents); forwards to MainActivity's destination. -->
+        <activity
+            android:name=".wear.WearLinkActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:label="@string/wr_link_label"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="open"
+                    android:scheme="myearthquakealert" />
+            </intent-filter>
+        </activity>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

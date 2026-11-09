@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Phone ↔ Wear OS watch bridge (prefix wr_). -->
+    <string name="wr_command_service_label">Watch remote control</string>
+    <string name="wr_link_label">Open from watch</string>
+</resources>

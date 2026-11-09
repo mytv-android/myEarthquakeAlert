@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@array/android_wear_capabilities">
+    <!-- Wearable Data Layer capability of the phone app; the watch app looks for it to tell
+         "phone connected" (with this app) from "手机未连接". Must match WearPaths.CAPABILITY_PHONE. -->
+    <string-array name="android_wear_capabilities" translatable="false">
+        <item>eew_phone</item>
+    </string-array>
+</resources>
