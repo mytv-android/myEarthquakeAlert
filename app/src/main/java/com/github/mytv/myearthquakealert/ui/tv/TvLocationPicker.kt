@@ -118,6 +118,8 @@ fun TvLocationPicker(
         }
     }
     val provinceFocus = remember { FocusRequester() }
+    // Picking a city moves focus to 使用此位置, so OK → OK confirms with the remote.
+    val useFocus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { provinceFocus.requestFocus() } }
 
     Box(modifier.background(TvPalette.Background).padding(horizontal = 48.dp, vertical = 27.dp)) {
@@ -166,6 +168,7 @@ fun TvLocationPicker(
                     items(cities, key = { it.province + it.name }) { city ->
                         CityTile(city, english, selected = picked?.matches(city) == true) {
                             pick(PickedPlace(city.latitude, city.longitude, city.displayName(english)))
+                            runCatching { useFocus.requestFocus() }
                         }
                     }
                 }
@@ -208,6 +211,7 @@ fun TvLocationPicker(
                     primary = true,
                     enabled = picked != null,
                     onClick = save,
+                    modifier = Modifier.focusRequester(useFocus),
                 )
             }
         }
@@ -267,9 +271,11 @@ private fun TvButton(
     icon: (@Composable () -> Unit)? = null,
     primary: Boolean = false,
     enabled: Boolean = true,
+    modifier: Modifier = Modifier,
 ) {
     TvTile(
         onClick = { if (enabled) onClick() },
+        modifier = modifier,
         shape = RoundedCornerShape(26.dp),
         container = when {
             !enabled -> TvPalette.Tile.copy(alpha = 0.5f)
