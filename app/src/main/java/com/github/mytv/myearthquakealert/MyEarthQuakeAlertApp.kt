@@ -27,6 +27,7 @@ import com.github.mytv.myearthquakealert.util.LocationProvider
 import com.github.mytv.myearthquakealert.util.LogExporter
 import com.github.mytv.myearthquakealert.util.isUserUnlocked
 import com.github.mytv.myearthquakealert.widget.WidgetUpdater
+import com.github.mytv.myearthquakealert.wear.WearBridge
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -69,6 +70,8 @@ class MyEarthQuakeAlertApp : Application() {
         ClockSync.init(this)
         EewHistory.init(this)
         AppNotifications.ensureChannels(this)
+        // Mirrors status, recent events and alerts to a paired Wear OS watch (no-op without Play services).
+        WearBridge.start(this)
         // The process can start before the first unlock (boot receiver and monitoring
         // service are directBootAware). Credential-encrypted storage (osmdroid config,
         // WorkManager's database) is off limits until then.

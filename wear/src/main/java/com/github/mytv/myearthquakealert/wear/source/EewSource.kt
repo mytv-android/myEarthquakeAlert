@@ -1,0 +1,49 @@
+package com.github.mytv.myearthquakealert.wear.source
+
+/** Copied from `:app` `data.source.EewSource` (keep the two in sync). Same Wolfx feeds as the phone. */
+enum class EewSource(
+    val label: String,
+    val description: String,
+    val wsUrl: String,
+    val httpUrl: String,
+) {
+    SICHUAN(
+        label = "四川地震局",
+        description = "Sichuan Earthquake Administration",
+        wsUrl = "wss://ws-api.wolfx.jp/sc_eew",
+        httpUrl = "https://api.wolfx.jp/sc_eew.json",
+    ),
+    CENC(
+        label = "中国地震台网",
+        description = "China Earthquake Networks Center",
+        wsUrl = "wss://ws-api.wolfx.jp/cenc_eew",
+        httpUrl = "https://api.wolfx.jp/cenc_eew.json",
+    ),
+    FUJIAN(
+        label = "福建地震局",
+        description = "Fujian Earthquake Administration",
+        wsUrl = "wss://ws-api.wolfx.jp/fj_eew",
+        httpUrl = "https://api.wolfx.jp/fj_eew.json",
+    ),
+    CHONGQING(
+        label = "重庆地震局",
+        description = "Chongqing Earthquake Administration",
+        wsUrl = "wss://ws-api.wolfx.jp/cq_eew",
+        httpUrl = "https://api.wolfx.jp/cq_eew.json",
+    );
+
+    /**
+     * Wolfx feed key, e.g. `cenc_eew`: the `type` field of WebSocket frames and the
+     * file name of the HTTP fallback endpoint (whose body carries no `type`).
+     */
+    val typeKey: String get() = wsUrl.substringAfterLast('/')
+
+    companion object {
+        /** Display label for an [EewEvent.source] value (stored as enum name). */
+        fun labelOf(name: String): String =
+            entries.firstOrNull { it.name == name }?.label ?: name
+
+        /** The source whose feed key is [type], or null for non-report frames (heartbeat, pong…). */
+        fun fromTypeKey(type: String?): EewSource? = entries.firstOrNull { it.typeKey == type }
+    }
+}

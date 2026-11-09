@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">地震速报</string>
+
+    <!-- 状态（短） -->
+    <string name="phase_monitoring">监测中</string>
+    <string name="phase_connecting">连接中</string>
+    <string name="phase_reconnecting">重连中</string>
+    <string name="phase_degraded">备用通道</string>
+    <string name="phase_limited">受限</string>
+    <string name="phase_paused_until">暂停至 %1$s</string>
+    <string name="phase_off">已关闭</string>
+    <string name="phase_disconnected">手机未连接</string>
+    <string name="phase_standalone">独立监测</string>
+    <string name="phase_waiting">等待同步</string>
+
+    <!-- 状态（复杂功能） -->
+    <string name="tiny_monitoring">监测中</string>
+    <string name="tiny_connecting">连接中</string>
+    <string name="tiny_degraded">备用</string>
+    <string name="tiny_limited">受限</string>
+    <string name="tiny_paused">已暂停</string>
+    <string name="tiny_off">已关闭</string>
+    <string name="tiny_disconnected">未连接</string>
+    <string name="tiny_standalone">独立</string>
+    <string name="tiny_alert">预警</string>
+
+    <!-- 状态副标题 -->
+    <string name="sub_monitoring">%1$d 路数据源 · 手机已连接</string>
+    <string name="sub_connecting">手机正在连接数据源</string>
+    <string name="sub_reconnecting">数据源断开，正在重连</string>
+    <string name="sub_degraded">实时通道断开，HTTP 轮询中</string>
+    <string name="sub_limited">手机缺少必要权限</string>
+    <string name="sub_paused">点「恢复」立即恢复监测</string>
+    <string name="sub_off">手机端监测已关闭</string>
+    <string name="sub_disconnected">预警由手机转发</string>
+    <string name="sub_disconnected_standalone">独立监测正在启动</string>
+    <string name="sub_standalone_connecting">手机不在身边 · 正在连接%1$s</string>
+    <string name="sub_standalone">手表直连%1$s</string>
+    <string name="sub_standalone_no_location">%1$s · 位置未知，无法倒计时</string>
+    <string name="sub_waiting">正在等待手机同步</string>
+
+    <!-- 状态页 -->
+    <string name="status_sources">数据源</string>
+    <string name="status_recent">最近地震</string>
+    <string name="status_no_quakes">暂无地震记录</string>
+    <string name="status_map">地图</string>
+    <string name="status_settings">设置</string>
+    <string name="status_alert_active">正在预警 · M%1$s</string>
+    <string name="distance_km">%1$d km</string>
+    <string name="link_connected">已连接</string>
+    <string name="link_polling">轮询中</string>
+    <string name="link_connecting">连接中</string>
+    <string name="link_reconnecting">重连中</string>
+    <string name="link_disconnected">已断开</string>
+
+    <!-- 底部按钮与操作结果 -->
+    <string name="action_pause_hour">暂停 1 小时</string>
+    <string name="action_resume">恢复</string>
+    <string name="action_start">开启</string>
+    <string name="action_retry">重试</string>
+    <string name="action_waiting">请稍候…</string>
+    <string name="done_paused">已暂停 1 小时</string>
+    <string name="done_resumed">已恢复监测</string>
+    <string name="done_started">已开启监测</string>
+    <string name="err_no_phone">手机未连接</string>
+    <string name="err_no_reply">手机没有回应</string>
+    <string name="err_off">手机端监测已关闭</string>
+    <string name="err_background">手机无法在后台开启监测，请在手机上打开应用</string>
+    <string name="err_timeout">手机未及时响应</string>
+    <string name="err_failed">操作未成功</string>
+
+    <!-- 预警 -->
+    <string name="alert_label_s">S 波抵达</string>
+    <string name="alert_label_waves">地震波</string>
+    <string name="alert_seconds">秒</string>
+    <string name="alert_arrived">已到达</string>
+    <string name="alert_intensity_distance">烈度 %1$d · %2$d km</string>
+    <string name="alert_drill">演练</string>
+    <string name="alert_drill_prefix">【演练】</string>
+    <string name="alert_safe">我已安全</string>
+    <string name="alert_open_map">打开地图</string>
+    <string name="alert_title">%1$s M%2$s</string>
+    <string name="alert_text_countdown">%1$d 秒后 S 波抵达 · 烈度 %2$d · %3$d km</string>
+    <string name="alert_text_arrived">地震波已到达 · 烈度 %1$d · %2$d km</string>
+
+    <!-- 通知渠道 -->
+    <string name="channel_alarm">强烈震动预警</string>
+    <string name="channel_alarm_desc">全屏倒计时并强烈振动</string>
+    <string name="channel_alert">地震提醒</string>
+    <string name="channel_alert_desc">未达强烈震动阈值的预警</string>
+    <string name="channel_monitor">独立监测</string>
+    <string name="channel_monitor_desc">手表自行连接数据源时显示</string>
+
+    <!-- 独立监测服务 -->
+    <string name="standalone_title">独立监测</string>
+    <string name="standalone_idle">手机在身边 · 由手机转发预警</string>
+    <string name="standalone_connecting">正在连接%1$s</string>
+    <string name="standalone_connected">正在监测%1$s</string>
+    <string name="standalone_retrying">%1$s 断开，正在重连</string>
+
+    <!-- 卡片 -->
+    <string name="tile_latest">%1$s · %2$s</string>
+    <string name="tile_alert">地震预警 M%1$s</string>
+    <string name="tile_open">打开</string>
+    <string name="tile_view_alert">查看</string>
+
+    <!-- 设置 -->
+    <string name="settings_title">设置</string>
+    <string name="settings_standalone">独立监测</string>
+    <string name="settings_standalone_desc">手机不在身边时，手表自行连接数据源</string>
+    <string name="settings_source">数据源</string>
+    <string name="settings_permissions">权限</string>
+    <string name="perm_notifications">允许通知</string>
+    <string name="perm_notifications_desc">预警以通知形式显示</string>
+    <string name="perm_location">允许位置</string>
+    <string name="perm_location_desc">没有手机时计算倒计时需要位置</string>
+    <string name="perm_full_screen">允许全屏预警</string>
+    <string name="perm_full_screen_desc">在表盘之上显示倒计时</string>
+    <string name="settings_about">关于</string>
+    <string name="settings_version">版本 %1$s（%2$d）</string>
+    <string name="settings_update">在手机上查看更新</string>
+    <string name="settings_update_desc">打开手机应用的设置</string>
+    <string name="open_on_phone">在手机上继续</string>
+</resources>

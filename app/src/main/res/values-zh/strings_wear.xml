@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 手机 ↔ Wear OS 手表桥接（前缀 wr_）。 -->
+    <string name="wr_command_service_label">手表遥控</string>
+    <string name="wr_link_label">从手表打开</string>
+</resources>
