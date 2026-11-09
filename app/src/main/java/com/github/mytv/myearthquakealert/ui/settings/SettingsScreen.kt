@@ -20,6 +20,7 @@ import androidx.compose.material3.adaptive.layout.calculateThreePaneScaffoldValu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -82,6 +83,9 @@ fun SettingsScreen(
     val app = context.applicationContext as MyEarthQuakeAlertApp
     val loaded by app.settingsRepository.settings.collectAsStateWithLifecycle<UserSettings?>(initialValue = null)
     val settings = loaded
+    var handledOpenPage by rememberSaveable { mutableStateOf<String?>(null) }
+    // A cleared request re-arms the page, so the same page can be opened again later.
+    SideEffect { if (openPage == null) handledOpenPage = null }
     if (settings == null) {
         Box(modifier.fillMaxSize())
         return
@@ -130,7 +134,6 @@ fun SettingsScreen(
 
     // Navigation: a small stack of sub-pages, saved across configuration changes.
     var stackKeys by rememberSaveable { mutableStateOf("") }
-    var handledOpenPage by rememberSaveable { mutableStateOf<String?>(null) }
     val stack = remember(stackKeys) { stackKeys.split(',').mapNotNull { SettingsPage.fromKey(it) } }
     fun setStack(pages: List<SettingsPage>) {
         stackKeys = pages.joinToString(",") { it.key }

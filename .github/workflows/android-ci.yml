@@ -78,34 +78,46 @@ jobs:
       - name: Prepare release assets
         id: apk
         run: |
-          metadata=$(find app/build/outputs/apk/release -name output-metadata.json | head -1)
+          set -euo pipefail
+          # Phone APK: only the :app release output (a :wear module builds its own APK).
+          phone_dir=app/build/outputs/apk/release
+          metadata="$phone_dir/output-metadata.json"
           version=$(jq -r '.elements[0].versionName' "$metadata")
           code=$(jq -r '.elements[0].versionCode' "$metadata")
           # versionName 固定为 1.0，标签带上 versionCode（运行号），每次构建的发布互不覆盖
           tag="v${version}.${code}"
           mkdir -p dist
-          find app/build/outputs/apk/release -name '*.apk' -exec cp {} dist/ \;
-          apk=$(find dist -name '*.apk' | head -1)
-          apk_name=$(basename "$apk")
+          mapfile -t phone_apks < <(find "$phone_dir" -maxdepth 1 -name '*.apk' | sort)
+          if [ "${#phone_apks[@]}" -ne 1 ]; then
+            echo "::error::期望 $phone_dir 下恰好一个 APK，实际 ${#phone_apks[@]} 个"
+            exit 1
+          fi
+          cp "${phone_apks[0]}" dist/
+          apk_name=$(basename "${phone_apks[0]}")
+          apk="dist/$apk_name"
           sha=$(sha256sum "$apk" | awk '{print $1}')
           size=$(stat -c%s "$apk")
           published=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           channel=$([ "$GITHUB_REF_NAME" = "master" ] && echo "stable" || echo "dev")
           note=$(git log -1 --pretty=%s)
-          url="https://github.com/${GITHUB_REPOSITORY}/releases/download/${tag}/${apk_name}"
-          jq -n \
-            --arg schema "myearthquakealert.update" \
-            --arg channel "$channel" \
-            --argjson versionCode "$code" \
-            --arg versionName "$version" \
-            --arg tag "$tag" \
-            --arg publishedAt "$published" \
-            --arg url "$url" \
-            --argjson size "$size" \
-            --arg sha "$sha" \
-            --arg note "$note" \
-            '{schema:$schema,channel:$channel,versionCode:$versionCode,versionName:$versionName,tag:$tag,publishedAt:$publishedAt,minSdk:23,apk:{url:$url,size:$size,sha256:$sha},notes:[$note]}' > dist/update.json
+          download="https://github.com/${GITHUB_REPOSITORY}/releases/download/${tag}"
+          # 应用内更新先找 <apk>.sha256，旧版本客户端与回退路径读 update.apk.sha256
+          echo "$sha  $apk_name" > "dist/$apk_name.sha256"
           echo "$sha  $apk_name" > dist/update.apk.sha256
+          # Watch APK, when a :wear module was built.
+          wear='null'
+          wear_apk=$(find wear/build/outputs/apk/release -maxdepth 1 -name '*.apk' 2>/dev/null | sort | head -1 || true)
+          if [ -n "$wear_apk" ]; then
+            wear_name="myEarthquakeAlert-wear-${version}.${code}.apk"
+            cp "$wear_apk" "dist/$wear_name"
+            wear_sha=$(sha256sum "dist/$wear_name" | awk '{print $1}')
+            wear_size=$(stat -c%s "dist/$wear_name")
+            echo "$wear_sha  $wear_name" > "dist/$wear_name.sha256"
+            wear=$(jq -n --arg url "$download/$wear_name" --argjson size "$wear_size" --arg sha "$wear_sha" '{url:$url,size:$size,sha256:$sha}')
+          fi
+          jq -n             --arg schema "myearthquakealert.update"             --arg channel "$channel"             --argjson versionCode "$code"             --arg versionName "$version"             --arg tag "$tag"             --arg publishedAt "$published"             --arg url "$download/$apk_name"             --argjson size "$size"             --arg sha "$sha"             --arg note "$note"             --argjson wear "$wear"             '{schema:$schema,channel:$channel,versionCode:$versionCode,versionName:$versionName,tag:$tag,publishedAt:$publishedAt,minSdk:23,apk:{url:$url,size:$size,sha256:$sha},notes:[$note]}
+             + (if $wear == null then {} else {wear:$wear} end)' > dist/update.json
+          ls -l dist
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "code=$code" >> "$GITHUB_OUTPUT"
@@ -113,10 +125,10 @@ jobs:
         with:
           tag_name: ${{ steps.apk.outputs.tag }}
           name: myEarthQuakeAlert ${{ steps.apk.outputs.version }} (${{ steps.apk.outputs.code }})
-          body: Android 6.0+ 通用安装包。versionCode ${{ steps.apk.outputs.code }}。应用内更新会读取 update.json 并校验 SHA-256 与签名。
+          body: Android 6.0+ 通用安装包。versionCode ${{ steps.apk.outputs.code }}。应用内更新会读取 update.json 并校验 SHA-256 与签名；附带手表 APK 时文件名为 myEarthquakeAlert-wear-*.apk。
           files: |
             dist/*.apk
+            dist/*.sha256
             dist/update.json
-            dist/update.apk.sha256
           prerelease: ${{ github.ref_name != 'master' }}
           make_latest: ${{ github.ref_name == 'master' && 'true' || 'false' }}

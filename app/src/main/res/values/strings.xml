@@ -1,34 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Earthquake Alert</string>
-    <string name="service_monitoring">Monitoring earthquake activity</string>
-    <string name="service_toggle">Monitoring Service</string>
-    <string name="source_selector">Data Source</string>
     <string name="min_magnitude">Min Magnitude</string>
-    <string name="min_intensity">Min Intensity (CSIS)</string>
-    <string name="allow_dismiss">Allow dismiss with Back key</string>
-    <string name="simulation_test">Simulation Test</string>
     <string name="alert_title">Earthquake Early Warning</string>
     <string name="connection_connected">Connected</string>
     <string name="connection_connecting">Connecting</string>
     <string name="connection_disconnected">Disconnected</string>
-    <string name="simulation_label">SIMULATION</string>
     <string name="earthquake_history">Recent Earthquakes</string>
     <string name="overlay_permission_required">Overlay permission is required to show earthquake alerts</string>
     <string name="location_permission_required">Location permission is required for simulation</string>
-    <string name="grant_permission">Grant Permission</string>
     <string name="notification_channel_name">Earthquake Monitor</string>
-    <string name="epicenter_label">Epicenter:</string>
-    <string name="magnitude_label">Magnitude:</string>
 
     <!-- About Screen -->
     <string name="about">About</string>
-    <string name="app_tagline">Earthquake Early Warning · Real-time Monitoring</string>
     <string name="app_description">An Android earthquake early warning app based on Jetpack Compose, supporting phones, tablets, and Android TV.</string>
-    <string name="version_info">Version Info</string>
-    <string name="current_version">Current Version</string>
-    <string name="version_code">Version Code</string>
-    <string name="build_date">Build Date</string>
     <string name="check_update">Check for Updates</string>
     <string name="view_changelog">View Changelog</string>
     <string name="data_sources">Data Sources</string>
@@ -36,7 +21,6 @@
     <string name="data_source_map">Map Service</string>
     <string name="data_source_algorithm">Algorithm Reference</string>
     <string name="license">License</string>
-    <string name="view_full_license">View Full License</string>
     <string name="acknowledgments">Acknowledgments</string>
     <string name="acknowledgment_wolfx">Wolfx Project</string>
     <string name="acknowledgment_kanameishi">kanameishi Project</string>
@@ -45,85 +29,37 @@
 
     <!-- Update Feature -->
     <string name="update_available">Update Available</string>
-    <string name="update_version">Version %s</string>
-    <string name="update_size">Size: %s</string>
     <string name="update_now">Update Now</string>
     <string name="update_later">Later</string>
     <string name="update_checking">Checking for updates…</string>
     <string name="update_up_to_date">Already up to date</string>
-    <string name="update_downloading">Downloading update…</string>
-    <string name="update_download_progress">%1$d%% (%2$s / %3$s)</string>
     <string name="update_download_speed">%s/s</string>
     <string name="update_install">Install</string>
-    <string name="update_error">Update failed</string>
     <string name="update_error_network">Network connection failed</string>
     <string name="update_error_rate_limit">Too many requests, please try again later</string>
     <string name="update_retry">Retry</string>
     <string name="cancel">Cancel</string>
-    <string name="export_log">Export Log</string>
-
-    <!-- Section Headers -->
-    <string name="section_service">Service</string>
-    <string name="section_data_source">Data Source</string>
-    <string name="section_thresholds">Alert Thresholds</string>
-    <string name="section_tools">Tools</string>
-
-    <!-- Service Status -->
-    <string name="service_active">Running in the background. Closing the app does not stop alerts.</string>
-    <string name="service_inactive">Off. No earthquake alerts will be received.</string>
 
     <!-- Subtitles -->
-    <string name="simulation_subtitle">Test alert with simulated data</string>
-    <string name="export_log_subtitle">Export diagnostic logs</string>
     <string name="no_earthquakes">No recent earthquakes</string>
-
-    <!-- Alert Overlay v2 -->
-    <string name="alert_dismiss">I understand</string>
-    <string name="alert_countdown_hint">Time until wave arrival</string>
-    <string name="alert_waves_arrived">Seismic waves have arrived</string>
-    <string name="alert_wave_p">P wave</string>
-    <string name="alert_wave_s">S wave</string>
-    <string name="alert_wave_state_arrived">Arrived</string>
-    <string name="alert_wave_state_in">%1$d s</string>
-    <string name="alert_report_no">#%1$d</string>
-    <string name="alert_intense_label">Strong shaking</string>
-    <string name="alert_distance_km">%1$s km from epicenter</string>
-    <string name="alert_intensity_unit">CSIS</string>
-    <string name="alert_intensity_expected">Expected intensity</string>
-    <string name="alert_title_source">%1$s (%2$s)</string>
-    <string name="alert_depth_km">Depth %1$s km</string>
-    <string name="alert_warn_zone">%1$d+ expected</string>
-    <string name="alert_seconds_unit">s</string>
 
     <!-- Map -->
     <string name="map_tile_style">Map style</string>
-    <string name="map_style_amap">AMap</string>
     <string name="map_style_osm">OpenStreetMap</string>
-    <string name="map_hint_select">Tap a marker for details</string>
-    <string name="distance_to_you">%1$s km away</string>
-    <string name="depth_label">Depth:</string>
 
     <!-- Tabs -->
-    <string name="tab_monitor">Monitor</string>
-    <string name="tab_recent">Recent</string>
     <string name="tab_settings">Settings</string>
 
     <!-- States -->
-    <string name="refresh">Refresh</string>
     <string name="retry">Retry</string>
     <string name="history_load_failed">Failed to load. Check your network.</string>
-    <string name="intense_threshold">Intense threshold (CSIS)</string>
-    <string name="monitor_status_title">Monitoring status</string>
 
     <!-- Start on boot / background detection -->
-    <string name="drill_hypocenter">Simulated epicenter</string>
     <string name="drill_failed">Could not run the drill. Try again.</string>
     <string name="boot_start">Start on boot</string>
     <string name="boot_start_unavailable">Unavailable while background monitoring is off</string>
     <string name="boot_start_off">After a restart, monitoring must be started manually</string>
-    <string name="boot_start_done">Started automatically %1$d s after this boot</string>
     <string name="boot_start_on_direct">Resumes after a restart, even before you unlock</string>
-    <string name="boot_start_on">Resumes after a restart without opening the app</string>
     <string name="autostart_hint">This system may block start on boot. Allow auto-start for this app.</string>
     <string name="autostart_open">Allow</string>
     <string name="boot_notice_title">Earthquake monitoring is not running</string>
@@ -131,7 +67,4 @@
     <string name="boot_notice_start">Start now</string>
     <string name="notification_channel_status">Monitoring status</string>
     <string name="notification_channel_alert">Earthquake alerts</string>
-    <string name="locked_alert_title">Earthquake early warning · %1$s M%2$.1f</string>
-    <string name="locked_alert_text">Expected intensity %1$d · S wave in about %2$d s</string>
-    <string name="locked_alert_text_arrived">Expected intensity %1$d · seismic waves have arrived</string>
 </resources>

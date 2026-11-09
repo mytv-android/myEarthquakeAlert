@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 应用内更新（设计 §8）：渠道、下载、校验、安装。 -->
+<resources>
+    <!-- 通知 -->
+    <string name="upd_channel_name">应用更新</string>
+    <string name="upd_channel_desc">新版本提醒、下载进度与安装</string>
+    <string name="upd_notify_available_title">发现新版本 %1$s</string>
+    <string name="upd_notify_available_text">%1$s · 点按查看更新内容并更新</string>
+    <string name="upd_notify_downloading">正在下载更新 %1$s</string>
+    <string name="upd_notify_ready_title">更新 %1$s 已就绪</string>
+    <string name="upd_notify_ready_text">已下载并通过校验，点按安装。</string>
+    <string name="upd_notify_confirm_title">继续安装 %1$s</string>
+    <string name="upd_notify_confirm_text">点按确认安装。</string>
+
+    <!-- 下载 -->
+    <string name="upd_pause">暂停</string>
+    <string name="upd_resume">继续</string>
+    <string name="upd_paused_title">下载已暂停</string>
+    <string name="upd_paused_desc">已下载 %2$s / %3$s（%1$d%%），继续时从断点接着下载。</string>
+    <string name="upd_wait_wifi">等待 Wi-Fi</string>
+    <string name="upd_waiting_starting">即将开始下载</string>
+    <string name="upd_waiting_wifi">等待 Wi-Fi</string>
+    <string name="upd_waiting_wifi_desc">连接 Wi-Fi 后自动开始下载。</string>
+    <string name="upd_waiting_network">等待网络</string>
+    <string name="upd_waiting_network_desc">网络恢复后自动继续下载。</string>
+    <string name="upd_waiting_retry">连接中断</string>
+    <string name="upd_waiting_retry_desc">稍后自动重试，从断点接着下载。</string>
+    <string name="upd_tv_progress_hint">下载进度显示在屏幕右下角，可以离开此页。</string>
+    <string name="upd_tv_overlay_title">正在更新到 %1$s</string>
+
+    <!-- 校验与安装 -->
+    <string name="upd_verified_detail">%1$sSHA-256 与 Release 一致。</string>
+    <string name="upd_ready_deferred">已通过校验，随时可以安装。</string>
+    <string name="upd_permission_first">首次更新需要允许本应用「安装未知应用」。</string>
+    <string name="upd_permission_explain">Android 要求应用获得「安装未知应用」授权后，才能安装它自己下载的安装包。本应用只用这项授权安装从 GitHub Releases 下载并通过校验的自身更新。</string>
+    <string name="upd_alert_active">预警进行中，结束后再安装。</string>
+    <string name="upd_installing_title">正在安装</string>
+    <string name="upd_installing_desc">请在系统安装界面确认。安装完成后应用会重新启动，监测自动恢复。</string>
+    <string name="upd_continue_install">继续安装</string>
+
+    <!-- 失败 -->
+    <string name="upd_err_title_check">检查更新失败</string>
+    <string name="upd_err_title_download">下载失败</string>
+    <string name="upd_err_title_verify">校验未通过</string>
+    <string name="upd_err_title_install">安装失败</string>
+    <string name="upd_err_server">暂时无法连接更新服务器</string>
+    <string name="upd_err_manifest">发布信息不完整</string>
+    <string name="upd_err_min_sdk">此更新需要 Android API %1$s 或更高版本</string>
+    <string name="upd_err_storage">存储空间不足，至少需要 %1$s</string>
+    <string name="upd_err_http">下载服务器返回 HTTP %1$s</string>
+    <string name="upd_err_incomplete">下载的文件与发布信息的大小不符</string>
+    <string name="upd_err_sha256">SHA-256 与 Release 不一致，安装包已删除</string>
+    <string name="upd_err_signature">签名证书与已安装版本不一致，安装包已删除</string>
+    <string name="upd_err_package">安装包不属于本应用，已删除</string>
+    <string name="upd_err_version">安装包版本与发布信息不一致，已删除</string>
+    <string name="upd_err_unreadable">无法读取安装包，已删除</string>
+    <string name="upd_err_not_newer">该版本不比已安装版本新</string>
+    <string name="upd_err_file_missing">安装包已不存在，请重新下载</string>
+    <string name="upd_err_install_blocked">安装被系统或设备策略阻止</string>
+    <string name="upd_err_install_aborted">已取消安装</string>
+    <string name="upd_err_install_invalid">安装包无效或已损坏</string>
+    <string name="upd_err_install_conflict">与已安装的应用冲突</string>
+    <string name="upd_err_install_storage">存储空间不足，无法安装</string>
+    <string name="upd_err_install_incompatible">此版本与本设备不兼容</string>
+    <string name="upd_err_install_timeout">安装超时</string>
+    <string name="upd_err_install_failed">安装未完成</string>
+</resources>

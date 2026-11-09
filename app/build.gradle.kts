@@ -101,9 +101,7 @@ dependencies {
     debugImplementation(libs.compose.ui.test.manifest)
 
     implementation(libs.lifecycle.runtime.compose)
-    implementation(libs.lifecycle.service)
     implementation(libs.lifecycle.viewmodel.compose)
-    implementation(libs.navigation.compose)
 
     implementation(libs.okhttp)
     implementation(libs.retrofit)

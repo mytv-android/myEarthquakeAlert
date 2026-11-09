@@ -14,6 +14,9 @@ enum class Destination(val route: String) {
         /** Intent extra on MainActivity selecting the start destination (e.g. from the 诊断 notification action). */
         const val EXTRA = "com.github.mytv.myearthquakealert.DESTINATION"
 
+        /** Optional settings sub-page with [EXTRA] = settings, e.g. "update" from 发现新版本. */
+        const val EXTRA_PAGE = "com.github.mytv.myearthquakealert.SETTINGS_PAGE"
+
         fun fromRoute(route: String?): Destination? = entries.firstOrNull { it.route == route }
     }
 }

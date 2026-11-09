@@ -1,34 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">地震速报</string>
-    <string name="service_monitoring">正在监测地震预警…</string>
-    <string name="service_toggle">监测服务</string>
-    <string name="source_selector">数据源</string>
     <string name="min_magnitude">最低震级</string>
-    <string name="min_intensity">最低烈度 (CSIS)</string>
-    <string name="allow_dismiss">允许使用返回键关闭</string>
-    <string name="simulation_test">模拟测试</string>
     <string name="alert_title">紧急地震速报</string>
     <string name="connection_connected">已连接</string>
     <string name="connection_connecting">连接中</string>
     <string name="connection_disconnected">已断开</string>
-    <string name="simulation_label">模拟测试</string>
     <string name="earthquake_history">最近地震</string>
     <string name="overlay_permission_required">需要悬浮窗权限以显示地震预警</string>
     <string name="location_permission_required">需要位置权限才能使用模拟功能</string>
-    <string name="grant_permission">授予权限</string>
     <string name="notification_channel_name">地震监测</string>
-    <string name="epicenter_label">震源：</string>
-    <string name="magnitude_label">震级：</string>
 
     <!-- About Screen -->
     <string name="about">关于</string>
-    <string name="app_tagline">地震预警 · 实时监测</string>
     <string name="app_description">基于 Jetpack Compose 开发的 Android 地震预警应用，支持手机、平板和 Android TV。</string>
-    <string name="version_info">版本信息</string>
-    <string name="current_version">当前版本</string>
-    <string name="version_code">版本代码</string>
-    <string name="build_date">构建时间</string>
     <string name="check_update">检查更新</string>
     <string name="view_changelog">查看更新日志</string>
     <string name="data_sources">数据来源</string>
@@ -36,7 +21,6 @@
     <string name="data_source_map">地图服务</string>
     <string name="data_source_algorithm">算法参考</string>
     <string name="license">开源协议</string>
-    <string name="view_full_license">查看完整协议</string>
     <string name="acknowledgments">致谢</string>
     <string name="acknowledgment_wolfx">Wolfx Project</string>
     <string name="acknowledgment_kanameishi">kanameishi 项目</string>
@@ -45,85 +29,37 @@
 
     <!-- Update Feature -->
     <string name="update_available">发现新版本</string>
-    <string name="update_version">版本 %s</string>
-    <string name="update_size">大小：%s</string>
     <string name="update_now">立即更新</string>
     <string name="update_later">稍后</string>
     <string name="update_checking">正在检查更新…</string>
     <string name="update_up_to_date">已是最新版本</string>
-    <string name="update_downloading">正在下载更新…</string>
-    <string name="update_download_progress">%1$d%% (%2$s / %3$s)</string>
     <string name="update_download_speed">%s/s</string>
     <string name="update_install">安装</string>
-    <string name="update_error">更新失败</string>
     <string name="update_error_network">网络连接失败，请检查网络设置</string>
     <string name="update_error_rate_limit">请求过于频繁，请稍后再试</string>
     <string name="update_retry">重试</string>
     <string name="cancel">取消</string>
-    <string name="export_log">导出日志</string>
-
-    <!-- Section Headers -->
-    <string name="section_service">服务</string>
-    <string name="section_data_source">数据源</string>
-    <string name="section_thresholds">预警阈值</string>
-    <string name="section_tools">工具</string>
-
-    <!-- Service Status -->
-    <string name="service_active">后台监测中，关闭应用不影响预警</string>
-    <string name="service_inactive">已关闭，不会收到任何地震预警</string>
 
     <!-- Subtitles -->
-    <string name="simulation_subtitle">使用模拟数据测试预警覆盖层</string>
-    <string name="export_log_subtitle">导出诊断日志以便排查问题</string>
     <string name="no_earthquakes">暂无最近地震记录</string>
-
-    <!-- Alert Overlay v2 -->
-    <string name="alert_dismiss">我知道了</string>
-    <string name="alert_countdown_hint">地震波到达倒计时</string>
-    <string name="alert_waves_arrived">地震波已到达</string>
-    <string name="alert_wave_p">P波</string>
-    <string name="alert_wave_s">S波</string>
-    <string name="alert_wave_state_arrived">已到达</string>
-    <string name="alert_wave_state_in">%1$d秒</string>
-    <string name="alert_report_no">第%1$d报</string>
-    <string name="alert_intense_label">强烈震动</string>
-    <string name="alert_distance_km">距震中 %1$s km</string>
-    <string name="alert_intensity_unit">烈度</string>
-    <string name="alert_intensity_expected">预计烈度</string>
-    <string name="alert_title_source">%1$s（%2$s）</string>
-    <string name="alert_depth_km">深度 %1$s km</string>
-    <string name="alert_warn_zone">预计%1$d以上</string>
-    <string name="alert_seconds_unit">秒</string>
 
     <!-- Map -->
     <string name="map_tile_style">地图样式</string>
-    <string name="map_style_amap">高德地图</string>
     <string name="map_style_osm">OpenStreetMap</string>
-    <string name="map_hint_select">点击圆点查看详情</string>
-    <string name="distance_to_you">距你 %1$s km</string>
-    <string name="depth_label">深度：</string>
 
     <!-- Tabs -->
-    <string name="tab_monitor">监测</string>
-    <string name="tab_recent">记录</string>
     <string name="tab_settings">设置</string>
 
     <!-- States -->
-    <string name="refresh">刷新</string>
     <string name="retry">重试</string>
     <string name="history_load_failed">加载失败，请检查网络连接</string>
-    <string name="intense_threshold">强震阈值 (CSIS)</string>
-    <string name="monitor_status_title">监测状态</string>
 
     <!-- Start on boot / background detection -->
-    <string name="drill_hypocenter">模拟震源</string>
     <string name="drill_failed">演练启动失败，请重试</string>
     <string name="boot_start">开机自动启动</string>
     <string name="boot_start_unavailable">后台监测关闭时不可用</string>
     <string name="boot_start_off">重启后需手动开启监测</string>
-    <string name="boot_start_done">本次开机后 %1$d 秒已自动启动</string>
     <string name="boot_start_on_direct">重启后自动恢复，解锁前即可监测</string>
-    <string name="boot_start_on">重启后自动恢复，无需打开应用</string>
     <string name="autostart_hint">本机系统可能拦截开机自启，请允许本应用自启动</string>
     <string name="autostart_open">去允许</string>
     <string name="boot_notice_title">地震监测未启动</string>
@@ -131,7 +67,4 @@
     <string name="boot_notice_start">立即启动</string>
     <string name="notification_channel_status">监测状态</string>
     <string name="notification_channel_alert">地震预警</string>
-    <string name="locked_alert_title">紧急地震速报 · %1$s M%2$.1f</string>
-    <string name="locked_alert_text">预计烈度 %1$d，S 波约 %2$d 秒后到达</string>
-    <string name="locked_alert_text_arrived">预计烈度 %1$d，地震波已到达</string>
 </resources>

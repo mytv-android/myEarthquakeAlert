@@ -23,7 +23,7 @@ import com.github.mytv.myearthquakealert.ui.settings.components.ConnectedChoice
 import com.github.mytv.myearthquakealert.ui.settings.components.SettingSwitch
 import com.github.mytv.myearthquakealert.ui.settings.components.focusHighlight
 
-/** Settings of the update flow, shared by 设置 › 关于与更新 and the legacy about route. */
+/** Settings of the update flow shown on 设置 › 关于与更新. */
 data class UpdatePreferences(
     val autoCheck: Boolean,
     val wifiOnly: Boolean,

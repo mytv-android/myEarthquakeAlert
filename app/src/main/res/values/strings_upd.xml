@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- In-app update pipeline (design §8): channels, download, verification, install. -->
+<resources>
+    <!-- Notifications -->
+    <string name="upd_channel_name">App updates</string>
+    <string name="upd_channel_desc">New versions, download progress and installation</string>
+    <string name="upd_notify_available_title">New version %1$s</string>
+    <string name="upd_notify_available_text">%1$s · tap to see what\'s new and update</string>
+    <string name="upd_notify_downloading">Downloading update %1$s</string>
+    <string name="upd_notify_ready_title">Update %1$s is ready</string>
+    <string name="upd_notify_ready_text">Downloaded and verified. Tap to install.</string>
+    <string name="upd_notify_confirm_title">Continue installing %1$s</string>
+    <string name="upd_notify_confirm_text">Tap to confirm the installation.</string>
+
+    <!-- Download -->
+    <string name="upd_pause">Pause</string>
+    <string name="upd_resume">Continue</string>
+    <string name="upd_paused_title">Download paused</string>
+    <string name="upd_paused_desc">%2$s of %3$s downloaded (%1$d%%). Continuing picks up where it stopped.</string>
+    <string name="upd_wait_wifi">Wait for Wi-Fi</string>
+    <string name="upd_waiting_starting">Starting download</string>
+    <string name="upd_waiting_wifi">Waiting for Wi-Fi</string>
+    <string name="upd_waiting_wifi_desc">The download starts by itself once you\'re on Wi-Fi.</string>
+    <string name="upd_waiting_network">Waiting for a network</string>
+    <string name="upd_waiting_network_desc">The download continues by itself once you\'re back online.</string>
+    <string name="upd_waiting_retry">Connection interrupted</string>
+    <string name="upd_waiting_retry_desc">Retrying shortly and continuing where it stopped.</string>
+    <string name="upd_tv_progress_hint">Download progress stays at the bottom right of the screen, so you can leave this page.</string>
+    <string name="upd_tv_overlay_title">Updating to %1$s</string>
+
+    <!-- Verify and install -->
+    <string name="upd_verified_detail">%1$s SHA-256 matches the release.</string>
+    <string name="upd_ready_deferred">Verified and ready to install whenever you like.</string>
+    <string name="upd_permission_first">The first update asks you to allow \"Install unknown apps\" for this app.</string>
+    <string name="upd_permission_explain">Android only installs packages an app downloaded itself once you allow \"Install unknown apps\" for it. This app uses that permission solely for its own updates, downloaded from GitHub Releases and verified first.</string>
+    <string name="upd_alert_active">An alert is in progress. Install once it has ended.</string>
+    <string name="upd_installing_title">Installing</string>
+    <string name="upd_installing_desc">Confirm in the system installer. The app restarts when it\'s done and monitoring resumes by itself.</string>
+    <string name="upd_continue_install">Continue installing</string>
+
+    <!-- Failures -->
+    <string name="upd_err_title_check">Couldn\'t check for updates</string>
+    <string name="upd_err_title_download">Download failed</string>
+    <string name="upd_err_title_verify">Verification failed</string>
+    <string name="upd_err_title_install">Installation failed</string>
+    <string name="upd_err_server">The update server can\'t be reached right now</string>
+    <string name="upd_err_manifest">The release information is incomplete</string>
+    <string name="upd_err_min_sdk">This update needs Android API level %1$s or newer</string>
+    <string name="upd_err_storage">Not enough storage. At least %1$s is needed.</string>
+    <string name="upd_err_http">The download server answered HTTP %1$s</string>
+    <string name="upd_err_incomplete">The downloaded file doesn\'t match the release size</string>
+    <string name="upd_err_sha256">SHA-256 doesn\'t match the release. The package was deleted.</string>
+    <string name="upd_err_signature">The signing certificate differs from the installed app. The package was deleted.</string>
+    <string name="upd_err_package">The package isn\'t an update of this app. It was deleted.</string>
+    <string name="upd_err_version">The package version doesn\'t match the release. It was deleted.</string>
+    <string name="upd_err_unreadable">The package can\'t be read. It was deleted.</string>
+    <string name="upd_err_not_newer">This version isn\'t newer than the installed one</string>
+    <string name="upd_err_file_missing">The downloaded package is gone. Download it again.</string>
+    <string name="upd_err_install_blocked">The system or a device policy blocked the installation</string>
+    <string name="upd_err_install_aborted">The installation was cancelled</string>
+    <string name="upd_err_install_invalid">The package is invalid or damaged</string>
+    <string name="upd_err_install_conflict">It conflicts with the installed app</string>
+    <string name="upd_err_install_storage">Not enough storage to install</string>
+    <string name="upd_err_install_incompatible">This version isn\'t compatible with this device</string>
+    <string name="upd_err_install_timeout">The installation timed out</string>
+    <string name="upd_err_install_failed">The installation didn\'t complete</string>
+</resources>
