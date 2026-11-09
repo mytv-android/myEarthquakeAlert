@@ -19,6 +19,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.github.mytv.myearthquakealert.MyEarthQuakeAlertApp
@@ -152,6 +153,7 @@ fun rememberMonitorActions(onLocationGranted: () -> Unit = {}): MonitorActions {
     }
 
     var actions: MonitorActions? = null
+    val locationRequiredText = stringResource(R.string.location_permission_required)
     val locationLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
         DeliveryChecks.refresh(context)
         val ok = result.values.any { it }
@@ -159,7 +161,7 @@ fun rememberMonitorActions(onLocationGranted: () -> Unit = {}): MonitorActions {
             onGranted()
             if (drillAfterLocation) actions?.drill()
         } else {
-            Toast.makeText(context, context.getString(R.string.location_permission_required), Toast.LENGTH_LONG).show()
+            Toast.makeText(context, locationRequiredText, Toast.LENGTH_LONG).show()
             val permanentlyDenied = activity != null &&
                 !ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
             if (permanentlyDenied && !drillAfterLocation) openAppDetails(context)

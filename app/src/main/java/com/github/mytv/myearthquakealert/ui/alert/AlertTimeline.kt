@@ -62,8 +62,10 @@ fun correctedTime(deviceMillis: Long): Long = deviceMillis - (Diagnostics.metric
 /** Current time on the corrected clock the countdown runs on. */
 fun alertNow(): Long = correctedTime(System.currentTimeMillis())
 
-private val originFormat = ThreadLocal.withInitial {
-    SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT).apply { timeZone = TimeZone.getTimeZone("Asia/Shanghai") }
+// ThreadLocal.withInitial needs API 26; minSdk is 23.
+private val originFormat = object : ThreadLocal<SimpleDateFormat>() {
+    override fun initialValue() =
+        SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT).apply { timeZone = TimeZone.getTimeZone("Asia/Shanghai") }
 }
 
 /** Parses an [com.github.mytv.myearthquakealert.data.model.EewEvent.originTime] (CST); null when empty or malformed. */
