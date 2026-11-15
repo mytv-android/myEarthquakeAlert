@@ -21,6 +21,27 @@ An Android earthquake early warning app built with Jetpack Compose, supporting p
 - 可自定义预警阈值（震级、烈度）
 - 地震历史记录列表
 
+## 界面截图 (Screenshots)
+
+同一版本 `1.0 (16)`，Android 模拟器实拍，覆盖手机、平板、电视、折叠屏与双面屏五种形态。
+
+<table>
+  <tr>
+    <td align="center"><img src="screenshots/phone.png" height="430" alt="myEarthQuakeAlert 手机"/><br/><sub>手机 · 1080×2400</sub></td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td align="center" width="50%"><img src="screenshots/fold.png" width="430" alt="myEarthQuakeAlert 折叠屏"/><br/><sub>折叠屏 · 2208×1840</sub></td>
+    <td align="center" width="50%"><img src="screenshots/dualscreen.png" width="520" alt="myEarthQuakeAlert 双面屏"/><br/><sub>双面屏 · 2784×1800</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="screenshots/tablet.png" width="380" alt="myEarthQuakeAlert 平板"/><br/><sub>平板 · 2560×1600</sub></td>
+    <td align="center"><img src="screenshots/tv.png" width="430" alt="myEarthQuakeAlert 电视"/><br/><sub>电视 · 1920×1080</sub></td>
+  </tr>
+</table>
+
 ## 注意事项 (Important Notes)
 
 - 本应用程序仅作为学习和个人使用
