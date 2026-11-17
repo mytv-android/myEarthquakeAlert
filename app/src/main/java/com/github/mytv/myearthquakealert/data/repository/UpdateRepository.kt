@@ -25,7 +25,11 @@ import java.util.concurrent.TimeUnit
  * the Releases API for 预览版, the `.sha256` assets, and mirror ordering for every GitHub
  * URL (direct access is often slow or blocked in mainland China).
  */
-class UpdateRepository(okHttpClient: OkHttpClient) {
+class UpdateRepository(
+    okHttpClient: OkHttpClient,
+    /** Supplies the pinned mirror; null means automatic probing. */
+    private val pinnedMirror: suspend () -> GithubMirror? = { null },
+) {
 
     /** Client for the update pipeline; the APK download reads with a longer timeout. */
     val http: OkHttpClient = okHttpClient.newBuilder()
@@ -151,18 +155,22 @@ class UpdateRepository(okHttpClient: OkHttpClient) {
      */
     private suspend fun mirrorOrder(target: String, probeKey: String): List<String> {
         val now = System.currentTimeMillis()
+        val pinned = pinnedMirror()
+        // A pinned mirror changes the candidate set, so it is part of the cache key's meaning: the
+        // entry is only reused while the pin is unchanged.
+        val key = PROBE_PIN_PREFIX + (pinned?.name ?: "") + probeKey
         synchronized(probeCache) {
-            probeCache[probeKey]?.takeIf { now < it.first }?.let { return it.second }
+            probeCache[key]?.takeIf { now < it.first }?.let { return it.second }
         }
-        return probeMirrors(target).also { order ->
+        return applyPinnedMirror(probeMirrors(target), pinned).also { order ->
             synchronized(probeCache) {
-                probeCache[probeKey] = (now + PROBE_TTL_MS) to order
+                probeCache[key] = (now + PROBE_TTL_MS) to order
             }
         }
     }
 
     private suspend fun probeMirrors(target: String): List<String> = coroutineScope {
-        val results = MIRRORS.map { mirror ->
+        val results = candidateMirrors(pinnedMirror()).map { mirror ->
             async(Dispatchers.IO) {
                 val startedAt = System.nanoTime()
                 val reachable = try {
@@ -194,6 +202,7 @@ class UpdateRepository(okHttpClient: OkHttpClient) {
         private const val PROBE_TTL_MS = 5 * 60 * 1000L
         private const val PROBE_TIMEOUT_MS = 3_000L
         private const val MANIFEST_TIMEOUT_MS = 15_000L
+        private const val PROBE_PIN_PREFIX = "pin:"
         private const val PROBE_MANIFEST = "manifest"
         private const val PROBE_API = "api"
 
@@ -202,18 +211,22 @@ class UpdateRepository(okHttpClient: OkHttpClient) {
         const val MANIFEST_URL = "$RELEASES_URL/latest/download/${ReleaseSelection.MANIFEST_ASSET}"
         private const val RELEASES_API_URL = "https://api.github.com/repos/$REPO/releases?per_page=15"
 
-        /** GitHub acceleration mirrors; the empty string is the origin. Same list as myMusic. */
-        private val MIRRORS = listOf(
-            "https://gh-proxy.org/",
-            "https://gh-proxy.com/",
-            "https://ghproxy.net/",
-            "https://gh.cc/",
-            "https://mirror.ghproxy.com/",
-            "https://github.moeyy.xyz/",
-            "https://ghproxy.cn/",
-            "https://gh.api.99988866.xyz/",
-            "https://gh-proxy.ygxz.in/",
-            "",
-        )
+        /**
+         * Candidate routes: the pinned mirror first (when one is pinned), then every other route
+         * and direct access as fallbacks. The list itself is [GithubMirror], measured on 2026-11-17.
+         */
+        private fun candidateMirrors(pinned: GithubMirror?): List<String> {
+            val routes = GithubMirror.proxies.map { it.prefix }
+            return when (pinned) {
+                null, GithubMirror.AUTO -> routes + ""
+                GithubMirror.DIRECT -> listOf("") + routes
+                else -> listOf(pinned.prefix) + routes.filterNot { it == pinned.prefix } + ""
+            }
+        }
+
+        /** A pinned route leads whatever the probe measured; the user named it explicitly. */
+        private fun applyPinnedMirror(order: List<String>, pinned: GithubMirror?): List<String> =
+            if (pinned != null && pinned.isProxy) listOf(pinned.prefix) + order.filterNot { it == pinned.prefix }
+            else order
     }
 }

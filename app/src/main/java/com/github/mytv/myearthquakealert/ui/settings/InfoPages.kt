@@ -16,10 +16,16 @@ internal fun UpdatePage(env: SettingsEnv, onBack: (() -> Unit)?, onOpenAbout: ()
     SettingsPageScaffold(title = stringResource(R.string.pg_about_update), onBack = onBack) {
         updateItems(
             viewModel = env.updateViewModel,
-            preferences = UpdatePreferences(settings.updateAutoCheck, settings.updateWifiOnly, settings.updateChannel),
+            preferences = UpdatePreferences(
+                settings.updateAutoCheck,
+                settings.updateWifiOnly,
+                settings.updateChannel,
+                settings.updateGithubMirror,
+            ),
             onAutoCheckChange = { on -> actions.edit { updateUpdateAutoCheck(on) } },
             onWifiOnlyChange = { on -> actions.edit { updateUpdateWifiOnly(on) } },
             onChannelChange = { channel -> actions.edit { updateUpdateChannel(channel) } },
+            onGithubMirrorChange = { mirror -> actions.edit { updateUpdateGithubMirror(mirror) } },
             onOpenUrl = actions::openUrl,
             onOpenAbout = onOpenAbout,
         )

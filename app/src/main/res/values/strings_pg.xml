@@ -154,6 +154,10 @@
     <string name="pg_channel_stable_desc">Tested releases</string>
     <string name="pg_update_verification">Package verification</string>
     <string name="pg_update_verification_desc">Signature and SHA-256 are checked before installing; a failed check never installs</string>
+    <string name="pg_update_github_mirror">GitHub mirror</string>
+    <string name="pg_update_github_mirror_auto">Probe every route, use the fastest</string>
+    <string name="pg_update_github_mirror_direct">Direct github.com</string>
+    <string name="pg_update_github_mirror_pinned">Prefer %1$s; other routes still follow</string>
 
     <!-- About -->
     <string name="pg_about_update">About &amp; updates</string>

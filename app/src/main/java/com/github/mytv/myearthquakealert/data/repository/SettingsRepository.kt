@@ -12,6 +12,7 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.github.mytv.myearthquakealert.data.model.LayoutOverride
 import com.github.mytv.myearthquakealert.data.model.LocationMode
 import com.github.mytv.myearthquakealert.data.model.ThemeMode
+import com.github.mytv.myearthquakealert.data.repository.GithubMirror
 import com.github.mytv.myearthquakealert.data.model.UpdateChannel
 import com.github.mytv.myearthquakealert.data.model.enumOrDefault
 import com.github.mytv.myearthquakealert.data.source.EewSource
@@ -51,6 +52,8 @@ data class UserSettings(
     val updateAutoCheck: Boolean = true,
     val updateChannel: UpdateChannel = UpdateChannel.STABLE,
     val updateWifiOnly: Boolean = true,
+    /** Pinned GitHub mirror; AUTO probes every route. See [GithubMirror]. */
+    val updateGithubMirror: GithubMirror = GithubMirror.AUTO,
 ) {
     /** First subscribed source, for places that show a single source. */
     val primarySource: EewSource get() = EewSource.entries.firstOrNull { it in enabledSources } ?: EewSource.CENC
@@ -88,6 +91,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val UPDATE_AUTO_CHECK = booleanPreferencesKey("update_auto_check")
         val UPDATE_CHANNEL = stringPreferencesKey("update_channel")
         val UPDATE_WIFI_ONLY = booleanPreferencesKey("update_wifi_only")
+        val UPDATE_GITHUB_MIRROR = stringPreferencesKey("update_github_mirror")
     }
 
     val settings: Flow<UserSettings> = dataStore.data.map { prefs ->
@@ -120,6 +124,8 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
             updateAutoCheck = prefs[Keys.UPDATE_AUTO_CHECK] ?: true,
             updateChannel = enumOrDefault(prefs[Keys.UPDATE_CHANNEL], UpdateChannel.STABLE),
             updateWifiOnly = prefs[Keys.UPDATE_WIFI_ONLY] ?: true,
+            updateGithubMirror = prefs[Keys.UPDATE_GITHUB_MIRROR]?.let(GithubMirror::fromName)
+                ?: GithubMirror.AUTO,
         )
     }
 
@@ -214,5 +220,9 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
     suspend fun updateUpdateWifiOnly(enabled: Boolean) {
         dataStore.edit { it[Keys.UPDATE_WIFI_ONLY] = enabled }
+    }
+
+    suspend fun updateUpdateGithubMirror(mirror: GithubMirror) {
+        dataStore.edit { it[Keys.UPDATE_GITHUB_MIRROR] = mirror.name }
     }
 }

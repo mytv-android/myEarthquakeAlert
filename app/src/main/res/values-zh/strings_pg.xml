@@ -154,6 +154,10 @@
     <string name="pg_channel_stable_desc">经过验证的正式版本</string>
     <string name="pg_update_verification">安装包校验</string>
     <string name="pg_update_verification_desc">安装前核对签名与 SHA-256，校验失败不会安装</string>
+    <string name="pg_update_github_mirror">GitHub 镜像源</string>
+    <string name="pg_update_github_mirror_auto">并发测速所有线路，选最快的</string>
+    <string name="pg_update_github_mirror_direct">直连 github.com</string>
+    <string name="pg_update_github_mirror_pinned">优先 %1$s，失败仍按顺序回退</string>
 
     <!-- 关于 -->
     <string name="pg_about_update">关于与更新</string>

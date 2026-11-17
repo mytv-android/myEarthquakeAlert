@@ -33,6 +33,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -157,6 +158,9 @@ class MyEarthQuakeAlertApp : Application() {
     private val okHttpClient: OkHttpClient by lazy { OkHttpClient() }
 
     val updateRepository: UpdateRepository by lazy {
-        UpdateRepository(okHttpClient)
+        UpdateRepository(okHttpClient) {
+            // Read on demand so pinning a mirror in settings takes effect on the next check.
+            runCatching { settingsRepository.settings.first().updateGithubMirror }.getOrNull()
+        }
     }
 }
