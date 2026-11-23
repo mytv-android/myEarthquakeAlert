@@ -199,6 +199,14 @@ class ApkDownloader(private val http: OkHttpClient, private val userAgent: Strin
         val context = coroutineContext
         var written = if (append) part.length() else 0L
         progress.onProgress(written, total)
+        // 速度门槛：前 [MirrorSpeedGate.WINDOW_MS] 毫秒这条线路拉不到 [MirrorSpeedGate.MIN_BYTES]
+        // 就换下一个站。断点续传时只数本次收到的字节——已经下到本地的部分不算这条线路的速度。
+        val gateBytes = minOf(
+            MirrorSpeedGate.MIN_BYTES,
+            if (total > 0) total else MirrorSpeedGate.MIN_BYTES,
+        )
+        val gateDeadline = System.currentTimeMillis() + MirrorSpeedGate.WINDOW_MS
+        var received = 0L
         input.use { source ->
             FileOutputStream(part, append).use { output ->
                 val buffer = ByteArray(BUFFER)
@@ -208,8 +216,13 @@ class ApkDownloader(private val http: OkHttpClient, private val userAgent: Strin
                     if (read < 0) break
                     output.write(buffer, 0, read)
                     written += read
+                    received += read
                     if (total > 0 && written > total) throw UpdateException(UpdateFailure.INCOMPLETE)
                     progress.onProgress(written, total)
+                    if (received < gateBytes && System.currentTimeMillis() > gateDeadline) {
+                        // 交给 download() 换下一条线路；已写入的部分留在 part 里，下一条能接着用。
+                        throw UpdateException(UpdateFailure.INCOMPLETE, "mirror too slow")
+                    }
                 }
                 output.fd.sync()
             }

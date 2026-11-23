@@ -158,7 +158,7 @@ class MyEarthQuakeAlertApp : Application() {
     private val okHttpClient: OkHttpClient by lazy { OkHttpClient() }
 
     val updateRepository: UpdateRepository by lazy {
-        UpdateRepository(okHttpClient) {
+        UpdateRepository(this, okHttpClient) {
             // Read on demand so pinning a mirror in settings takes effect on the next check.
             runCatching { settingsRepository.settings.first().updateGithubMirror }.getOrNull()
         }

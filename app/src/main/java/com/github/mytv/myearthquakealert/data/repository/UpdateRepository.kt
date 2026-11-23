@@ -1,5 +1,6 @@
 package com.github.mytv.myearthquakealert.data.repository
 
+import android.content.Context
 import android.os.Build
 import com.github.mytv.myearthquakealert.BuildConfig
 import com.github.mytv.myearthquakealert.data.model.UpdateChannel
@@ -24,8 +25,12 @@ import java.util.concurrent.TimeUnit
  * GitHub Releases access for 应用内更新 (design §8 检查 / 渠道): the `update.json` manifests,
  * the Releases API for 预览版, the `.sha256` assets, and mirror ordering for every GitHub
  * URL (direct access is often slow or blocked in mainland China).
+ *
+ * 线路清单见 [GithubMirror]：内置一份，运行时再与 gitee `my-mirror` 的最新清单合并，
+ * 排序铁律是「镜像 / 国内直连优先，raw 最后兜底」。
  */
 class UpdateRepository(
+    private val context: Context,
     okHttpClient: OkHttpClient,
     /** Supplies the pinned mirror; null means automatic probing. */
     private val pinnedMirror: suspend () -> GithubMirror? = { null },
@@ -38,7 +43,7 @@ class UpdateRepository(
         .build()
 
     /** Probe results per probe key, valid for [PROBE_TTL_MS]. */
-    private val probeCache = mutableMapOf<String, Pair<Long, List<String>>>()
+    private val probeCache = mutableMapOf<String, Pair<Long, List<MirrorRoute>>>()
 
     /**
      * The newest release newer than this build on [channel], or null when up to date.
@@ -47,6 +52,8 @@ class UpdateRepository(
      */
     suspend fun checkForUpdate(channel: UpdateChannel): Result<UpdateInfo?> = withContext(Dispatchers.IO) {
         try {
+            // 远程清单可能已经过期，顺手补一次；拉不到也不影响内置清单。
+            GithubMirror.refreshListIfStale(context)
             val candidates = when (channel) {
                 UpdateChannel.STABLE -> listOfNotNull(fetchLatestManifest())
                 UpdateChannel.PREVIEW -> previewManifests()
@@ -88,8 +95,8 @@ class UpdateRepository(
         fetchManifest(MANIFEST_URL, release = null)
 
     private suspend fun fetchManifest(url: String, release: ReleaseCandidate?): ManifestCandidate? {
-        for (mirror in mirrorOrder(url, PROBE_MANIFEST)) {
-            val body = fetchText(mirrorUrl(mirror, url)) ?: continue
+        for (route in mirrorOrder(url, PROBE_MANIFEST)) {
+            val body = fetchText(route.urlFor(url) ?: continue) ?: continue
             val manifest = ReleaseSelection.parseManifest(body) ?: continue
             return ManifestCandidate(manifest, release)
         }
@@ -97,8 +104,8 @@ class UpdateRepository(
     }
 
     private suspend fun fetchReleases(): List<com.github.mytv.myearthquakealert.update.GithubRelease> {
-        for (mirror in mirrorOrder(RELEASES_API_URL, PROBE_API)) {
-            val body = fetchText(mirrorUrl(mirror, RELEASES_API_URL), api = true) ?: continue
+        for (route in mirrorOrder(RELEASES_API_URL, PROBE_API)) {
+            val body = fetchText(route.urlFor(RELEASES_API_URL) ?: continue, api = true) ?: continue
             val releases = runCatching { ReleaseSelection.parseReleases(body) }.getOrNull() ?: continue
             return releases
         }
@@ -108,15 +115,16 @@ class UpdateRepository(
     /** The hash published in the Release's `.sha256` asset, or null when it has none. */
     suspend fun fetchReleaseSha256(info: UpdateInfo): String? {
         val url = info.sha256Url ?: return null
-        for (mirror in mirrorOrder(url, PROBE_MANIFEST)) {
-            val body = fetchText(mirrorUrl(mirror, url)) ?: continue
+        for (route in mirrorOrder(url, PROBE_MANIFEST)) {
+            val body = fetchText(route.urlFor(url) ?: continue) ?: continue
             ReleaseSelection.parseChecksumFile(body, ReleaseSelection.apkName(info.url))?.let { return it }
         }
         return null
     }
 
     /** Mirror URLs of the APK, fastest first (probed against the APK itself). */
-    suspend fun downloadUrls(url: String): List<String> = mirrorOrder(url, url).map { mirrorUrl(it, url) }.distinct()
+    suspend fun downloadUrls(url: String): List<String> =
+        mirrorOrder(url, url).mapNotNull { it.urlFor(url) }.distinct()
 
     private suspend fun fetchText(url: String, api: Boolean = false): String? = withContext(Dispatchers.IO) {
         try {
@@ -153,7 +161,7 @@ class UpdateRepository(
      * plus the origin are probed concurrently and used fastest first. Probes are cached for
      * five minutes per [probeKey]; unreachable routes stay at the end as a last resort.
      */
-    private suspend fun mirrorOrder(target: String, probeKey: String): List<String> {
+    private suspend fun mirrorOrder(target: String, probeKey: String): List<MirrorRoute> {
         val now = System.currentTimeMillis()
         val pinned = pinnedMirror()
         // A pinned mirror changes the candidate set, so it is part of the cache key's meaning: the
@@ -162,21 +170,24 @@ class UpdateRepository(
         synchronized(probeCache) {
             probeCache[key]?.takeIf { now < it.first }?.let { return it.second }
         }
-        return applyPinnedMirror(probeMirrors(target), pinned).also { order ->
+        return probeMirrors(target, pinned).also { order ->
             synchronized(probeCache) {
                 probeCache[key] = (now + PROBE_TTL_MS) to order
             }
         }
     }
 
-    private suspend fun probeMirrors(target: String): List<String> = coroutineScope {
-        val results = candidateMirrors(pinnedMirror()).map { mirror ->
+    private suspend fun probeMirrors(target: String, pinned: GithubMirror?): List<MirrorRoute> = coroutineScope {
+        val results = GithubMirror.candidates(context, target, pinned).map { route ->
             async(Dispatchers.IO) {
+                val url = route.urlFor(target)
                 val startedAt = System.nanoTime()
-                val reachable = try {
+                val reachable = if (url == null) {
+                    false
+                } else try {
                     val call = http.newCall(
                         Request.Builder()
-                            .url(mirrorUrl(mirror, target))
+                            .url(url)
                             .head()
                             .header("User-Agent", USER_AGENT)
                             .build()
@@ -188,14 +199,11 @@ class UpdateRepository(
                 } catch (_: Exception) {
                     false
                 }
-                mirror to if (reachable) System.nanoTime() - startedAt else Long.MAX_VALUE
+                route to if (reachable) System.nanoTime() - startedAt else Long.MAX_VALUE
             }
         }.awaitAll()
-        results.sortedWith(compareBy({ it.second }, { it.first })).map { it.first }
+        results.sortedWith(compareBy({ it.second }, { it.first.label })).map { it.first }
     }
-
-    private fun mirrorUrl(mirror: String, target: String): String =
-        if (mirror.isEmpty()) target else mirror + target
 
     companion object {
         const val USER_AGENT = "myEarthquakeAlert-Android"
@@ -210,23 +218,5 @@ class UpdateRepository(
         const val RELEASES_URL = "https://github.com/$REPO/releases"
         const val MANIFEST_URL = "$RELEASES_URL/latest/download/${ReleaseSelection.MANIFEST_ASSET}"
         private const val RELEASES_API_URL = "https://api.github.com/repos/$REPO/releases?per_page=15"
-
-        /**
-         * Candidate routes: the pinned mirror first (when one is pinned), then every other route
-         * and direct access as fallbacks. The list itself is [GithubMirror], measured on 2026-11-17.
-         */
-        private fun candidateMirrors(pinned: GithubMirror?): List<String> {
-            val routes = GithubMirror.proxies.map { it.prefix }
-            return when (pinned) {
-                null, GithubMirror.AUTO -> routes + ""
-                GithubMirror.DIRECT -> listOf("") + routes
-                else -> listOf(pinned.prefix) + routes.filterNot { it == pinned.prefix } + ""
-            }
-        }
-
-        /** A pinned route leads whatever the probe measured; the user named it explicitly. */
-        private fun applyPinnedMirror(order: List<String>, pinned: GithubMirror?): List<String> =
-            if (pinned != null && pinned.isProxy) listOf(pinned.prefix) + order.filterNot { it == pinned.prefix }
-            else order
     }
 }
