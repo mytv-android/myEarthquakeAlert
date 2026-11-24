@@ -203,7 +203,7 @@
     <string name="pg_back_dismiss_desc">关闭后只能用屏幕上的按钮关闭预警</string>
     <string name="pg_alert_sound">警报音</string>
     <string name="pg_alert_sound_preset">预置警报音</string>
-    <string name="pg_alert_sound_preset_desc">内置警笛，4 秒一循环，一响起就是最大音量，不会由弱渐强</string>
+    <string name="pg_alert_sound_preset_desc">内置四音警报，每秒重复一次，一响起就是满幅，不由弱渐强</string>
     <string name="pg_alert_sound_system">系统闹钟铃声</string>
     <string name="pg_alert_sound_system_desc">跟随系统闹钟铃声；若默认铃声由弱渐强，听到预警会偏晚</string>
     <string name="pg_alert_sound_preview">试听</string>

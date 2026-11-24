@@ -915,7 +915,7 @@ footer{margin-top:72px;padding-block:28px 40px;border-top:1px solid var(--s3);fo
       <ul class="bul">
         <li>提醒级：系统通知音 + 一次短振。</li>
         <li>强震级：警报音走 <code>USAGE_ALARM</code>，振动模式 500/250 ms 循环；最后 10 秒每秒一声提示。</li>
-        <li>警报音默认用内置警笛（<code>res/raw/eew_alert.wav</code>，4 秒无缝循环，一响起就是满幅，不由弱渐强），不继承系统闹钟铃声——默认闹钟铃声常常由弱渐强，会让用户更晚注意到预警。设置 › 预警 › 警报音 可改回系统闹钟铃声，并带试听。</li>
+        <li>警报音默认用内置四音警报（<code>res/raw/eew_alert.wav</code>，C6-E6-G6-C7 上扬四音，每秒重复一次，一响起就是满幅，不由弱渐强），不继承系统闹钟铃声——默认闹钟铃声常常由弱渐强，会让用户更晚注意到预警。不用警笛：扫频警笛像救护车，且会盖住语音播报。设置 › 预警 › 警报音 可改回系统闹钟铃声，并带试听。</li>
         <li>语音播报：「地震预警，预计 25 秒后到达，本地烈度 4 度」，可在设置中关闭。</li>
       </ul>
     </div>
@@ -1730,7 +1730,7 @@ function scrSettings() {
   <div class="appbar"><div class="tt"><h5>设置</h5></div><span class="ib">${ic('search')}</span></div>
   <div class="body" style="gap:4px">
     ${grp('监测', [srow('sensors', '后台持续监测', (STATES[mon] || STATES.off).short, swH(mon !== 'off', 'data-act="mon-direct" role="switch" tabindex="0"')), bootRow(), srow('public', '数据源', '中国地震台网、四川、福建、重庆 · 4 路'), srow('pause', '暂停', mon === 'paused' ? '至 11:12' : '未暂停')])}
-    ${grp('预警', [srow('tune', '预警阈值', '震级 ≥ 3.0 · 本地烈度 ≥ 2 度'), srow('crisis_alert', '强震阈值', '本地烈度 ≥ 5 度时全屏接管'), srow('volume_up', '警报音', '预置警报音 · 内置警笛，不由弱渐强'), srow('do_not_disturb_on', '强震越过勿扰', '警报音在勿扰时也播放', swH(true)), srow('graphic_eq', '语音播报', '朗读倒计时与烈度', swH(true))])}
+    ${grp('预警', [srow('tune', '预警阈值', '震级 ≥ 3.0 · 本地烈度 ≥ 2 度'), srow('crisis_alert', '强震阈值', '本地烈度 ≥ 5 度时全屏接管'), srow('volume_up', '警报音', '预置警报音 · 内置四音警报，不由弱渐强'), srow('do_not_disturb_on', '强震越过勿扰', '警报音在勿扰时也播放', swH(true)), srow('graphic_eq', '语音播报', '朗读倒计时与烈度', swH(true))])}
     ${grp('显示', [srow('dark_mode', '主题', '跟随系统'), srow('dashboard', '界面布局', '自动 · 当前为手机'), srow('map', '地图样式', STATE.mapStyle === 'sat' ? '高德卫星' : '高德标准')])}
     ${grp('位置', [srow('my_location', '位置来源', '自动 · GPS，失败时用 IP')])}
     ${grp('工具', [srow('science', '模拟演练', '芦山 6.1 级回放等 3 个场景'), srow('monitor_heart', '诊断', '服务正常'), srow('ios_share', '导出日志', null)])}

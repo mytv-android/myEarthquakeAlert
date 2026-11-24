@@ -15,10 +15,10 @@ enum class ThemeMode { SYSTEM, LIGHT, DARK }
 /**
  * Settings › 预警 › 声音与振动 › 警报音: which sound a STRONG alert plays on the alarm stream.
  *
- * [PRESET] is the built-in siren ([com.github.mytv.myearthquakealert.R.raw.eew_alert]): it is
- * at full level from its first sample and identical on every device, so it never inherits a
- * system alarm ringtone that fades in. [SYSTEM] plays the ringtone the user picked as their
- * alarm sound instead.
+ * [PRESET] is the built-in alert figure ([com.github.mytv.myearthquakealert.R.raw.eew_alert]): a
+ * four-none figure repeated every second, at full level from its first note and identical on
+ * every device, so it never inherits a system alarm ringtone that fades in. [SYSTEM] plays the
+ * ringtone the user picked as their alarm sound instead.
  */
 enum class AlertSound { PRESET, SYSTEM }
 

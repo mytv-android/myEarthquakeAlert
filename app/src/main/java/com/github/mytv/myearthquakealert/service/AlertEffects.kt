@@ -30,10 +30,10 @@ import java.util.Locale
  *   second near the end when speech is unavailable. Whether this may sound during Do Not
  *   Disturb is decided by the caller ([dndActive]).
  *
- * The alarm sound itself is the bundled siren unless the user asked for the system alarm
- * ringtone ([AlertSound]): a default alarm ringtone often fades in from silence, which
- * delays the moment a strong alert is noticed, and the only way around it used to be to
- * replace the user's own alarm ringtone with a siren.
+ * The alarm sound itself is the bundled alert figure unless the user asked for the system alarm
+ * ringtone ([AlertSound]): a default alarm ringtone often fades in from silence, which delays
+ * the moment a strong alert is noticed, and the only way around it used to be to replace the
+ * user's own alarm ringtone with a siren.
  *
  * [stopAll] silences everything at once (静音 / 我已安全). Main thread only.
  */
@@ -270,9 +270,9 @@ internal class AlertEffects(private val context: Context) {
     }
 
     /**
-     * The bundled siren ([R.raw.eew_alert]): a 4 s seamless loop at full level from its
-     * first sample. Falls back to null when the resource cannot be opened or played, which
-     * sends [createAlarmPlayer] on to the system ringtone.
+     * The bundled alert figure ([R.raw.eew_alert]): a four-note figure repeated every second,
+     * at full level from its first note. Falls back to null when the resource cannot be opened
+     * or played, which sends [createAlarmPlayer] on to the system ringtone.
      */
     private fun presetPlayer(): MediaPlayer? {
         val fd = try {
