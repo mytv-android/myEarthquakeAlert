@@ -201,6 +201,12 @@
     <string name="pg_tts_desc">朗读倒计时与烈度</string>
     <string name="pg_back_dismiss">返回键关闭预警</string>
     <string name="pg_back_dismiss_desc">关闭后只能用屏幕上的按钮关闭预警</string>
+    <string name="pg_alert_sound">警报音</string>
+    <string name="pg_alert_sound_preset">预置警报音</string>
+    <string name="pg_alert_sound_preset_desc">内置警笛，4 秒一循环，一响起就是最大音量，不会由弱渐强</string>
+    <string name="pg_alert_sound_system">系统闹钟铃声</string>
+    <string name="pg_alert_sound_system_desc">跟随系统闹钟铃声；若默认铃声由弱渐强，听到预警会偏晚</string>
+    <string name="pg_alert_sound_preview">试听</string>
     <string name="pg_theme">主题</string>
     <string name="pg_theme_system">跟随系统</string>
     <string name="pg_theme_light">浅色</string>

@@ -26,21 +26,27 @@ import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.material.icons.filled.KeyboardReturn
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.NearMe
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Sensors
 import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -55,8 +61,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.github.mytv.myearthquakealert.R
+import com.github.mytv.myearthquakealert.data.model.AlertSound
 import com.github.mytv.myearthquakealert.data.model.LocationMode
 import com.github.mytv.myearthquakealert.data.source.EewSource
+import com.github.mytv.myearthquakealert.service.AlertEffects
 import com.github.mytv.myearthquakealert.service.DeliveryRequirement
 import com.github.mytv.myearthquakealert.service.LinkState
 import com.github.mytv.myearthquakealert.service.SourceHealth
@@ -76,6 +84,7 @@ import com.github.mytv.myearthquakealert.ui.theme.csisColor
 import com.github.mytv.myearthquakealert.ui.theme.status
 import java.util.Locale
 import kotlin.math.roundToInt
+import kotlinx.coroutines.delay
 
 // ---------------------------------------------------------------- 数据源
 
@@ -231,9 +240,66 @@ internal fun AlertsPage(env: SettingsEnv, onBack: (() -> Unit)?) {
                 }
             }
         }
+        item(key = "alert_sound") {
+            Column {
+                Subhead(stringResource(R.string.pg_alert_sound))
+                Surface(
+                    shape = RoundedCornerShape(20.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    RadioOptions(
+                        options = listOf(
+                            ChoiceOption(AlertSound.PRESET, stringResource(R.string.pg_alert_sound_preset), stringResource(R.string.pg_alert_sound_preset_desc)),
+                            ChoiceOption(AlertSound.SYSTEM, stringResource(R.string.pg_alert_sound_system), stringResource(R.string.pg_alert_sound_system_desc)),
+                        ),
+                        selected = settings.alertSound,
+                        onSelect = { sound -> actions.edit { updateAlertSound(sound) } },
+                        trailing = { sound -> AlertSoundPreview(sound) },
+                        modifier = Modifier.padding(8.dp),
+                    )
+                }
+            }
+        }
         item(key = "note") { InfoNote(stringResource(R.string.pg_alert_tiers_note)) }
     }
 }
+
+/**
+ * 试听 button: the real alarm sound and vibration for [sound], stopped by itself after
+ * [PREVIEW_MS] or by a second tap. Reuses [AlertEffects], so what is heard here is exactly
+ * what a STRONG alert plays.
+ */
+@Composable
+private fun AlertSoundPreview(sound: AlertSound) {
+    val context = LocalContext.current
+    val effects = remember(sound) { AlertEffects(context.applicationContext) }
+    DisposableEffect(effects) { onDispose { effects.release() } }
+    var playing by remember(effects) { mutableStateOf(false) }
+    LaunchedEffect(playing, effects) {
+        if (playing) {
+            delay(PREVIEW_MS)
+            effects.stopAlarm()
+            playing = false
+        }
+    }
+    IconButton(
+        onClick = {
+            if (playing) effects.stopAlarm()
+            else effects.startAlarm(sound)
+            playing = !playing
+        },
+        modifier = Modifier.focusHighlight(RoundedCornerShape(50)),
+    ) {
+        Icon(
+            imageVector = if (playing) Icons.Filled.Stop else Icons.Filled.PlayArrow,
+            contentDescription = stringResource(R.string.pg_alert_sound_preview),
+        )
+    }
+}
+
+/** How long 试听 plays before it stops on its own. */
+private const val PREVIEW_MS = 2_500L
 
 /**
  * The CSIS colour scale with the two thresholds marked: cells below the reminder threshold

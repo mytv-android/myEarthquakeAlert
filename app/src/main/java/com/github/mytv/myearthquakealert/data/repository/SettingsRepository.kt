@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
+import com.github.mytv.myearthquakealert.data.model.AlertSound
 import com.github.mytv.myearthquakealert.data.model.LayoutOverride
 import com.github.mytv.myearthquakealert.data.model.LocationMode
 import com.github.mytv.myearthquakealert.data.model.ThemeMode
@@ -36,6 +37,8 @@ data class UserSettings(
     val allowDismissWithBack: Boolean = true,
     val ttsEnabled: Boolean = true,
     val alarmBypassDnd: Boolean = true,
+    /** Which sound a STRONG alert plays on the alarm stream. */
+    val alertSound: AlertSound = AlertSound.PRESET,
     // 显示
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val layoutOverride: LayoutOverride = LayoutOverride.AUTO,
@@ -78,6 +81,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val ALLOW_DISMISS_WITH_BACK = booleanPreferencesKey("allow_dismiss_with_back")
         val TTS_ENABLED = booleanPreferencesKey("tts_enabled")
         val ALARM_BYPASS_DND = booleanPreferencesKey("alarm_bypass_dnd")
+        val ALERT_SOUND = stringPreferencesKey("alert_sound")
         val THEME_MODE = stringPreferencesKey("theme_mode")
         val LAYOUT_OVERRIDE = stringPreferencesKey("layout_override")
         val SPAN_HINGE = booleanPreferencesKey("span_hinge")
@@ -111,6 +115,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
             allowDismissWithBack = prefs[Keys.ALLOW_DISMISS_WITH_BACK] ?: true,
             ttsEnabled = prefs[Keys.TTS_ENABLED] ?: true,
             alarmBypassDnd = prefs[Keys.ALARM_BYPASS_DND] ?: true,
+            alertSound = enumOrDefault(prefs[Keys.ALERT_SOUND], AlertSound.PRESET),
             themeMode = enumOrDefault(prefs[Keys.THEME_MODE], ThemeMode.SYSTEM),
             layoutOverride = enumOrDefault(prefs[Keys.LAYOUT_OVERRIDE], LayoutOverride.AUTO),
             spanHinge = prefs[Keys.SPAN_HINGE] ?: true,
@@ -171,6 +176,10 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
     suspend fun updateAlarmBypassDnd(enabled: Boolean) {
         dataStore.edit { it[Keys.ALARM_BYPASS_DND] = enabled }
+    }
+
+    suspend fun updateAlertSound(sound: AlertSound) {
+        dataStore.edit { it[Keys.ALERT_SOUND] = sound.name }
     }
 
     suspend fun updateThemeMode(mode: ThemeMode) {

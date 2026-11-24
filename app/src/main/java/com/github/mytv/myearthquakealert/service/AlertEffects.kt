@@ -17,6 +17,8 @@ import android.os.VibratorManager
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.util.Log
+import com.github.mytv.myearthquakealert.R
+import com.github.mytv.myearthquakealert.data.model.AlertSound
 import java.util.Locale
 
 /**
@@ -27,6 +29,11 @@ import java.util.Locale
  *   500/250 ms vibration loop with alarm attributes, spoken countdown, and one beep per
  *   second near the end when speech is unavailable. Whether this may sound during Do Not
  *   Disturb is decided by the caller ([dndActive]).
+ *
+ * The alarm sound itself is the bundled siren unless the user asked for the system alarm
+ * ringtone ([AlertSound]): a default alarm ringtone often fades in from silence, which
+ * delays the moment a strong alert is noticed, and the only way around it used to be to
+ * replace the user's own alarm ringtone with a siren.
  *
  * [stopAll] silences everything at once (静音 / 我已安全). Main thread only.
  */
@@ -76,11 +83,11 @@ internal class AlertEffects(private val context: Context) {
     }
 
     /** STRONG: starts the looping alarm sound and vibration. */
-    fun startAlarm() {
+    fun startAlarm(sound: AlertSound) {
         if (player == null && alarmTone == null) {
-            player = createAlarmPlayer()
+            player = createAlarmPlayer(sound)
             if (player == null) {
-                // No playable alarm ringtone (e.g. media storage not unlocked yet): synthesized tone.
+                // No playable ringtone (e.g. media storage not unlocked yet): synthesized tone.
                 alarmTone = try {
                     ToneGenerator(AudioManager.STREAM_ALARM, 100).apply { startTone(ToneGenerator.TONE_CDMA_EMERGENCY_RINGBACK) }
                 } catch (e: Exception) {
@@ -232,7 +239,8 @@ internal class AlertEffects(private val context: Context) {
         engine.speak(text, if (flush) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD, params, "eew-${System.nanoTime()}")
     }
 
-    private fun createAlarmPlayer(): MediaPlayer? {
+    private fun createAlarmPlayer(sound: AlertSound): MediaPlayer? {
+        if (sound == AlertSound.PRESET) presetPlayer()?.let { return it }
         val candidates = listOfNotNull(
             safeUri { RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_ALARM) },
             safeUri { RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM) },
@@ -259,6 +267,41 @@ internal class AlertEffects(private val context: Context) {
             }
         }
         return null
+    }
+
+    /**
+     * The bundled siren ([R.raw.eew_alert]): a 4 s seamless loop at full level from its
+     * first sample. Falls back to null when the resource cannot be opened or played, which
+     * sends [createAlarmPlayer] on to the system ringtone.
+     */
+    private fun presetPlayer(): MediaPlayer? {
+        val fd = try {
+            context.resources.openRawResourceFd(R.raw.eew_alert)
+        } catch (e: Exception) {
+            Log.w(TAG, "preset alarm sound unavailable: ${e.message}")
+            null
+        } ?: return null
+        val mp = MediaPlayer()
+        return try {
+            fd.use {
+                mp.setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_ALARM)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .build()
+                )
+                mp.setDataSource(it.fileDescriptor, it.startOffset, it.length)
+                mp.isLooping = true
+                mp.prepare()
+                mp.setVolume(alarmVolume, alarmVolume)
+                mp.start()
+            }
+            mp
+        } catch (e: Exception) {
+            Log.w(TAG, "preset alarm sound failed: ${e.message}")
+            mp.release()
+            null
+        }
     }
 
     private inline fun safeUri(block: () -> android.net.Uri?): android.net.Uri? = try {

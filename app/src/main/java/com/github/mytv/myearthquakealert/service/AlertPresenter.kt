@@ -288,7 +288,7 @@ internal class AlertPresenter(
                     Diagnostics.log(HealthLevel.WARN, LogTags.ALERT, context.getString(R.string.svc_log_alert_dnd))
                     return
                 }
-                effects.startAlarm()
+                effects.startAlarm(settings.alertSound)
                 if (settings.ttsEnabled) effects.speak { announcement(a) }
             }
             AlertTier.REMIND -> {
