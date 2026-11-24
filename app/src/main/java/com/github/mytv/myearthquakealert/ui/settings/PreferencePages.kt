@@ -79,7 +79,7 @@ import kotlin.math.roundToInt
 
 // ---------------------------------------------------------------- 数据源
 
-/** 设置 › 数据源: the four Wolfx feeds; at least one stays subscribed. */
+/** 设置 › 数据源: the five Wolfx feeds; at least one stays subscribed. */
 @Composable
 internal fun SourcesPage(env: SettingsEnv, onBack: (() -> Unit)?) {
     val settings = env.settings

@@ -2,12 +2,15 @@ package com.github.mytv.myearthquakealert.data.source
 
 import com.github.mytv.myearthquakealert.data.api.CencEewResponse
 import com.github.mytv.myearthquakealert.data.api.CqEewResponse
+import com.github.mytv.myearthquakealert.data.api.CwaEewResponse
 import com.github.mytv.myearthquakealert.data.api.FjEewResponse
 import com.github.mytv.myearthquakealert.data.api.ScEewResponse
 import com.github.mytv.myearthquakealert.data.model.EewEvent
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.longOrNull
 
@@ -22,7 +25,7 @@ sealed interface EewFrame {
     /** Reply to the client's text `ping` (`{"type":"pong","timestamp":…}`). */
     data class Pong(val serverTime: Long?) : EewFrame
 
-    /** A well-formed frame of a type that carries no report (e.g. a feed of another source). */
+    /** A well-formed frame that carries no report (a feed of another source, or a CWA 预报 withdrawn with `isCancel`). */
     data class Ignored(val type: String) : EewFrame
 
     /** Not JSON, or a report without the fields an alert needs. */
@@ -57,6 +60,11 @@ object EewParser {
             "pong" -> return EewFrame.Pong(obj.long("timestamp"))
         }
         val feed = if (type == null) source else EewSource.fromTypeKey(type) ?: return EewFrame.Ignored(type)
+        // CWA withdraws a 预报 once it turns out too weak: still a frame from a live feed
+        // (liveness, health), but nothing to report or alert on.
+        if (feed == EewSource.CWA && obj.boolean("isCancel") == true) {
+            return EewFrame.Ignored("${feed.typeKey}:isCancel")
+        }
 
         val event = try {
             decode(feed, obj)
@@ -72,6 +80,18 @@ object EewParser {
     }
 
     private fun JsonObject.long(key: String): Long? = (this[key] as? JsonPrimitive)?.longOrNull
+
+    private fun JsonObject.boolean(key: String): Boolean? = (this[key] as? JsonPrimitive)?.booleanOrNull
+
+    /**
+     * CWA's 震度 as a number: the feed sends it as a string, and a level can carry a suffix
+     * ("5弱", "5強"), so only the leading number is taken. Non-numeric values are 0.
+     */
+    private fun shindo(value: JsonElement?): Double {
+        val primitive = value as? JsonPrimitive ?: return 0.0
+        val text = primitive.contentOrNull ?: return 0.0
+        return text.takeWhile { it.isDigit() || it == '.' }.toDoubleOrNull() ?: 0.0
+    }
 
     private fun decode(feed: EewSource, obj: JsonObject): EewEvent = when (feed) {
         EewSource.SICHUAN -> json.decodeFromJsonElement(ScEewResponse.serializer(), obj).let { r ->
@@ -138,6 +158,24 @@ object EewParser {
                 magnitude = r.Magnitude,
                 depth = r.Depth,
                 maxIntensity = r.MaxIntensity,
+            )
+        }
+        EewSource.CWA -> json.decodeFromJsonElement(CwaEewResponse.serializer(), obj).let { r ->
+            EewEvent(
+                // The CWA feed carries no EventID; its 地震编号 is stable across the reports of
+                // one earthquake, which is what ReportNum counts, so it stands in for one.
+                id = r.ID.toString(),
+                eventId = "cwa-${r.ID}",
+                source = feed.name,
+                reportTime = r.ReportTime,
+                reportNum = r.ReportNum,
+                originTime = r.OriginTime,
+                hypocenter = r.HypoCenter,
+                latitude = r.Latitude,
+                longitude = r.Longitude,
+                magnitude = r.Magnitude,
+                depth = r.Depth?.takeIf { it > 0.0 },
+                maxIntensity = shindo(r.MaxIntensity),
             )
         }
     }

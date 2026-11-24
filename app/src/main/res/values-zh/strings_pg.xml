@@ -76,9 +76,11 @@
     <string name="pg_source_sichuan">四川地震局</string>
     <string name="pg_source_fujian">福建地震局</string>
     <string name="pg_source_chongqing">重庆地震局</string>
+    <string name="pg_source_cwa">台湾中央气象署</string>
     <string name="pg_source_sichuan_short">四川</string>
     <string name="pg_source_fujian_short">福建</string>
     <string name="pg_source_chongqing_short">重庆</string>
+    <string name="pg_source_cwa_short">台湾气象署</string>
     <string name="pg_sources_summary">%1$s · %2$d 路</string>
 
     <!-- 指令反馈 -->

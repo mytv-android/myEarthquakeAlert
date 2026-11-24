@@ -17,6 +17,9 @@ interface WolfxApi {
     @GET("cq_eew.json")
     suspend fun getCqEew(): CqEewResponse
 
+    @GET("cwa_eew.json")
+    suspend fun getCwaEew(): CwaEewResponse
+
     /**
      * The list payload is an object of "No1".."No50" entries plus a trailing
      * "md5" string — decoded loosely and filtered in the repository.

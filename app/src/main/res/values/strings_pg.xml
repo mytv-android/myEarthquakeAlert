@@ -76,9 +76,11 @@
     <string name="pg_source_sichuan">Sichuan Earthquake Administration</string>
     <string name="pg_source_fujian">Fujian Earthquake Administration</string>
     <string name="pg_source_chongqing">Chongqing Earthquake Administration</string>
+    <string name="pg_source_cwa">Central Weather Administration, Taiwan</string>
     <string name="pg_source_sichuan_short">Sichuan</string>
     <string name="pg_source_fujian_short">Fujian</string>
     <string name="pg_source_chongqing_short">Chongqing</string>
+    <string name="pg_source_cwa_short">Taiwan CWA</string>
     <string name="pg_sources_summary">%1$s · %2$d sources</string>
 
     <!-- Command feedback -->

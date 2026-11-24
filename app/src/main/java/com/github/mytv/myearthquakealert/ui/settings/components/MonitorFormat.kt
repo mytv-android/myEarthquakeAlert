@@ -231,6 +231,7 @@ class Formats(private val res: Resources) {
         "SICHUAN" -> res.getString(R.string.pg_source_sichuan)
         "FUJIAN" -> res.getString(R.string.pg_source_fujian)
         "CHONGQING" -> res.getString(R.string.pg_source_chongqing)
+        "CWA" -> res.getString(R.string.pg_source_cwa)
         else -> source.label
     }
 
@@ -239,10 +240,11 @@ class Formats(private val res: Resources) {
         "SICHUAN" -> res.getString(R.string.pg_source_sichuan_short)
         "FUJIAN" -> res.getString(R.string.pg_source_fujian_short)
         "CHONGQING" -> res.getString(R.string.pg_source_chongqing_short)
+        "CWA" -> res.getString(R.string.pg_source_cwa_short)
         else -> source.label
     }
 
-    /** "中国地震台网、四川、福建、重庆 · 4 路" in [EewSource] order. */
+    /** "中国地震台网、四川、福建、重庆、台湾气象署 · 5 路" in [EewSource] order. */
     fun sourcesSummary(sources: Set<EewSource>): String {
         val ordered = EewSource.entries.filter { it in sources }
         return res.getString(

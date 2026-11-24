@@ -87,4 +87,47 @@ class EewParserTest {
         assertTrue(e.isFinal)
         assertNull(e.depth)
     }
+
+    /** The body of `cwa_eew.json` as the feed serves it: no `type`, no `EventID`, 震度 as a string. */
+    private val cwa = """
+        {"ID":1150085,"ReportTime":"2026-11-17 16:46:30","ReportNum":1,"OriginTime":"2026-11-17 16:46:03",
+         "HypoCenter":"臺東縣北部外海","Latitude":23.38,"Longitude":121.68,"Magunitude":4.7,"Magnitude":4.7,
+         "Depth":20.0,"MaxIntensity":"3","isCancel":false}
+    """.trimIndent()
+
+    @Test
+    fun cwaReport_isParsed() {
+        val frame = EewParser.parse(cwa, EewSource.CWA)
+        assertTrue(frame is EewFrame.Report)
+        val e = (frame as EewFrame.Report).event
+        // No EventID on this feed: the CWA 地震编号 stands in, so reports of one quake share it.
+        assertEquals("cwa-1150085", e.eventId)
+        assertEquals("1150085", e.id)
+        assertEquals(EewSource.CWA.name, e.source)
+        assertEquals(1, e.reportNum)
+        assertEquals(4.7, e.magnitude, 1e-9)
+        assertEquals(20.0, e.depth!!, 1e-9)
+        assertEquals(3.0, e.maxIntensity, 1e-9)
+    }
+
+    @Test
+    fun cwaFeedType_isRoutedFromTheFrame() {
+        val frame = EewParser.parse(cwa.replace("{", """{"type":"cwa_eew","""), EewSource.SICHUAN)
+        assertEquals(EewSource.CWA.name, (frame as EewFrame.Report).event.source)
+    }
+
+    @Test
+    fun cwaShindoSuffix_keepsTheNumber() {
+        val withSuffix = cwa.replace("\"MaxIntensity\":\"3\"", "\"MaxIntensity\":\"5弱\"")
+        val e = (EewParser.parse(withSuffix, EewSource.CWA) as EewFrame.Report).event
+        assertEquals(5.0, e.maxIntensity, 1e-9)
+        val asNumber = cwa.replace("\"MaxIntensity\":\"3\"", "\"MaxIntensity\":4")
+        assertEquals(4.0, (EewParser.parse(asNumber, EewSource.CWA) as EewFrame.Report).event.maxIntensity, 1e-9)
+    }
+
+    @Test
+    fun cwaCancelledReport_isIgnored() {
+        val cancelled = cwa.replace("\"isCancel\":false", "\"isCancel\":true")
+        assertEquals(EewFrame.Ignored("cwa_eew:isCancel"), EewParser.parse(cancelled, EewSource.CWA))
+    }
 }

@@ -15,7 +15,7 @@ An Android earthquake early warning app built with Jetpack Compose, supporting p
 ## 主要功能 (Main Features)
 
 - 实时地震预警 (Real-time earthquake early warning via WebSocket)
-- 多数据源支持：中国地震台网、四川地震局、福建地震局、重庆地震局
+- 多数据源支持：中国地震台网、四川地震局、福建地震局、重庆地震局、台湾中央气象署
 - 系统悬浮窗预警，带倒计时和迷你地图
 - 自适应 UI，支持手机/平板/TV 的统一 D-pad 操作
 - 可自定义预警阈值（震级、烈度）

@@ -30,6 +30,12 @@ enum class EewSource(
         description = "Chongqing Earthquake Administration",
         wsUrl = "wss://ws-api.wolfx.jp/cq_eew",
         httpUrl = "https://api.wolfx.jp/cq_eew.json",
+    ),
+    CWA(
+        label = "台湾中央气象署",
+        description = "Central Weather Administration, Taiwan",
+        wsUrl = "wss://ws-api.wolfx.jp/cwa_eew",
+        httpUrl = "https://api.wolfx.jp/cwa_eew.json",
     );
 
     /**
